@@ -1,6 +1,6 @@
 ![Spring](https://img.shields.io/badge/Spring-6DB33F?style=flat&logo=spring&logoColor=white)
 ![Angular](https://img.shields.io/badge/Angular-0F0F11?style=flat&logo=angular&logoColor=white)
-![App Screenshot](src/LogoReadme.png)
+![App Screenshot](src/LogoReadme(1).png)
 
 # PlanUCAB
 
