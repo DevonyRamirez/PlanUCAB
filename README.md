@@ -14,9 +14,10 @@ Aplicación web de planificación y gestión de eventos, inspirada en Google Cal
 
 ### Integrantes
 
-- [@devonyramirez](https://www.github.com/devonyramirez)
-- [@diegoprietoucab](https://www.github.com/diegoprietoucab)
-
+- [Devony Ramírez](https://www.github.com/devonyramirez)
+- [Diego Prieto](https://www.github.com/diegoprietoucab)
+- [Leonardo Chacón](https://www.github.com/leonardochch)
+- [Alonso Acosta](https://www.github.com/acostalf-prog)
 
 ### Documentación
 Toda la documentación asociada al proyecto se encuentra a continuación:
