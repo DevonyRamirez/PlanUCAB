@@ -22,7 +22,7 @@ Aplicación web de planificación y gestión de eventos, inspirada en Google Cal
 ### Documentación
 Toda la documentación asociada al proyecto se encuentra a continuación:
 
-- [Brief]()
+- [Brief](https://docs.google.com/document/d/1_rlrjKBw5DU59AIBMnbJDAC3Y4xeNjhIaQVeUf_crN8/edit?usp=sharing)
 - [Diagrama de casos de uso]()
 - [Especificación de Requisitos de Software (ERS)]()
 - [Diagramas de actividades]()
