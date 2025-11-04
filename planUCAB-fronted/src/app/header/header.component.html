@@ -1,0 +1,20 @@
+<header class="header">
+  <div class="header__logo">
+    <img src="assets/PlanUCAB_light.png" alt="PlanUCAB" class="header__logo-img" />
+  </div>
+  
+  <div class="header__search">
+    <input 
+      type="search" 
+      placeholder="Buscar eventos..." 
+      class="header__search-input"
+      [value]="busquedaService.filtro()" 
+      (input)="busquedaService.filtro.set(($any($event.target)).value)" />
+  </div>
+  
+  <div class="header__user">
+    <span class="header__user-name">{{ nombreUsuario() }}</span>
+    <img src="assets/cuenta-perfil-logo.svg" alt="Perfil" class="header__user-icon" />
+  </div>
+</header>
+

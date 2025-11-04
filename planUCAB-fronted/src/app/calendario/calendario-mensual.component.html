@@ -1,0 +1,34 @@
+<div class="calendario-mensual">
+  <div class="calendario-mensual__top">
+    <button (click)="toggleMenu()" class="calendario-mensual__add-btn">
+      <img src="assets/agregar.svg" alt="Agregar" class="calendario-mensual__add-icon" />
+    </button>
+    <div class="calendario-mensual__menu" *ngIf="mostrarMenu()">
+      <button (click)="onCrearEvento()" class="calendario-mensual__menu-item">Crear evento</button>
+      <!-- Más opciones aquí en el futuro -->
+    </div>
+  </div>
+
+  <div class="calendario-mensual__header">
+    <button (click)="mesAnterior()" class="calendario-mensual__nav">◀</button>
+    <h3 class="calendario-mensual__titulo">{{ nombreMes() }}</h3>
+    <button (click)="mesSiguiente()" class="calendario-mensual__nav">▶</button>
+  </div>
+
+  <div class="calendario-mensual__dias-semana">
+    <div *ngFor="let d of diasSemana" class="calendario-mensual__dia-label">{{ d }}</div>
+  </div>
+
+  <div class="calendario-mensual__grid">
+    <button
+      *ngFor="let dia of diasMes()"
+      (click)="seleccionarDia(dia)"
+      [class.calendario-mensual__dia--otro-mes]="!esMesActual(dia)"
+      [class.calendario-mensual__dia--hoy]="esHoy(dia)"
+      [class.calendario-mensual__dia--seleccionado]="esSeleccionado(dia)"
+      class="calendario-mensual__dia">
+      {{ dia?.getDate() }}
+    </button>
+  </div>
+</div>
+

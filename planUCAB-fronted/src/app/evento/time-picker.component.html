@@ -1,0 +1,30 @@
+<div class="time-picker" #timePickerRef>
+  <div class="time-picker__input-wrapper">
+    <input 
+      type="text" 
+      [value]="inputValue()" 
+      (input)="onInput($event)"
+      (focus)="onFocus()"
+      (blur)="onBlur()"
+      placeholder="hh:mm am/pm" 
+      class="time-picker__input" />
+    <svg class="time-picker__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"></circle>
+      <polyline points="12 6 12 12 16 14"></polyline>
+    </svg>
+  </div>
+  
+  <div class="time-picker__selector" *ngIf="mostrarSelector()" (mousedown)="$event.preventDefault()">
+    <div class="time-picker__scroll-list">
+      <button
+        *ngFor="let opcion of opcionesHora"
+        (mousedown)="$event.preventDefault(); seleccionarOpcion(opcion)"
+        (click)="$event.stopPropagation()"
+        [class.time-picker__option--selected]="horaSeleccionada()?.display === opcion.display"
+        class="time-picker__option">
+        {{ opcion.display }}
+      </button>
+    </div>
+  </div>
+</div>
+
