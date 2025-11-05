@@ -1,0 +1,40 @@
+<div class="color-picker" #pickerContainer>
+  <div class="color-picker__trigger" (click)="togglePicker()">
+    <div class="color-picker__swatch" [style.background]="colorHex()"></div>
+    <input 
+      type="text" 
+      [value]="colorHex()" 
+      (input)="onHexInput($event)"
+      class="color-picker__hex-input"
+      (click)="togglePicker(); $event.stopPropagation()" />
+  </div>
+  
+  <div class="color-picker__overlay" *ngIf="mostrarPicker()" (click)="togglePicker()">
+    <div class="color-picker__dropdown" (click)="$event.stopPropagation()">
+      <div class="color-picker__saturation-area" 
+           [style.background]="saturationGradient()"
+           (click)="onColorAreaClick($event)"
+           (mousedown)="onColorAreaMouseDown($event)">
+        <div class="color-picker__brightness-overlay" [style.background]="brightnessGradient()"></div>
+        <div class="color-picker__selector" [style.left]="getSelectorPosition().left" [style.top]="getSelectorPosition().top"></div>
+      </div>
+      
+      <div class="color-picker__hue-slider" 
+           (click)="onHueSliderClick($event)"
+           (mousedown)="onHueSliderMouseDown($event)">
+        <div class="color-picker__hue-handle" [style.left]="getHueSliderPosition()"></div>
+      </div>
+      
+      <div class="color-picker__footer">
+        <div class="color-picker__footer-swatch" [style.background]="colorHex()"></div>
+        <input 
+          type="text" 
+          [value]="colorHex()" 
+          (input)="onHexInput($event)"
+          class="color-picker__hex-input-footer"
+          (click)="$event.stopPropagation()" />
+      </div>
+    </div>
+  </div>
+</div>
+

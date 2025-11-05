@@ -6,8 +6,8 @@ export interface CreateEventPayload {
   name: string;
   location: string;
   date: string;   // YYYY-MM-DD
-  startTime: string;   // HH:mm or h:mm AM/PM
-  endTime: string;     // HH:mm or h:mm AM/PM
+  startTime: string;   // HH:mm o h:mm AM/PM
+  endTime: string;     // HH:mm o h:mm AM/PM
   description?: string;
   colorHex: string; // #RRGGBB
 }
@@ -18,8 +18,8 @@ export interface Event {
   name: string;
   location: string;
   description?: string;
-  startDateTime: string; // ISO
-  endDateTime: string;   // ISO
+  startDateTime: string; // ISO 8601
+  endDateTime: string;   // ISO 8601
   colorHex: string;
 }
 

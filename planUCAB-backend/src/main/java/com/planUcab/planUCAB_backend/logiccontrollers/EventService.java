@@ -1,8 +1,7 @@
-package com.planUcab.planUCAB_backend.event.service;
+package com.planUcab.planUCAB_backend.logiccontrollers;
 
-import com.planUcab.planUCAB_backend.event.dto.CreateEventRequest;
-import com.planUcab.planUCAB_backend.event.model.Event;
-import com.planUcab.planUCAB_backend.event.repository.EventRepository;
+import com.planUcab.planUCAB_backend.model.Event;
+import com.planUcab.planUCAB_backend.model.exceptions.InvalidEventTimeException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,7 +24,7 @@ public class EventService {
         LocalTime start = parseTime24(request.getStartTime());
         LocalTime end = parseTime24(request.getEndTime());
         if (end.isBefore(start) || end.equals(start)) {
-            throw new IllegalArgumentException("endTime must be after startTime");
+            throw new InvalidEventTimeException("endTime must be after startTime");
         }
         LocalDateTime startDateTime = LocalDateTime.of(date, start);
         LocalDateTime endDateTime = LocalDateTime.of(date, end);
@@ -51,3 +50,4 @@ public class EventService {
     }
 
 }
+

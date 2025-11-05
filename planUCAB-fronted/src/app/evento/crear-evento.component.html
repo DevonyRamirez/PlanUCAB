@@ -2,16 +2,10 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>Crear Evento</h2>
-      <button type="button" class="modal-close" (click)="cerrarModal()">×</button>
     </div>
     <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
   <label>
-    Usuario ID
-    <input type="number" formControlName="userId" />
-  </label>
-
-  <label>
-    Nombre
+    Título
     <input type="text" formControlName="name" />
     <small *ngIf="form.get('name')?.touched && form.get('name')?.hasError('required')" style="color:#d32f2f">El título es requerido</small>
   </label>
@@ -37,7 +31,10 @@
       </div>
       <div style="flex:1">
         <div style="font-size:12px; font-weight:600; margin-bottom:4px">Fin</div>
-        <app-time-picker [value]="form.get('endTime')?.value || ''" (valueChange)="form.patchValue({endTime: $event})"></app-time-picker>
+        <app-time-picker 
+          [value]="form.get('endTime')?.value || ''" 
+          [minTime]="form.get('startTime')?.value || null"
+          (valueChange)="form.patchValue({endTime: $event})"></app-time-picker>
         <small *ngIf="form.get('endTime')?.touched && form.get('endTime')?.hasError('required')" style="color:#d32f2f; font-size:11px">La hora de fin es requerida</small>
       </div>
     </div>
@@ -50,15 +47,35 @@
 
   <label>
     Color
-    <input type="color" formControlName="colorHex" />
+    <app-color-picker [value]="form.get('colorHex')?.value || '#2196F3'" (valueChange)="form.patchValue({colorHex: $event})"></app-color-picker>
   </label>
 
-  <div style="display:flex; gap:8px">
+  <div class="modal-buttons">
     <button type="button" (click)="cancelar()">Cancelar</button>
     <button type="submit">Crear evento</button>
   </div>
       <div class="mensaje" [style.color]="mensaje.startsWith('Error') ? '#d32f2f' : '#333'">{{ mensaje }}</div>
     </form>
+  </div>
+</div>
+
+<!-- Modal de Error -->
+<div class="error-modal-overlay" *ngIf="mostrarError" (click)="cerrarError()">
+  <div class="error-modal-content" (click)="$event.stopPropagation()">
+    <div class="error-modal-header">
+      <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h3>Error</h3>
+    </div>
+    <div class="error-modal-body">
+      <p>{{ mensajeError }}</p>
+    </div>
+    <div class="error-modal-footer">
+      <button type="button" class="error-modal-button" (click)="cerrarError()">Entendido</button>
+    </div>
   </div>
 </div>
 

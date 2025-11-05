@@ -1,4 +1,4 @@
-package com.planUcab.planUCAB_backend.event.dto;
+package com.planUcab.planUCAB_backend.logiccontrollers;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,11 +9,10 @@ public class CreateEventRequest {
     @NotBlank
     private String name;
 
-    @NotBlank
     private String location;
 
     @NotBlank
-    // Expected format: YYYY-MM-DD
+    // Formato esperado: YYYY-MM-DD
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "date must be in format YYYY-MM-DD")
     private String date;
 
@@ -28,7 +27,7 @@ public class CreateEventRequest {
     private String description;
 
     @NotNull
-    // Hex color like #RRGGBB
+    // Color hexadecimal como #RRGGBB
     @Pattern(regexp = "^#([A-Fa-f0-9]{6})$", message = "color must be in hex #RRGGBB")
     private String colorHex;
 
@@ -73,5 +72,4 @@ public class CreateEventRequest {
         this.colorHex = colorHex;
     }
 }
-
 

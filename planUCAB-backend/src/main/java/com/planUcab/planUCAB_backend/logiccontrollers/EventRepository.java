@@ -1,8 +1,8 @@
-package com.planUcab.planUCAB_backend.event.repository;
+package com.planUcab.planUCAB_backend.logiccontrollers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.planUcab.planUCAB_backend.event.model.Event;
+import com.planUcab.planUCAB_backend.model.Event;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -37,7 +37,7 @@ public class EventRepository {
                 if (path.getParent() != null) {
                     Files.createDirectories(path.getParent());
                 }
-                // initialize empty map {}
+                // Inicializar mapa vacío {}
                 objectMapper.writeValue(path.toFile(), new HashMap<Long, List<Event>>());
             }
             Map<Long, List<Event>> loaded = objectMapper.readValue(
@@ -45,7 +45,7 @@ public class EventRepository {
             );
             if (loaded != null) {
                 userIdToEvents.putAll(loaded);
-                // reconstruct id sequence max
+                // Reconstruir secuencia de ID máximo
                 long maxId = loaded.values().stream()
                         .flatMap(List::stream)
                         .mapToLong(e -> e.getId() == null ? 0L : e.getId())
@@ -53,7 +53,7 @@ public class EventRepository {
                 idSequence.set(maxId + 1);
             }
         } catch (IOException e) {
-            // If loading fails, start with empty in-memory store
+            // Si falla la carga, iniciar con almacenamiento en memoria vacío
         }
     }
 
@@ -79,9 +79,8 @@ public class EventRepository {
             }
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(path.toFile(), userIdToEvents);
         } catch (IOException e) {
-            // swallow persist errors for now; could add logging
+            // Ignorar errores de persistencia por ahora; se podría agregar logging
         }
     }
 }
-
 

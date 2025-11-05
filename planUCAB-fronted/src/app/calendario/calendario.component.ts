@@ -7,8 +7,8 @@ import { BusquedaService } from '../shared/busqueda.service';
 
 function startOfWeek(date: Date): Date {
   const d = new Date(date);
-  const day = d.getDay();
-  const diff = (day === 0 ? -6 : 1) - day;
+  const day = d.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+  const diff = -day; // Restar el día para llegar al domingo
   d.setDate(d.getDate() + diff);
   d.setHours(0, 0, 0, 0);
   return d;
@@ -36,6 +36,7 @@ export class CalendarioComponent implements OnInit {
   diasSemana = computed(() => Array.from({ length: 7 }).map((_, i) => addDays(this.semanaInicio(), i)));
   eventos = signal<Event[]>([]);
   mostrarModalCrear = signal(false);
+  eventoSeleccionado = signal<Event | null>(null);
   eventosFiltrados = computed(() => {
     const f = this.busquedaService.filtro().trim().toLowerCase();
     if (!f) return this.eventos();
@@ -91,6 +92,43 @@ export class CalendarioComponent implements OnInit {
 
   formatHour(hour: number): string {
     return `${String(hour).padStart(2, '0')}:00`;
+  }
+
+  formatDayName(date: Date): string {
+    const dias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const dia = date.getDay();
+    return `${dias[dia]} ${date.getDate()}`;
+  }
+
+  formatMonthName(date: Date): string {
+    const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    return meses[date.getMonth()];
+  }
+
+  formatDateRange(): string {
+    const inicio = this.diasSemana()[0];
+    const fin = this.diasSemana()[6];
+    return `${this.formatMonthName(inicio)} ${inicio.getDate()} - ${this.formatMonthName(fin)} ${fin.getDate()}, ${fin.getFullYear()}`;
+  }
+
+  abrirDetallesEvento(evento: Event): void {
+    this.eventoSeleccionado.set(evento);
+  }
+
+  cerrarDetallesEvento(): void {
+    this.eventoSeleccionado.set(null);
+  }
+
+  formatEventDate(date: string): string {
+    const d = new Date(date);
+    const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    return `${dias[d.getDay()]}, ${d.getDate()} de ${meses[d.getMonth()]} de ${d.getFullYear()}`;
+  }
+
+  formatEventTime(date: string): string {
+    const d = new Date(date);
+    return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   }
 }
 

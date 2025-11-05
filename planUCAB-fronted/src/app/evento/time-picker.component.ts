@@ -18,6 +18,7 @@ interface TimeOption {
 })
 export class TimePickerComponent implements OnInit, OnChanges {
   @Input() value: string = '';
+  @Input() minTime: string | null = null; // Hora mínima permitida (ej: "09:00")
   @Output() valueChange = new EventEmitter<string>();
   @ViewChild('timePickerRef', { static: false }) timePickerRef!: ElementRef;
   
@@ -33,7 +34,8 @@ export class TimePickerComponent implements OnInit, OnChanges {
       for (let m = 0; m < 60; m += 15) {
         const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
         const ampm: 'AM' | 'PM' = h >= 12 ? 'PM' : 'AM';
-        const display = `${hour12}:${String(m).padStart(2, '0')}${ampm.toLowerCase()}`;
+        // Formato 24h (militar)
+        const display = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
         opciones.push({
           hour24: h,
           hour12,
@@ -51,7 +53,27 @@ export class TimePickerComponent implements OnInit, OnChanges {
     const [h, m] = this.value.split(':');
     const hour24 = parseInt(h, 10);
     const minute = parseInt(m, 10) || 0;
+    // Buscar por hour24 y minute ya que display ahora es formato 24h
     return this.opcionesHora.find(op => op.hour24 === hour24 && op.minute === minute) || null;
+  });
+
+  // Filtrar opciones basándose en minTime
+  opcionesDisponibles = computed(() => {
+    if (!this.minTime) {
+      return this.opcionesHora;
+    }
+    
+    // Parsear minTime
+    const [minH, minM] = this.minTime.split(':');
+    const minHour24 = parseInt(minH, 10);
+    const minMinute = parseInt(minM, 10) || 0;
+    const minTimeMinutes = minHour24 * 60 + minMinute;
+    
+    // Filtrar opciones que sean mayores a minTime
+    return this.opcionesHora.filter(op => {
+      const opTimeMinutes = op.hour24 * 60 + op.minute;
+      return opTimeMinutes > minTimeMinutes;
+    });
   });
   
   ngOnInit(): void {
@@ -66,6 +88,25 @@ export class TimePickerComponent implements OnInit, OnChanges {
       this.actualizarInput();
       this.lastValidValue.set(this.value);
     }
+    
+    // Si cambia minTime y el valor actual es menor o igual, limpiar el valor
+    if (changes['minTime'] && this.value && this.minTime) {
+      const [minH, minM] = this.minTime.split(':');
+      const minHour24 = parseInt(minH, 10);
+      const minMinute = parseInt(minM, 10) || 0;
+      const minTimeMinutes = minHour24 * 60 + minMinute;
+      
+      const [h, m] = this.value.split(':');
+      const hour24 = parseInt(h, 10);
+      const minute = parseInt(m, 10) || 0;
+      const currentTimeMinutes = hour24 * 60 + minute;
+      
+      if (currentTimeMinutes <= minTimeMinutes) {
+        this.valueChange.emit('');
+        this.lastValidValue.set('');
+        this.inputValue.set('');
+      }
+    }
   }
   
   actualizarInput(): void {
@@ -73,12 +114,11 @@ export class TimePickerComponent implements OnInit, OnChanges {
       this.inputValue.set('');
       return;
     }
+    // Mostrar en formato 24h (militar)
     const [h, m] = this.value.split(':');
     const hour = parseInt(h, 10);
     const min = parseInt(m, 10) || 0;
-    const ampm = hour >= 12 ? 'pm' : 'am';
-    const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
-    this.inputValue.set(`${hour12}:${String(min).padStart(2, '0')}${ampm}`);
+    this.inputValue.set(`${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`);
   }
   
   @HostListener('document:click', ['$event'])
@@ -182,6 +222,7 @@ export class TimePickerComponent implements OnInit, OnChanges {
     const timeStr = `${String(opcion.hour24).padStart(2, '0')}:${String(opcion.minute).padStart(2, '0')}`;
     this.valueChange.emit(timeStr);
     this.lastValidValue.set(timeStr);
+    // display ya está en formato 24h
     this.inputValue.set(opcion.display);
     this.mostrarSelector.set(false);
     setTimeout(() => {

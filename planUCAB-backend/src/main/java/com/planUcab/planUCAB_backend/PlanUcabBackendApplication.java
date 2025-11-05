@@ -3,7 +3,7 @@ package com.planUcab.planUCAB_backend;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.planUcab.planUCAB_backend")
 public class PlanUcabBackendApplication {
 
 	public static void main(String[] args) {
@@ -11,3 +11,4 @@ public class PlanUcabBackendApplication {
 	}
 
 }
+

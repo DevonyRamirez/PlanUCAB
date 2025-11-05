@@ -1,4 +1,4 @@
-package com.planUcab.planUCAB_backend.event.model;
+package com.planUcab.planUCAB_backend.model;
 
 import java.time.LocalDateTime;
 
@@ -62,5 +62,3 @@ public class Event {
         this.colorHex = colorHex;
     }
 }
-
-

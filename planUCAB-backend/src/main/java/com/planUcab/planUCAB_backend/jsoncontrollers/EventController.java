@@ -1,8 +1,8 @@
-package com.planUcab.planUCAB_backend.event.controller;
+package com.planUcab.planUCAB_backend.jsoncontrollers;
 
-import com.planUcab.planUCAB_backend.event.dto.CreateEventRequest;
-import com.planUcab.planUCAB_backend.event.model.Event;
-import com.planUcab.planUCAB_backend.event.service.EventService;
+import com.planUcab.planUCAB_backend.model.Event;
+import com.planUcab.planUCAB_backend.logiccontrollers.CreateEventRequest;
+import com.planUcab.planUCAB_backend.logiccontrollers.EventService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +31,4 @@ public class EventController {
         return eventService.getEventsByUser(userId);
     }
 }
-
 
