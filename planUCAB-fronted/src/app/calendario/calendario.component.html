@@ -1,6 +1,6 @@
 <div class="calendario-semanal">
   <aside class="calendario-semanal__sidebar">
-    <app-calendario-mensual (crearEvento)="abrirModalCrear()"></app-calendario-mensual>
+    <app-calendario-mensual (crearEvento)="abrirModalCrear()" (crearHorario)="abrirModalCrearHorario()"></app-calendario-mensual>
   </aside>
 
   <main class="calendario-semanal__main">
@@ -37,7 +37,7 @@
         <div *ngFor="let h of horas" class="day-col__grid-cell"></div>
         <!-- overlay de eventos -->
         <div class="events-layer">
-          <div *ngFor="let ev of eventosFiltrados()" [style.display]="estaEnDia(ev, d) ? 'block' : 'none'"
+          <div *ngFor="let ev of eventosYHorarios()" [style.display]="estaEnDia(ev, d) ? 'block' : 'none'"
                [style.top]="topPercent(ev)" [style.height]="heightPercent(ev)" [style.background]="ev.colorHex"
                class="event"
                (click)="abrirDetallesEvento(ev)">
@@ -48,6 +48,27 @@
     </div>
   </main>
   <app-crear-evento *ngIf="mostrarModalCrear()" (eventoCreado)="onEventoCreado()" (cerrar)="cerrarModalCrear()"></app-crear-evento>
+  <app-crear-horario *ngIf="mostrarModalCrearHorario()" (horarioCreado)="onHorarioCreado()" (cerrar)="cerrarModalCrearHorario()"></app-crear-horario>
+  
+  <!-- Mensaje de error de búsqueda -->
+  <div class="error-busqueda-overlay" *ngIf="mostrarErrorBusqueda()" (click)="mostrarErrorBusqueda.set(false)">
+    <div class="error-busqueda-content" (click)="$event.stopPropagation()">
+      <div class="error-busqueda-header">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>No encontrado</span>
+      </div>
+      <div class="error-busqueda-body">
+        <p>{{ mensajeErrorBusqueda() }}</p>
+      </div>
+      <div class="error-busqueda-footer">
+        <button type="button" (click)="mostrarErrorBusqueda.set(false)">Cerrar</button>
+      </div>
+    </div>
+  </div>
   
   <!-- Modal de Detalles del Evento -->
   <div class="event-details-overlay" *ngIf="eventoSeleccionado()" (click)="cerrarDetallesEvento()">

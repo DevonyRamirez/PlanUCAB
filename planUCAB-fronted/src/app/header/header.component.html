@@ -4,12 +4,7 @@
   </div>
   
   <div class="header__search">
-    <input 
-      type="search" 
-      placeholder="Buscar eventos..." 
-      class="header__search-input"
-      [value]="busquedaService.filtro()" 
-      (input)="busquedaService.filtro.set(($any($event.target)).value)" />
+    <app-barra-busqueda></app-barra-busqueda>
   </div>
   
   <div class="header__user">

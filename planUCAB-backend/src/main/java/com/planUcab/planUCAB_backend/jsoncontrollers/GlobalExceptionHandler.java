@@ -1,6 +1,6 @@
 package com.planUcab.planUCAB_backend.jsoncontrollers;
 
-import com.planUcab.planUCAB_backend.model.exceptions.EventException;
+import com.planUcab.planUCAB_backend.exceptions.EventException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

@@ -2,9 +2,9 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EventoService } from './evento.service';
-import { DatePickerComponent } from './date-picker.component';
-import { TimePickerComponent } from './time-picker.component';
-import { ColorPickerComponent } from './color-picker.component';
+import { DatePickerComponent } from '../components/date-picker.component';
+import { TimePickerComponent } from '../components/time-picker.component';
+import { ColorPickerComponent } from '../components/color-picker.component';
 
 @Component({
   selector: 'app-crear-evento',

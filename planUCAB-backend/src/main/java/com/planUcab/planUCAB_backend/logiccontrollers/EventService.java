@@ -1,14 +1,15 @@
 package com.planUcab.planUCAB_backend.logiccontrollers;
 
-import com.planUcab.planUCAB_backend.model.Event;
-import com.planUcab.planUCAB_backend.model.exceptions.InvalidEventTimeException;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.planUcab.planUCAB_backend.exceptions.InvalidEventTimeException;
+import com.planUcab.planUCAB_backend.model.Event;
 
 @Service
 public class EventService {

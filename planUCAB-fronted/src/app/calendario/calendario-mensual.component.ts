@@ -23,6 +23,7 @@ function addMonths(date: Date, months: number): Date {
 })
 export class CalendarioMensualComponent {
   @Output() crearEvento = new EventEmitter<void>();
+  @Output() crearHorario = new EventEmitter<void>();
   mesActual = signal(startOfMonth(new Date()));
   fechaSeleccionada = signal<Date | null>(null);
   mostrarMenu = signal(false);
@@ -104,6 +105,11 @@ export class CalendarioMensualComponent {
     this.cerrarMenu();
   }
 
+  onCrearHorario(): void {
+    this.crearHorario.emit();
+    this.cerrarMenu();
+  }
+
   @HostListener('document:click', ['$event'])
   cerrarMenuSiClickFuera(event: Event): void {
     const target = event.target as HTMLElement;
@@ -111,5 +117,7 @@ export class CalendarioMensualComponent {
       this.cerrarMenu();
     }
   }
+
+
 }
 

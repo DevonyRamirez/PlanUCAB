@@ -3,7 +3,7 @@ package com.planUcab.planUCAB_backend.logiccontrollers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
-import com.planUcab.planUCAB_backend.model.Event;
+import com.planUcab.planUCAB_backend.model.Horario;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -20,13 +20,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
-public class EventRepository {
+public class HorarioRepository {
 
-    private final Map<Long, List<Event>> userIdToEvents = new ConcurrentHashMap<>();
+    private final Map<Long, List<Horario>> userIdToHorarios = new ConcurrentHashMap<>();
     private final AtomicLong idSequence = new AtomicLong(1);
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${event.storage.path:data/eventos.json}")
+    @Value("${horario.storage.path:data/horarios.json}")
     private String storagePath;
 
     @PostConstruct
@@ -37,18 +37,16 @@ public class EventRepository {
                 if (path.getParent() != null) {
                     Files.createDirectories(path.getParent());
                 }
-                // Inicializar mapa vacío {}
-                objectMapper.writeValue(path.toFile(), new HashMap<Long, List<Event>>());
+                objectMapper.writeValue(path.toFile(), new HashMap<Long, List<Horario>>());
             }
-            Map<Long, List<Event>> loaded = objectMapper.readValue(
-                    path.toFile(), new TypeReference<Map<Long, List<Event>>>() {}
+            Map<Long, List<Horario>> loaded = objectMapper.readValue(
+                    path.toFile(), new TypeReference<Map<Long, List<Horario>>>() {}
             );
             if (loaded != null) {
-                userIdToEvents.putAll(loaded);
-                // Reconstruir secuencia de ID máximo
+                userIdToHorarios.putAll(loaded);
                 long maxId = loaded.values().stream()
                         .flatMap(List::stream)
-                        .mapToLong(e -> e.getId() == null ? 0L : e.getId())
+                        .mapToLong(h -> h.getId() == null ? 0L : h.getId())
                         .max().orElse(0L);
                 idSequence.set(maxId + 1);
             }
@@ -57,17 +55,17 @@ public class EventRepository {
         }
     }
 
-    public Event save(Long userId, Event event) {
-        event.setId(idSequence.getAndIncrement());
-        event.setUserId(userId);
-        userIdToEvents.computeIfAbsent(userId, k -> new ArrayList<>()).add(event);
+    public Horario save(Long userId, Horario horario) {
+        horario.setId(idSequence.getAndIncrement());
+        horario.setUserId(userId);
+        userIdToHorarios.computeIfAbsent(userId, k -> new ArrayList<>()).add(horario);
         persist();
-        return event;
+        return horario;
     }
 
-    public List<Event> findByUserId(Long userId) {
-        return userIdToEvents.containsKey(userId)
-                ? Collections.unmodifiableList(userIdToEvents.get(userId))
+    public List<Horario> findByUserId(Long userId) {
+        return userIdToHorarios.containsKey(userId)
+                ? Collections.unmodifiableList(userIdToHorarios.get(userId))
                 : List.of();
     }
 
@@ -77,9 +75,9 @@ public class EventRepository {
             if (path.getParent() != null) {
                 Files.createDirectories(path.getParent());
             }
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(path.toFile(), userIdToEvents);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(path.toFile(), userIdToHorarios);
         } catch (IOException e) {
-            // Ignorar errores de persistencia por ahora; se podría agregar logging
+            // Ignorar errores de persistencia por ahora
         }
     }
 }

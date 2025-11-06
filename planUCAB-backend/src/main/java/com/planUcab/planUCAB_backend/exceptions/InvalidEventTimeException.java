@@ -1,4 +1,4 @@
-package com.planUcab.planUCAB_backend.model.exceptions;
+package com.planUcab.planUCAB_backend.exceptions;
 
 public class InvalidEventTimeException extends EventException {
 
@@ -6,3 +6,4 @@ public class InvalidEventTimeException extends EventException {
         super(message);
     }
 }
+

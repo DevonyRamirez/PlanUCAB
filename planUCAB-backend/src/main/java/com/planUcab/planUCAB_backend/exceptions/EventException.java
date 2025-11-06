@@ -1,4 +1,4 @@
-package com.planUcab.planUCAB_backend.model.exceptions;
+package com.planUcab.planUCAB_backend.exceptions;
 
 public class EventException extends RuntimeException {
 
@@ -10,3 +10,4 @@ public class EventException extends RuntimeException {
         super(message, cause);
     }
 }
+

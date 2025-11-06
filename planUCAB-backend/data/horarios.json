@@ -1,0 +1,69 @@
+{
+  "1" : [ {
+    "id" : 1,
+    "userId" : 1,
+    "materia" : "Cálculo Vectorial",
+    "aula" : "L2010",
+    "diaSemana" : "Lunes",
+    "startTime" : "07:00",
+    "endTime" : "09:00",
+    "profesor" : "Elvira Sabal",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#2196F3"
+  }, {
+    "id" : 2,
+    "userId" : 1,
+    "materia" : "Cálculo Vectorial",
+    "aula" : "L2010",
+    "diaSemana" : "Miércoles",
+    "startTime" : "10:00",
+    "endTime" : "12:00",
+    "profesor" : "Elvira Sabal",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#2196F3"
+  }, {
+    "id" : 3,
+    "userId" : 1,
+    "materia" : "Cálculo Vectorial",
+    "aula" : "L2010",
+    "diaSemana" : "Viernes",
+    "startTime" : "15:00",
+    "endTime" : "17:00",
+    "profesor" : "Elvira Sabal",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#2196F3"
+  }, {
+    "id" : 4,
+    "userId" : 1,
+    "materia" : "Ingeniería de Software",
+    "aula" : "A2-41",
+    "diaSemana" : "Viernes",
+    "startTime" : "07:00",
+    "endTime" : "09:00",
+    "profesor" : "MAPO",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#A906AC"
+  }, {
+    "id" : 5,
+    "userId" : 1,
+    "materia" : "Interacción Humano - Computador",
+    "aula" : "A241",
+    "diaSemana" : "Lunes",
+    "startTime" : "07:00",
+    "endTime" : "09:00",
+    "profesor" : "Alba Varela",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#F320E2"
+  }, {
+    "id" : 6,
+    "userId" : 1,
+    "materia" : "Interacción Humano - Computador",
+    "aula" : "A241",
+    "diaSemana" : "Martes",
+    "startTime" : "09:00",
+    "endTime" : "12:00",
+    "profesor" : "Alba Varela",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#F320E2"
+  } ]
+}
