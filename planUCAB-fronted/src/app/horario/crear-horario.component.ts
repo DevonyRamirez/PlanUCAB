@@ -1,9 +1,10 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormArray, FormGroup } from '@angular/forms';
-import { HorarioService } from './horario.service';
-import { TimePickerComponent } from '../components/time-picker.component';
-import { ColorPickerComponent } from '../components/color-picker.component';
+import { HorarioService, Horario } from './horario.service';
+import { Event } from '../evento/evento.service';
+import { TimePickerComponent } from '../generic-components/time-picker.component';
+import { ColorPickerComponent } from '../generic-components/color-picker.component';
 
 @Component({
   selector: 'app-crear-horario',
@@ -13,6 +14,8 @@ import { ColorPickerComponent } from '../components/color-picker.component';
   styleUrl: './crear-horario.component.css'
 })
 export class CrearHorarioComponent {
+  @Input() horariosExistentes: Horario[] = [];
+  @Input() eventosExistentes: Event[] = [];
   @Output() horarioCreado = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
   mensaje = '';
@@ -113,6 +116,56 @@ export class CrearHorarioComponent {
         this.mostrarError = true;
         return;
       }
+
+      // Validar conflictos con horarios existentes del mismo día
+      for (const horarioExistente of this.horariosExistentes) {
+        if (horarioExistente.diaSemana === horario.diaSemana) {
+          const existenteStart = new Date(`1970-01-01T${horarioExistente.startTime}`);
+          const existenteEnd = new Date(`1970-01-01T${horarioExistente.endTime}`);
+          
+          // Verificar solapamiento: (start < existenteEnd) && (end > existenteStart)
+          if (start < existenteEnd && end > existenteStart) {
+            this.mensajeError = `El horario ${i + 1} (${horario.diaSemana}) entra en conflicto con '${horarioExistente.materia}' (${horarioExistente.startTime} - ${horarioExistente.endTime})`;
+            this.mostrarError = true;
+            return;
+          }
+        }
+      }
+
+      // Validar conflictos con eventos del mismo día de la semana
+      const diaSemanaMap: { [key: string]: number } = {
+        'Lunes': 1,
+        'Martes': 2,
+        'Miércoles': 3,
+        'Jueves': 4,
+        'Viernes': 5,
+        'Sábado': 6,
+        'Domingo': 0
+      };
+      const diaSemanaNum = diaSemanaMap[horario.diaSemana];
+
+      for (const eventoExistente of this.eventosExistentes) {
+        const fechaEvento = new Date(eventoExistente.startDateTime);
+        const diaSemanaEvento = fechaEvento.getDay();
+        
+        if (diaSemanaEvento === diaSemanaNum) {
+          const horaEventoInicio = String(fechaEvento.getHours()).padStart(2, '0');
+          const minEventoInicio = String(fechaEvento.getMinutes()).padStart(2, '0');
+          const fechaFinEvento = new Date(eventoExistente.endDateTime);
+          const horaEventoFin = String(fechaFinEvento.getHours()).padStart(2, '0');
+          const minEventoFin = String(fechaFinEvento.getMinutes()).padStart(2, '0');
+          
+          const eventoInicio = new Date(`1970-01-01T${horaEventoInicio}:${minEventoInicio}`);
+          const eventoFin = new Date(`1970-01-01T${horaEventoFin}:${minEventoFin}`);
+          
+          // Verificar solapamiento: (start < eventoFin) && (end > eventoInicio)
+          if (start < eventoFin && end > eventoInicio) {
+            this.mensajeError = `El horario ${i + 1} (${horario.diaSemana}) entra en conflicto con el evento '${eventoExistente.name}' (${this.formatTime(fechaEvento)} - ${this.formatTime(fechaFinEvento)})`;
+            this.mostrarError = true;
+            return;
+          }
+        }
+      }
       
       horariosValidos.push({
         materia,
@@ -154,6 +207,9 @@ export class CrearHorarioComponent {
           
           if (err.status === 0 || err.status === undefined) {
             mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+          } else if (err.status === 409) {
+            // Conflicto de horarios
+            mensajeError = err.error?.message || 'El horario entra en conflicto con otro horario existente';
           } else if (err.error?.message) {
             mensajeError = `Error: ${err.error.message}`;
           } else if (err.error?.errors) {
@@ -215,6 +271,10 @@ export class CrearHorarioComponent {
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
     return t;
+  }
+
+  private formatTime(date: Date): string {
+    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   }
 }
 

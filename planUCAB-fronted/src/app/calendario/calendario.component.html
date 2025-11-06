@@ -1,6 +1,6 @@
 <div class="calendario-semanal">
   <aside class="calendario-semanal__sidebar">
-    <app-calendario-mensual (crearEvento)="abrirModalCrear()" (crearHorario)="abrirModalCrearHorario()"></app-calendario-mensual>
+    <app-calendario-mensual (crearEvento)="abrirModalCrear()" (crearHorario)="abrirModalCrearHorario()" (fechaSeleccionada)="navegarAFecha($event)"></app-calendario-mensual>
   </aside>
 
   <main class="calendario-semanal__main">
@@ -47,8 +47,8 @@
       </div>
     </div>
   </main>
-  <app-crear-evento *ngIf="mostrarModalCrear()" (eventoCreado)="onEventoCreado()" (cerrar)="cerrarModalCrear()"></app-crear-evento>
-  <app-crear-horario *ngIf="mostrarModalCrearHorario()" (horarioCreado)="onHorarioCreado()" (cerrar)="cerrarModalCrearHorario()"></app-crear-horario>
+  <app-crear-evento *ngIf="mostrarModalCrear()" [eventosExistentes]="eventos()" [horariosExistentes]="horarios()" (eventoCreado)="onEventoCreado()" (cerrar)="cerrarModalCrear()"></app-crear-evento>
+  <app-crear-horario *ngIf="mostrarModalCrearHorario()" [horariosExistentes]="horarios()" [eventosExistentes]="eventos()" (horarioCreado)="onHorarioCreado()" (cerrar)="cerrarModalCrearHorario()"></app-crear-horario>
   
   <!-- Mensaje de error de búsqueda -->
   <div class="error-busqueda-overlay" *ngIf="mostrarErrorBusqueda()" (click)="mostrarErrorBusqueda.set(false)">

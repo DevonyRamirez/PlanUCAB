@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EventoService } from './evento.service';
-import { DatePickerComponent } from '../components/date-picker.component';
-import { TimePickerComponent } from '../components/time-picker.component';
-import { ColorPickerComponent } from '../components/color-picker.component';
+import { EventoService, Event } from './evento.service';
+import { Horario } from '../horario/horario.service';
+import { DatePickerComponent } from '../generic-components/date-picker.component';
+import { TimePickerComponent } from '../generic-components/time-picker.component';
+import { ColorPickerComponent } from '../generic-components/color-picker.component';
 
 @Component({
   selector: 'app-crear-evento',
@@ -14,6 +15,8 @@ import { ColorPickerComponent } from '../components/color-picker.component';
   styleUrl: './crear-evento.component.css'
 })
 export class CrearEventoComponent {
+  @Input() eventosExistentes: Event[] = [];
+  @Input() horariosExistentes: Horario[] = [];
   @Output() eventoCreado = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
   mensaje = '';
@@ -77,6 +80,54 @@ export class CrearEventoComponent {
       this.mostrarError = true;
       return;
     }
+    // Validar conflictos con eventos existentes
+    const fechaEvento = new Date(date + 'T' + normalizedStartTime);
+    const fechaFinEvento = new Date(date + 'T' + normalizedEndTime);
+    
+    for (const eventoExistente of this.eventosExistentes) {
+      const fechaExistente = new Date(eventoExistente.startDateTime);
+      const fechaFinExistente = new Date(eventoExistente.endDateTime);
+      
+      // Verificar si es el mismo día
+      if (fechaEvento.toDateString() === fechaExistente.toDateString()) {
+        // Verificar solapamiento: (start < existenteEnd) && (end > existenteStart)
+        if (fechaEvento < fechaFinExistente && fechaFinEvento > fechaExistente) {
+          this.mensajeError = `El evento entra en conflicto con '${eventoExistente.name}' (${this.formatTime(fechaExistente)} - ${this.formatTime(fechaFinExistente)})`;
+          this.mostrarError = true;
+          return;
+        }
+      }
+    }
+
+    // Validar conflictos con horarios del mismo día de la semana
+    const diaSemanaEvento = fechaEvento.getDay(); // 0 = Domingo, 1 = Lunes, etc.
+    const diaSemanaMap: { [key: number]: string } = {
+      0: 'Domingo',
+      1: 'Lunes',
+      2: 'Martes',
+      3: 'Miércoles',
+      4: 'Jueves',
+      5: 'Viernes',
+      6: 'Sábado'
+    };
+    const nombreDiaSemana = diaSemanaMap[diaSemanaEvento];
+
+    for (const horarioExistente of this.horariosExistentes) {
+      if (horarioExistente.diaSemana === nombreDiaSemana) {
+        const horarioInicio = new Date(`1970-01-01T${horarioExistente.startTime}`);
+        const horarioFin = new Date(`1970-01-01T${horarioExistente.endTime}`);
+        const eventoInicio = new Date(`1970-01-01T${normalizedStartTime}`);
+        const eventoFin = new Date(`1970-01-01T${normalizedEndTime}`);
+        
+        // Verificar solapamiento: (start < horarioFin) && (end > horarioInicio)
+        if (eventoInicio < horarioFin && eventoFin > horarioInicio) {
+          this.mensajeError = `El evento entra en conflicto con el horario '${horarioExistente.materia}' (${horarioExistente.startTime} - ${horarioExistente.endTime})`;
+          this.mostrarError = true;
+          return;
+        }
+      }
+    }
+    
     // Convertir strings vacíos a null para campos opcionales
     const locationValue = location?.trim() || null;
     const descriptionValue = description?.trim() || null;
@@ -96,6 +147,9 @@ export class CrearEventoComponent {
           
           if (err.status === 0 || err.status === undefined) {
             mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+          } else if (err.status === 409) {
+            // Conflicto de horarios
+            mensajeError = err.error?.message || 'El evento entra en conflicto con otro evento existente';
           } else if (err.error?.message) {
             mensajeError = `Error: ${err.error.message}`;
           } else if (err.error?.errors) {
@@ -143,6 +197,10 @@ export class CrearEventoComponent {
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
     return t;
+  }
+
+  private formatTime(date: Date): string {
+    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   }
 }
 

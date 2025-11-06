@@ -83,6 +83,11 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   siguienteSemana(): void { this.semanaInicio.set(addDays(this.semanaInicio(), 7)); }
   anteriorSemana(): void { this.semanaInicio.set(addDays(this.semanaInicio(), -7)); }
+  
+  navegarAFecha(fecha: Date): void {
+    const semana = startOfWeek(fecha);
+    this.semanaInicio.set(semana);
+  }
 
   estaEnDia(evento: Event, dia: Date): boolean {
     const d = new Date(evento.startDateTime);

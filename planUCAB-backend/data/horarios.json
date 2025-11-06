@@ -65,5 +65,49 @@
     "profesor" : "Alba Varela",
     "tipoClase" : "Teoría",
     "colorHex" : "#F320E2"
+  }, {
+    "id" : 7,
+    "userId" : 1,
+    "materia" : "Organización del Computador",
+    "aula" : "L2010",
+    "diaSemana" : "Jueves",
+    "startTime" : "07:00",
+    "endTime" : "10:00",
+    "profesor" : null,
+    "tipoClase" : null,
+    "colorHex" : "#2196F3"
+  }, {
+    "id" : 8,
+    "userId" : 1,
+    "materia" : "Organización del Computador",
+    "aula" : "L2010",
+    "diaSemana" : "Martes",
+    "startTime" : "12:00",
+    "endTime" : "13:00",
+    "profesor" : null,
+    "tipoClase" : null,
+    "colorHex" : "#2196F3"
+  }, {
+    "id" : 9,
+    "userId" : 1,
+    "materia" : "Ecuaciones Diferenciales Ordinarias",
+    "aula" : "L1213",
+    "diaSemana" : "Martes",
+    "startTime" : "14:00",
+    "endTime" : "15:00",
+    "profesor" : "Liliana Lupo",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#171A96"
+  }, {
+    "id" : 10,
+    "userId" : 1,
+    "materia" : "Ecuaciones Diferenciales Ordinarias",
+    "aula" : "L1213",
+    "diaSemana" : "Miércoles",
+    "startTime" : "16:00",
+    "endTime" : "18:00",
+    "profesor" : "Liliana Lupo",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#171A96"
   } ]
 }

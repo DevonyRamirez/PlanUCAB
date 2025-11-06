@@ -24,8 +24,9 @@ function addMonths(date: Date, months: number): Date {
 export class CalendarioMensualComponent {
   @Output() crearEvento = new EventEmitter<void>();
   @Output() crearHorario = new EventEmitter<void>();
+  @Output() fechaSeleccionada = new EventEmitter<Date>();
   mesActual = signal(startOfMonth(new Date()));
-  fechaSeleccionada = signal<Date | null>(null);
+  fechaSeleccionadaSignal = signal<Date | null>(null);
   mostrarMenu = signal(false);
 
   nombreMes = computed(() => {
@@ -73,14 +74,15 @@ export class CalendarioMensualComponent {
 
   esSeleccionado(dia: Date | null): boolean {
     if (!dia) return false;
-    const sel = this.fechaSeleccionada();
+    const sel = this.fechaSeleccionadaSignal();
     if (!sel) return false;
     return dia.getDate() === sel.getDate() && dia.getMonth() === sel.getMonth() && dia.getFullYear() === sel.getFullYear();
   }
 
   seleccionarDia(dia: Date | null): void {
     if (dia) {
-      this.fechaSeleccionada.set(dia);
+      this.fechaSeleccionadaSignal.set(dia);
+      this.fechaSeleccionada.emit(dia);
     }
   }
 
