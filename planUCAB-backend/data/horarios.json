@@ -1,1 +1,25 @@
-{}
+{
+  "1" : [ {
+    "id" : 1,
+    "userId" : 1,
+    "materia" : "Ingeniería de Software",
+    "aula" : ",kwkwkdwm",
+    "diaSemana" : "Martes",
+    "startTime" : "03:00",
+    "endTime" : "11:00",
+    "profesor" : "ldlwdmwlw",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#366891"
+  }, {
+    "id" : 2,
+    "userId" : 1,
+    "materia" : "Ingeniería de Software",
+    "aula" : ",kwkwkdwm",
+    "diaSemana" : "Lunes",
+    "startTime" : "00:30",
+    "endTime" : "01:00",
+    "profesor" : "ldlwdmwlw",
+    "tipoClase" : "Teoría",
+    "colorHex" : "#366891"
+  } ]
+}

@@ -1,1 +1,12 @@
-{}
+{
+  "1" : [ {
+    "id" : 1,
+    "userId" : 1,
+    "name" : "ola",
+    "location" : null,
+    "description" : "ldmklwmkdw",
+    "startDateTime" : "2025-11-04T00:15:00",
+    "endDateTime" : "2025-11-04T00:45:00",
+    "colorHex" : "#2A74B2"
+  } ]
+}
