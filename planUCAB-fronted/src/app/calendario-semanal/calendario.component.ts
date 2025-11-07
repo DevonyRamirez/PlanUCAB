@@ -2,7 +2,7 @@ import { Component, OnInit, computed, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventoService, Event } from '../evento/evento.service';
 import { HorarioService, Horario } from '../horario/horario.service';
-import { CalendarioMensualComponent } from './calendario-mensual.component';
+import { CalendarioMensualComponent } from '../calendario-mensual/calendario-mensual.component';
 import { CrearEventoComponent } from '../evento/crear-evento.component';
 import { CrearHorarioComponent } from '../horario/crear-horario.component';
 import { BusquedaComunicacionService } from '../barra-busqueda/busqueda-comunicacion.service';
