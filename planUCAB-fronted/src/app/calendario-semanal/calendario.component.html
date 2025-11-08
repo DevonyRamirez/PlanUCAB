@@ -54,18 +54,18 @@
   <div class="error-busqueda-overlay" *ngIf="mostrarErrorBusqueda()" (click)="mostrarErrorBusqueda.set(false)">
     <div class="error-busqueda-content" (click)="$event.stopPropagation()">
       <div class="error-busqueda-header">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="12" y1="8" x2="12" y2="12"></line>
           <line x1="12" y1="16" x2="12.01" y2="16"></line>
         </svg>
-        <span>No encontrado</span>
+        <h3>No encontrado</h3>
       </div>
       <div class="error-busqueda-body">
         <p>{{ mensajeErrorBusqueda() }}</p>
       </div>
       <div class="error-busqueda-footer">
-        <button type="button" (click)="mostrarErrorBusqueda.set(false)">Cerrar</button>
+        <button type="button" class="error-busqueda-button" (click)="mostrarErrorBusqueda.set(false)">Entendido</button>
       </div>
     </div>
   </div>

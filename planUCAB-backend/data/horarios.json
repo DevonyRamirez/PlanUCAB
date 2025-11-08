@@ -21,5 +21,16 @@
     "profesor" : "ldlwdmwlw",
     "tipoClase" : "Teoría",
     "colorHex" : "#366891"
+  }, {
+    "id" : 3,
+    "userId" : 1,
+    "materia" : "Interacción Humano - Computador",
+    "aula" : "l2315",
+    "diaSemana" : "Miércoles",
+    "startTime" : "00:00",
+    "endTime" : "01:00",
+    "profesor" : "jujuju",
+    "tipoClase" : null,
+    "colorHex" : "#97ADBF"
   } ]
 }

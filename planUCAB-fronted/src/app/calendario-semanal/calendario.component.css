@@ -29,6 +29,7 @@
 .calendar-toolbar {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   margin-bottom: 12px;
 }
@@ -325,26 +326,33 @@
 
 .error-busqueda-header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 20px 24px;
+  justify-content: center;
+  padding: 24px;
   background: #fee;
   border-bottom: 1px solid #fcc;
 }
 
-.error-busqueda-header svg {
+.error-icon {
   color: #d32f2f;
-  flex-shrink: 0;
+  margin-bottom: 12px;
 }
 
-.error-busqueda-header span {
-  font-size: 18px;
+.error-busqueda-header h3 {
+  margin: 0;
+  font-size: 20px;
   font-weight: 600;
   color: #d32f2f;
+  text-align: center;
 }
 
 .error-busqueda-body {
   padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .error-busqueda-body p {
@@ -361,7 +369,7 @@
   justify-content: center;
 }
 
-.error-busqueda-footer button {
+.error-busqueda-button {
   padding: 10px 32px;
   border-radius: 8px;
   border: none;
@@ -374,13 +382,13 @@
   box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
 }
 
-.error-busqueda-footer button:hover {
+.error-busqueda-button:hover {
   background: #b71c1c;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(211, 47, 47, 0.4);
 }
 
-.error-busqueda-footer button:active {
+.error-busqueda-button:active {
   transform: translateY(0);
 }
 
