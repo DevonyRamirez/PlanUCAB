@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormArray, FormGroup } from '@angular/forms';
 import { HorarioService, Horario } from './horario.service';
 import { Event } from '../evento/evento.service';
 import { TimePickerComponent } from '../generic-components/time-picker.component';
 import { ColorPickerComponent } from '../generic-components/color-picker.component';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-crear-horario',
@@ -13,7 +14,7 @@ import { ColorPickerComponent } from '../generic-components/color-picker.compone
   templateUrl: './crear-horario.component.html',
   styleUrl: './crear-horario.component.css'
 })
-export class CrearHorarioComponent {
+export class CrearHorarioComponent implements OnInit {
   @Input() horariosExistentes: Horario[] = [];
   @Input() eventosExistentes: Event[] = [];
   @Output() horarioCreado = new EventEmitter<void>();
@@ -35,7 +36,7 @@ export class CrearHorarioComponent {
   tiposClase = ['Teoría', 'Práctica', 'Taller'];
 
   form = this.fb.group({
-    userId: [1, [Validators.required, Validators.min(1)]],
+    userId: [0, [Validators.required, Validators.min(1)]],
     materia: ['', [Validators.required]],
     aula: ['', [Validators.required, Validators.maxLength(50)]],
     profesor: ['', [Validators.maxLength(100)]],
@@ -44,7 +45,18 @@ export class CrearHorarioComponent {
     horarios: this.fb.array([this.createHorarioGroup()])
   });
 
-  constructor(private fb: FormBuilder, private horarioService: HorarioService) {}
+  constructor(
+    private fb: FormBuilder,
+    private horarioService: HorarioService,
+    private authService: AuthService
+  ) {}
+
+  ngOnInit(): void {
+    const userId = this.authService.getCurrentUserId();
+    if (userId) {
+      this.form.patchValue({ userId });
+    }
+  }
 
   get horariosArray(): FormArray {
     return this.form.get('horarios') as FormArray;
@@ -237,8 +249,9 @@ export class CrearHorarioComponent {
     while (this.horariosArray.length > 1) {
       this.horariosArray.removeAt(1);
     }
+    const userId = this.authService.getCurrentUserId() || 0;
     this.form.reset({
-      userId: 1,
+      userId,
       materia: '',
       tipoClase: '',
       colorHex: '#2196F3'

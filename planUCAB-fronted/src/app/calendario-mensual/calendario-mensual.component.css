@@ -79,17 +79,25 @@
 .calendario-mensual__header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 12px;
+  justify-content: space-between;
+  gap: 4px;
   margin-bottom: 8px;
+  width: 100%;
+  min-width: 0;
 }
 
 .calendario-mensual__titulo {
   margin: 0;
-  font-size: 13px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: capitalize;
   color: #333;
+  white-space: nowrap;
+  text-align: center;
+  flex: 1;
+  overflow: visible;
+  line-height: 1.2;
+  min-width: 0;
 }
 
 .calendario-mensual__nav {
@@ -97,15 +105,16 @@
   border: 1px solid #ddd;
   border-radius: 6px;
   cursor: pointer;
-  padding: 4px;
+  padding: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #333;
   transition: all 0.2s;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 .calendario-mensual__nav:hover {
@@ -114,8 +123,8 @@
 }
 
 .calendario-mensual__nav svg {
-  width: 16px;
-  height: 16px;
+  width: 12px;
+  height: 12px;
   fill: currentColor;
 }
 

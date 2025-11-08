@@ -24,6 +24,7 @@ function addMonths(date: Date, months: number): Date {
 export class CalendarioMensualComponent {
   @Output() crearEvento = new EventEmitter<void>();
   @Output() crearHorario = new EventEmitter<void>();
+  @Output() crearEvaluacion = new EventEmitter<void>();
   @Output() fechaSeleccionada = new EventEmitter<Date>();
   mesActual = signal(startOfMonth(new Date()));
   fechaSeleccionadaSignal = signal<Date | null>(null);
@@ -109,6 +110,11 @@ export class CalendarioMensualComponent {
 
   onCrearHorario(): void {
     this.crearHorario.emit();
+    this.cerrarMenu();
+  }
+
+  onCrearEvaluacion(): void {
+    this.crearEvaluacion.emit();
     this.cerrarMenu();
   }
 

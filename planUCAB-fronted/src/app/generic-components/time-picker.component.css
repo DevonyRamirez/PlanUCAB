@@ -11,12 +11,15 @@
 
 .time-picker__input {
   width: 100%;
-  padding: 8px 40px 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  padding: 10px 40px 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
   font-size: 14px;
   cursor: text;
   background: #fff;
+  color: #333;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
 }
 
 .time-picker__input:focus {
@@ -25,11 +28,17 @@
   box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
 }
 
+.time-picker__input::placeholder {
+  color: #999;
+}
+
 .time-picker__icon {
   position: absolute;
   right: 12px;
-  color: #666;
+  color: #999;
   pointer-events: none;
+  width: 18px;
+  height: 18px;
 }
 
 .time-picker__selector {

@@ -8,8 +8,12 @@
   </div>
   
   <div class="header__user">
-    <span class="header__user-name">{{ nombreUsuario() }}</span>
-    <img src="assets/cuenta-perfil-logo.svg" alt="Perfil" class="header__user-icon" />
+    <span class="header__user-name">{{ nombreUsuario }}</span>
+    <button (click)="togglePerfil()" class="header__profile-btn" title="Ver perfil">
+      <img src="assets/cuenta-perfil-logo.svg" alt="Perfil" class="header__user-icon" />
+    </button>
   </div>
+
+  <app-cuenta [mostrar]="mostrarPerfil" (cerrar)="cerrarPerfil()"></app-cuenta>
 </header>
 

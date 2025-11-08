@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EventoService, Event } from './evento.service';
@@ -6,6 +6,7 @@ import { Horario } from '../horario/horario.service';
 import { DatePickerComponent } from '../generic-components/date-picker.component';
 import { TimePickerComponent } from '../generic-components/time-picker.component';
 import { ColorPickerComponent } from '../generic-components/color-picker.component';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-crear-evento',
@@ -14,7 +15,7 @@ import { ColorPickerComponent } from '../generic-components/color-picker.compone
   templateUrl: './crear-evento.component.html',
   styleUrl: './crear-evento.component.css'
 })
-export class CrearEventoComponent {
+export class CrearEventoComponent implements OnInit {
   @Input() eventosExistentes: Event[] = [];
   @Input() horariosExistentes: Horario[] = [];
   @Output() eventoCreado = new EventEmitter<void>();
@@ -24,8 +25,8 @@ export class CrearEventoComponent {
   mensajeError = '';
 
   form = this.fb.group({
-    userId: [1, [Validators.required, Validators.min(1)]],
-    name: ['', [Validators.required, Validators.maxLength(100)]],
+    userId: [0, [Validators.required, Validators.min(1)]],
+    name: ['', [Validators.required, Validators.maxLength(30)]],
     location: ['', [Validators.maxLength(200)]],
     date: ['', [Validators.required]],
     startTime: ['', [Validators.required]],
@@ -34,7 +35,11 @@ export class CrearEventoComponent {
     colorHex: ['#2196F3', [Validators.required, Validators.pattern(/^#([A-Fa-f0-9]{6})$/)]]
   });
 
-  constructor(private fb: FormBuilder, private eventoService: EventoService) {
+  constructor(
+    private fb: FormBuilder,
+    private eventoService: EventoService,
+    private authService: AuthService
+  ) {
     // Cuando cambie la hora de inicio, validar y limpiar la hora de fin si es necesario
     this.form.get('startTime')?.valueChanges.subscribe(startTime => {
       if (startTime) {
@@ -51,6 +56,13 @@ export class CrearEventoComponent {
         }
       }
     });
+  }
+
+  ngOnInit(): void {
+    const userId = this.authService.getCurrentUserId();
+    if (userId) {
+      this.form.patchValue({ userId });
+    }
   }
 
   submit(): void {
@@ -170,8 +182,9 @@ export class CrearEventoComponent {
 
   cerrarModal(): void {
     this.cerrar.emit();
+    const userId = this.authService.getCurrentUserId() || 0;
     this.form.reset({
-      userId: 1,
+      userId,
       colorHex: '#2196F3'
     });
     this.mensaje = '';

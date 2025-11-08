@@ -1,0 +1,143 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <img src="assets/PlanUCAB-login.png" alt="PlanUCAB" class="login-logo" />
+        </div>
+
+    <div class="login-tabs">
+      <button 
+        class="tab-btn" 
+        [class.active]="!mostrarRegistro" 
+        (click)="toggleForm()">
+        Iniciar Sesión
+      </button>
+      <button 
+        class="tab-btn" 
+        [class.active]="mostrarRegistro" 
+        (click)="toggleForm()">
+        Crear cuenta
+      </button>
+    </div>
+
+    <!-- Formulario de Login -->
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" *ngIf="!mostrarRegistro" class="login-form">
+      <!-- Mensaje de éxito después del registro -->
+      <div class="success-message" *ngIf="mostrarExito" (click)="cerrarExito()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+        <span>{{ mensajeExito }}</span>
+      </div>
+      <div class="form-group">
+        <label for="login-email">Correo electrónico</label>
+        <input 
+          type="email" 
+          id="login-email" 
+          formControlName="email" 
+          placeholder="usuario@est.ucab.edu.ve" />
+        <small *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.hasError('required')" class="error-text">
+          El correo es requerido
+        </small>
+        <small *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.hasError('invalidUcabEmail')" class="error-text">
+          El correo debe ser del dominio &#64;est.ucab.edu.ve
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="login-password">Contraseña</label>
+        <input 
+          type="password" 
+          id="login-password" 
+          formControlName="password" 
+          placeholder="Máximo 10 caracteres" 
+          maxlength="10" />
+        <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')" class="error-text">
+          La contraseña es requerida
+        </small>
+        <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('maxlength')" class="error-text">
+          La contraseña no puede tener más de 10 caracteres
+        </small>
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="loginForm.invalid">
+        Iniciar Sesión
+      </button>
+    </form>
+
+    <!-- Formulario de Registro -->
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()" *ngIf="mostrarRegistro" class="login-form">
+      <div class="form-group">
+        <label for="register-username">Nombre de usuario</label>
+        <input 
+          type="text" 
+          id="register-username" 
+          formControlName="username" 
+          placeholder="Máximo 10 caracteres" 
+          maxlength="10" />
+        <small *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('required')" class="error-text">
+          El nombre de usuario es requerido
+        </small>
+        <small *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('maxlength')" class="error-text">
+          El nombre de usuario no puede tener más de 10 caracteres
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="register-email">Correo electrónico</label>
+        <input 
+          type="email" 
+          id="register-email" 
+          formControlName="email" 
+          placeholder="usuario@est.ucab.edu.ve" />
+        <small *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('required')" class="error-text">
+          El correo es requerido
+        </small>
+        <small *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('invalidUcabEmail')" class="error-text">
+          El correo debe ser del dominio &#64;est.ucab.edu.ve
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="register-password">Contraseña</label>
+        <input 
+          type="password" 
+          id="register-password" 
+          formControlName="password" 
+          placeholder="Máximo 10 caracteres" 
+          maxlength="10" />
+        <small *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')" class="error-text">
+          La contraseña es requerida
+        </small>
+        <small *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('maxlength')" class="error-text">
+          La contraseña no puede tener más de 10 caracteres
+        </small>
+      </div>
+
+      <button type="submit" class="submit-btn" [disabled]="registerForm.invalid">
+        Registrarse
+      </button>
+    </form>
+
+    <!-- Modal de Error -->
+    <div class="error-modal-overlay" *ngIf="mostrarError" (click)="cerrarError()">
+      <div class="error-modal-content" (click)="$event.stopPropagation()">
+        <div class="error-modal-header">
+          <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          <h3>Error</h3>
+        </div>
+        <div class="error-modal-body">
+          <p>{{ mensajeError }}</p>
+        </div>
+        <div class="error-modal-footer">
+          <button type="button" class="error-modal-button" (click)="cerrarError()">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

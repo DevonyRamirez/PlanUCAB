@@ -8,11 +8,62 @@
 .calendario-semanal__sidebar {
   width: 200px;
   flex-shrink: 0;
-  padding: 12px;
+  padding: 0;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.calendario-semanal__sidebar-content {
+  flex: 1;
+  padding: 12px;
   overflow-y: auto;
+  min-height: 0;
+}
+
+.calendario-semanal__sidebar-footer {
+  flex-shrink: 0;
+  padding: 12px;
+  border-top: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+.calendario-semanal__logout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  width: 100%;
+  box-shadow: 0 2px 4px rgba(211, 47, 47, 0.2);
+}
+
+.calendario-semanal__logout-btn:hover {
+  background: #c62828;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(211, 47, 47, 0.3);
+}
+
+.calendario-semanal__logout-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(211, 47, 47, 0.2);
+}
+
+.calendario-semanal__logout-btn svg {
+  flex-shrink: 0;
+  stroke: currentColor;
 }
 
 .calendario-semanal__main {
@@ -256,6 +307,20 @@
   border: 1px solid #ddd;
   vertical-align: middle;
   margin-right: 8px;
+}
+
+.materia-detail {
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: #f5f5f5;
+  border-radius: 6px;
+  border-left: 3px solid #FF9800;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.materia-detail:last-child {
+  margin-bottom: 0;
 }
 
 .event-details-footer {

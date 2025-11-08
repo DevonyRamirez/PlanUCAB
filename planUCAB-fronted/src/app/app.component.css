@@ -2,3 +2,7 @@
   min-height: calc(100vh - 64px);
 }
 
+.main-content--no-header {
+  min-height: 100vh;
+}
+

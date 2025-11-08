@@ -2,10 +2,14 @@ import { Component, OnInit, computed, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventoService, Event } from '../evento/evento.service';
 import { HorarioService, Horario } from '../horario/horario.service';
+import { EvaluacionService, Evaluacion } from '../evaluacion/evaluacion.service';
 import { CalendarioMensualComponent } from '../calendario-mensual/calendario-mensual.component';
 import { CrearEventoComponent } from '../evento/crear-evento.component';
 import { CrearHorarioComponent } from '../horario/crear-horario.component';
+import { CrearEvaluacionComponent } from '../evaluacion/crear-evaluacion.component';
 import { BusquedaComunicacionService } from '../barra-busqueda/busqueda-comunicacion.service';
+import { AuthService } from '../auth/auth.service';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 function startOfWeek(date: Date): Date {
@@ -26,12 +30,12 @@ function addDays(date: Date, days: number): Date {
 @Component({
   selector: 'app-calendario',
   standalone: true,
-  imports: [CommonModule, CalendarioMensualComponent, CrearEventoComponent, CrearHorarioComponent],
+  imports: [CommonModule, CalendarioMensualComponent, CrearEventoComponent, CrearHorarioComponent, CrearEvaluacionComponent],
   templateUrl: './calendario.component.html',
   styleUrl: './calendario.component.css'
 })
 export class CalendarioComponent implements OnInit, OnDestroy {
-  readonly usuarioId = 1;
+  usuarioId = 0;
   readonly startHour = 0;
   readonly endHour = 24;
   readonly horas = Array.from({ length: 24 }).map((_, i) => i);
@@ -39,30 +43,42 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   diasSemana = computed(() => Array.from({ length: 7 }).map((_, i) => addDays(this.semanaInicio(), i)));
   eventos = signal<Event[]>([]);
   horarios = signal<Horario[]>([]);
+  evaluaciones = signal<Evaluacion[]>([]);
   mostrarModalCrear = signal(false);
   mostrarModalCrearHorario = signal(false);
+  mostrarModalCrearEvaluacion = signal(false);
   eventoSeleccionado = signal<Event | null>(null);
+  evaluacionSeleccionada = signal<Evaluacion | null>(null);
   mostrarErrorBusqueda = signal(false);
   mensajeErrorBusqueda = signal('');
   
   private busquedaSubscription?: Subscription;
   
-  // Combinar eventos y horarios convertidos a eventos virtuales
+  // Combinar eventos, horarios y evaluaciones convertidos a eventos virtuales
   eventosYHorarios = computed(() => {
     const eventos = this.eventos();
     const horariosVirtuales = this.convertirHorariosAEventos();
-    return [...eventos, ...horariosVirtuales];
+    const evaluacionesVirtuales = this.convertirEvaluacionesAEventos();
+    return [...eventos, ...horariosVirtuales, ...evaluacionesVirtuales];
   });
 
   constructor(
     private eventoService: EventoService,
     private horarioService: HorarioService,
-    private busquedaComunicacion: BusquedaComunicacionService
+    private evaluacionService: EvaluacionService,
+    private busquedaComunicacion: BusquedaComunicacionService,
+    private authService: AuthService,
+    private router: Router
   ) {}
 
-  ngOnInit(): void { 
-    this.cargar(); 
-    this.cargarHorarios();
+  ngOnInit(): void {
+    const userId = this.authService.getCurrentUserId();
+    if (userId) {
+      this.usuarioId = userId;
+      this.cargar();
+      this.cargarHorarios();
+      this.cargarEvaluaciones();
+    }
     // Suscribirse a eventos de búsqueda
     this.busquedaSubscription = this.busquedaComunicacion.busqueda$.subscribe(
       termino => this.onBuscar(termino)
@@ -79,6 +95,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   cargarHorarios(): void {
     this.horarioService.obtenerHorarios(this.usuarioId).subscribe((horarios) => this.horarios.set(horarios));
+  }
+
+  cargarEvaluaciones(): void {
+    this.evaluacionService.obtenerEvaluaciones(this.usuarioId).subscribe((evaluaciones) => this.evaluaciones.set(evaluaciones));
   }
 
   siguienteSemana(): void { this.semanaInicio.set(addDays(this.semanaInicio(), 7)); }
@@ -137,6 +157,36 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.cerrarModalCrearHorario();
   }
 
+  abrirModalCrearEvaluacion(): void {
+    this.mostrarModalCrearEvaluacion.set(true);
+  }
+
+  cerrarModalCrearEvaluacion(): void {
+    this.mostrarModalCrearEvaluacion.set(false);
+  }
+
+  onEvaluacionCreada(): void {
+    this.cargarEvaluaciones(); // Recargar evaluaciones
+  }
+
+  convertirEvaluacionesAEventos(): Event[] {
+    const evaluaciones = this.evaluaciones();
+    return evaluaciones.map(evaluacion => {
+      // Crear un evento virtual a partir de la evaluación
+      const evento: Event = {
+        id: evaluacion.id,
+        userId: evaluacion.userId,
+        name: evaluacion.titulo,
+        location: evaluacion.salon || '',
+        description: evaluacion.descripcion || '',
+        startDateTime: evaluacion.startDateTime,
+        endDateTime: evaluacion.endDateTime,
+        colorHex: evaluacion.colorHex || '#FF9800' // Usar el color personalizado o naranja por defecto
+      };
+      return evento;
+    });
+  }
+
   formatHour(hour: number): string {
     return `${String(hour).padStart(2, '0')}:00`;
   }
@@ -159,11 +209,20 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   }
 
   abrirDetallesEvento(evento: Event): void {
-    this.eventoSeleccionado.set(evento);
+    // Verificar si es una evaluación buscando el ID en las evaluaciones
+    const evaluacion = this.evaluaciones().find(e => e.id === evento.id);
+    if (evaluacion) {
+      this.evaluacionSeleccionada.set(evaluacion);
+      this.eventoSeleccionado.set(null);
+    } else {
+      this.eventoSeleccionado.set(evento);
+      this.evaluacionSeleccionada.set(null);
+    }
   }
 
   cerrarDetallesEvento(): void {
     this.eventoSeleccionado.set(null);
+    this.evaluacionSeleccionada.set(null);
   }
 
   formatEventDate(date: string): string {
@@ -261,7 +320,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     return addDays(primerDomingo, 7);
   }
 
-  // Buscar evento/horario y navegar a su semana
+  // Buscar evento/horario/evaluación y navegar a su semana
   onBuscar(termino: string): void {
     const terminoLower = termino.toLowerCase().trim();
     if (!terminoLower) return;
@@ -294,12 +353,36 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Buscar en evaluaciones
+    const evaluacionEncontrada = this.evaluaciones().find(ev => {
+      const tituloMatch = (ev.titulo || '').toLowerCase().includes(terminoLower);
+      const profesorMatch = (ev.profesor || '').toLowerCase().includes(terminoLower);
+      const salonMatch = (ev.salon || '').toLowerCase().includes(terminoLower);
+      const materiaMatch = ev.materias.some(m => 
+        (m.nombre || '').toLowerCase().includes(terminoLower)
+      );
+      return tituloMatch || profesorMatch || salonMatch || materiaMatch;
+    });
+
+    if (evaluacionEncontrada) {
+      const fechaEvaluacion = new Date(evaluacionEncontrada.startDateTime);
+      const semanaEvaluacion = startOfWeek(fechaEvaluacion);
+      this.semanaInicio.set(semanaEvaluacion);
+      this.mostrarErrorBusqueda.set(false);
+      return;
+    }
+
     // No se encontró nada
-    this.mensajeErrorBusqueda.set(`No se encontró ningún evento o horario con el nombre "${termino}"`);
+    this.mensajeErrorBusqueda.set(`No se encontró ningún evento, horario o evaluación con el nombre "${termino}"`);
     this.mostrarErrorBusqueda.set(true);
     setTimeout(() => {
       this.mostrarErrorBusqueda.set(false);
     }, 5000);
+  }
+
+  cerrarSesion(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }
 
