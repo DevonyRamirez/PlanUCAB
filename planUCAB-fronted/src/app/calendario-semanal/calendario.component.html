@@ -1,0 +1,109 @@
+<div class="calendario-semanal">
+  <aside class="calendario-semanal__sidebar">
+    <app-calendario-mensual (crearEvento)="abrirModalCrear()" (crearHorario)="abrirModalCrearHorario()" (fechaSeleccionada)="navegarAFecha($event)"></app-calendario-mensual>
+  </aside>
+
+  <main class="calendario-semanal__main">
+    <div class="calendar-toolbar">
+      <button (click)="anteriorSemana()" class="calendar-toolbar__nav-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+          <path d="M24,12A12,12,0,1,0,12,24,12.013,12.013,0,0,0,24,12ZM8,12a2.993,2.993,0,0,1,.752-1.987c.291-.327.574-.637.777-.84L12.353,6.3a1,1,0,0,1,1.426,1.4L10.95,10.58c-.187.188-.441.468-.7.759a1,1,0,0,0,0,1.323c.258.29.512.57.693.752L13.779,16.3a1,1,0,0,1-1.426,1.4L9.524,14.822c-.2-.2-.48-.507-.769-.833A2.99,2.99,0,0,1,8,12Z"/>
+        </svg>
+      </button>
+      <div class="calendar-toolbar__date-range">
+        {{ formatDateRange() }}
+      </div>
+      <button (click)="siguienteSemana()" class="calendar-toolbar__nav-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+          <path d="M0,12A12,12,0,1,0,12,0,12.013,12.013,0,0,0,0,12Zm16,0a2.993,2.993,0,0,1-.752,1.987c-.291.327-.574.637-.777.84L11.647,17.7a1,1,0,1,1-1.426-1.4L13.05,13.42c.187-.188.441-.468.7-.759a1,1,0,0,0,0-1.323c-.258-.29-.512-.57-.693-.752L10.221,7.7a1,1,0,1,1,1.426-1.4l2.829,2.879c.2.2.48.507.769.833A2.99,2.99,0,0,1,16,12Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="calendar">
+      <div class="calendar__hours-label"></div>
+      <div *ngFor="let d of diasSemana()" class="calendar__day-label">
+        {{ formatDayName(d) }}
+      </div>
+
+      <!-- Columna de horas -->
+      <div class="hours-col">
+        <div *ngFor="let h of horas" class="hours-col__cell">{{ formatHour(h) }}</div>
+      </div>
+
+      <!-- Columnas de días con overlay absoluto para eventos -->
+      <div *ngFor="let d of diasSemana()" class="day-col">
+        <!-- rejilla de fondo por hora -->
+        <div *ngFor="let h of horas" class="day-col__grid-cell"></div>
+        <!-- overlay de eventos -->
+        <div class="events-layer">
+          <div *ngFor="let ev of eventosYHorarios()" [style.display]="estaEnDia(ev, d) ? 'block' : 'none'"
+               [style.top]="topPercent(ev)" [style.height]="heightPercent(ev)" [style.background]="ev.colorHex"
+               class="event"
+               (click)="abrirDetallesEvento(ev)">
+            {{ ev.name }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <app-crear-evento *ngIf="mostrarModalCrear()" [eventosExistentes]="eventos()" [horariosExistentes]="horarios()" (eventoCreado)="onEventoCreado()" (cerrar)="cerrarModalCrear()"></app-crear-evento>
+  <app-crear-horario *ngIf="mostrarModalCrearHorario()" [horariosExistentes]="horarios()" [eventosExistentes]="eventos()" (horarioCreado)="onHorarioCreado()" (cerrar)="cerrarModalCrearHorario()"></app-crear-horario>
+  
+  <!-- Mensaje de error de búsqueda -->
+  <div class="error-busqueda-overlay" *ngIf="mostrarErrorBusqueda()" (click)="mostrarErrorBusqueda.set(false)">
+    <div class="error-busqueda-content" (click)="$event.stopPropagation()">
+      <div class="error-busqueda-header">
+        <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <h3>No encontrado</h3>
+      </div>
+      <div class="error-busqueda-body">
+        <p>{{ mensajeErrorBusqueda() }}</p>
+      </div>
+      <div class="error-busqueda-footer">
+        <button type="button" class="error-busqueda-button" (click)="mostrarErrorBusqueda.set(false)">Entendido</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de Detalles del Evento -->
+  <div class="event-details-overlay" *ngIf="eventoSeleccionado()" (click)="cerrarDetallesEvento()">
+    <div class="event-details-content" (click)="$event.stopPropagation()">
+      <div class="event-details-header" [style.background]="eventoSeleccionado()?.colorHex || '#2196F3'">
+        <h2>{{ eventoSeleccionado()?.name }}</h2>
+      </div>
+      <div class="event-details-body">
+        <div class="event-detail-item" *ngIf="eventoSeleccionado()?.location">
+          <div class="event-detail-label">Ubicación</div>
+          <div class="event-detail-value">{{ eventoSeleccionado()?.location }}</div>
+        </div>
+        
+        <div class="event-detail-item">
+          <div class="event-detail-label">Fecha</div>
+          <div class="event-detail-value">{{ formatEventDate(eventoSeleccionado()?.startDateTime || '') }}</div>
+        </div>
+        
+        <div class="event-detail-item">
+          <div class="event-detail-label">Hora</div>
+          <div class="event-detail-value">
+            {{ formatEventTime(eventoSeleccionado()?.startDateTime || '') }} - {{ formatEventTime(eventoSeleccionado()?.endDateTime || '') }}
+          </div>
+        </div>
+        
+        <div class="event-detail-item" *ngIf="eventoSeleccionado()?.description">
+          <div class="event-detail-label">Descripción</div>
+          <div class="event-detail-value">{{ eventoSeleccionado()?.description }}</div>
+        </div>
+      </div>
+      <div class="event-details-footer">
+        <button type="button" class="event-details-close-btn" (click)="cerrarDetallesEvento()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
