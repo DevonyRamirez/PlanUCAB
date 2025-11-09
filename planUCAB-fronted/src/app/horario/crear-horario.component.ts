@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormArray, FormGroup } from '@angular/forms';
 import { HorarioService, Horario } from './horario.service';
 import { Event } from '../evento/evento.service';
-import { TimePickerComponent } from '../generic-components/time-picker.component';
-import { ColorPickerComponent } from '../generic-components/color-picker.component';
+import { TimePickerComponent } from '../time-picker/time-picker.component';
+import { ColorPickerComponent } from '../color-picker/color-picker.component';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -38,7 +38,6 @@ export class CrearHorarioComponent implements OnInit {
   form = this.fb.group({
     userId: [0, [Validators.required, Validators.min(1)]],
     materia: ['', [Validators.required]],
-    aula: ['', [Validators.required, Validators.maxLength(50)]],
     profesor: ['', [Validators.maxLength(100)]],
     tipoClase: [''],
     colorHex: ['#2196F3', [Validators.required, Validators.pattern(/^#([A-Fa-f0-9]{6})$/)]],
@@ -65,6 +64,7 @@ export class CrearHorarioComponent implements OnInit {
   createHorarioGroup(): FormGroup {
     return this.fb.group({
       diaSemana: ['', [Validators.required]],
+      aula: ['', [Validators.required, Validators.maxLength(50)]],
       startTime: ['', [Validators.required]],
       endTime: ['', [Validators.required]]
     });
@@ -94,10 +94,10 @@ export class CrearHorarioComponent implements OnInit {
       this.form.markAllAsTouched();
       const faltantes: string[] = [];
       if (this.form.get('materia')?.hasError('required')) faltantes.push('materia');
-      if (this.form.get('aula')?.hasError('required')) faltantes.push('aula');
       
       this.horariosArray.controls.forEach((control, index) => {
         if (control.get('diaSemana')?.hasError('required')) faltantes.push(`día ${index + 1}`);
+        if (control.get('aula')?.hasError('required')) faltantes.push(`aula día ${index + 1}`);
         if (control.get('startTime')?.hasError('required')) faltantes.push(`hora inicio ${index + 1}`);
         if (control.get('endTime')?.hasError('required')) faltantes.push(`hora fin ${index + 1}`);
       });
@@ -110,7 +110,7 @@ export class CrearHorarioComponent implements OnInit {
       return;
     }
 
-    const { userId, materia, aula, profesor, tipoClase, colorHex } = this.form.value as any;
+    const { userId, materia, profesor, tipoClase, colorHex } = this.form.value as any;
     const horarios = this.horariosArray.value as any[];
     
     // Validar todos los horarios
@@ -181,7 +181,7 @@ export class CrearHorarioComponent implements OnInit {
       
       horariosValidos.push({
         materia,
-        aula,
+        aula: horario.aula,
         diaSemana: horario.diaSemana,
         startTime: normalizedStartTime,
         endTime: normalizedEndTime,
@@ -258,6 +258,7 @@ export class CrearHorarioComponent implements OnInit {
     });
     this.horariosArray.at(0).reset({
       diaSemana: '',
+      aula: '',
       startTime: '',
       endTime: ''
     });

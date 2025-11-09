@@ -1,16 +1,6 @@
 [ {
   "id" : 1,
-  "username" : "Devony",
-  "email" : "daramirez.24@est.ucab.edu.ve",
-  "password" : "ola"
-}, {
-  "id" : 2,
-  "username" : "dr",
-  "email" : "drprieto@est.ucab.edu.ve",
-  "password" : "jeje"
-}, {
-  "id" : 3,
-  "username" : "leo",
-  "email" : "leo@est.ucab.edu.ve",
-  "password" : "jiji"
+  "username" : "diegoprieto",
+  "email" : "daprieto.24@est.ucab.edu.ve",
+  "password" : "DAPV0310**"
 } ]

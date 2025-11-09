@@ -50,13 +50,12 @@
           type="password" 
           id="login-password" 
           formControlName="password" 
-          placeholder="Máximo 10 caracteres" 
-          maxlength="10" />
+          placeholder="Mínimo 10 caracteres" />
         <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')" class="error-text">
           La contraseña es requerida
         </small>
-        <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('maxlength')" class="error-text">
-          La contraseña no puede tener más de 10 caracteres
+        <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('minlength')" class="error-text">
+          La contraseña debe tener al menos 10 caracteres
         </small>
       </div>
 
@@ -73,13 +72,12 @@
           type="text" 
           id="register-username" 
           formControlName="username" 
-          placeholder="Máximo 10 caracteres" 
-          maxlength="10" />
+          placeholder="Mínimo 10 caracteres" />
         <small *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('required')" class="error-text">
           El nombre de usuario es requerido
         </small>
-        <small *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('maxlength')" class="error-text">
-          El nombre de usuario no puede tener más de 10 caracteres
+        <small *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('minlength')" class="error-text">
+          El nombre de usuario debe tener al menos 10 caracteres
         </small>
       </div>
 
@@ -104,13 +102,12 @@
           type="password" 
           id="register-password" 
           formControlName="password" 
-          placeholder="Máximo 10 caracteres" 
-          maxlength="10" />
+          placeholder="Mínimo 10 caracteres" />
         <small *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')" class="error-text">
           La contraseña es requerida
         </small>
-        <small *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('maxlength')" class="error-text">
-          La contraseña no puede tener más de 10 caracteres
+        <small *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')" class="error-text">
+          La contraseña debe tener al menos 10 caracteres
         </small>
       </div>
 

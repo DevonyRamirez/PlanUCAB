@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 public class CreateUserRequest {
 
     @NotBlank(message = "El nombre de usuario es requerido")
-    @Size(max = 30, message = "El nombre de usuario no puede tener más de 30 caracteres")
+    @Size(min = 10, message = "El nombre de usuario debe tener al menos 10 caracteres")
     private String username;
 
     @NotBlank(message = "El correo electrónico es requerido")
@@ -17,7 +17,7 @@ public class CreateUserRequest {
     private String email;
 
     @NotBlank(message = "La contraseña es requerida")
-    @Size(max = 10, message = "La contraseña no puede tener más de 10 caracteres")
+    @Size(min = 10, message = "La contraseña debe tener al menos 10 caracteres")
     private String password;
 
     public String getUsername() {

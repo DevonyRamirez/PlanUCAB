@@ -27,23 +27,21 @@ export class TimePickerComponent implements OnInit, OnChanges {
   lastValidValue = signal('');
   isSelectingOption = false;
   
-  // Generar todas las opciones de hora en intervalos de 15 minutos
+  // Generar todas las opciones de hora en intervalos de 1 hora
   opcionesHora: TimeOption[] = (() => {
     const opciones: TimeOption[] = [];
     for (let h = 0; h < 24; h++) {
-      for (let m = 0; m < 60; m += 15) {
-        const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-        const ampm: 'AM' | 'PM' = h >= 12 ? 'PM' : 'AM';
-        // Formato 24h (militar)
-        const display = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-        opciones.push({
-          hour24: h,
-          hour12,
-          minute: m,
-          ampm,
-          display
-        });
-      }
+      const hour12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+      const ampm: 'AM' | 'PM' = h >= 12 ? 'PM' : 'AM';
+      // Formato 24h (militar)
+      const display = `${String(h).padStart(2, '0')}:00`;
+      opciones.push({
+        hour24: h,
+        hour12,
+        minute: 0,
+        ampm,
+        display
+      });
     }
     return opciones;
   })();
@@ -51,10 +49,14 @@ export class TimePickerComponent implements OnInit, OnChanges {
   horaSeleccionada = computed(() => {
     if (!this.value) return null;
     const [h, m] = this.value.split(':');
-    const hour24 = parseInt(h, 10);
+    let hour24 = parseInt(h, 10);
     const minute = parseInt(m, 10) || 0;
-    // Buscar por hour24 y minute ya que display ahora es formato 24h
-    return this.opcionesHora.find(op => op.hour24 === hour24 && op.minute === minute) || null;
+    // Si hay minutos, redondear a la hora más cercana
+    if (minute >= 30) {
+      hour24 = (hour24 + 1) % 24;
+    }
+    // Buscar por hour24 con minutos 0
+    return this.opcionesHora.find(op => op.hour24 === hour24 && op.minute === 0) || null;
   });
 
   // Filtrar opciones basándose en minTime
@@ -69,7 +71,7 @@ export class TimePickerComponent implements OnInit, OnChanges {
     const minMinute = parseInt(minM, 10) || 0;
     const minTimeMinutes = minHour24 * 60 + minMinute;
     
-    // Filtrar opciones que sean mayores a minTime
+    // Filtrar opciones que sean mayores a minTime (solo horas completas)
     return this.opcionesHora.filter(op => {
       const opTimeMinutes = op.hour24 * 60 + op.minute;
       return opTimeMinutes > minTimeMinutes;
@@ -114,11 +116,13 @@ export class TimePickerComponent implements OnInit, OnChanges {
       this.inputValue.set('');
       return;
     }
-    // Mostrar en formato 24h (militar)
+    // Mostrar en formato 24h (militar), redondeando a la hora más cercana
     const [h, m] = this.value.split(':');
     const hour = parseInt(h, 10);
     const min = parseInt(m, 10) || 0;
-    this.inputValue.set(`${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`);
+    // Redondear a la hora completa más cercana
+    const roundedHour = min >= 30 ? (hour + 1) % 24 : hour;
+    this.inputValue.set(`${String(roundedHour).padStart(2, '0')}:00`);
   }
   
   @HostListener('document:click', ['$event'])
@@ -183,7 +187,11 @@ export class TimePickerComponent implements OnInit, OnChanges {
       let h = parseInt(match[1], 10);
       let m = parseInt(match[2], 10);
       if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        // Redondear a la hora más cercana
+        if (m >= 30) {
+          h = (h + 1) % 24;
+        }
+        return `${String(h).padStart(2, '0')}:00`;
       }
     }
     
@@ -197,20 +205,25 @@ export class TimePickerComponent implements OnInit, OnChanges {
       if (h >= 1 && h <= 12 && m >= 0 && m <= 59) {
         if (ampm === 'pm' && h !== 12) h += 12;
         if (ampm === 'am' && h === 12) h = 0;
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        // Redondear a la hora más cercana
+        if (m >= 30) {
+          h = (h + 1) % 24;
+        }
+        return `${String(h).padStart(2, '0')}:00`;
       }
     }
     
-    // Formato: HHmm (24h)
-    match = input.match(/^(\d{3,4})$/);
+    // Formato: HHmm (24h) o solo HH
+    match = input.match(/^(\d{1,2})(\d{2})?$/);
     if (match) {
-      let num = parseInt(match[1], 10);
-      if (num >= 0 && num <= 2359) {
-        let h = Math.floor(num / 100);
-        let m = num % 100;
-        if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
-          return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      let h = parseInt(match[1], 10);
+      let m = match[2] ? parseInt(match[2], 10) : 0;
+      if (h >= 0 && h <= 23) {
+        // Redondear a la hora más cercana
+        if (m >= 30) {
+          h = (h + 1) % 24;
         }
+        return `${String(h).padStart(2, '0')}:00`;
       }
     }
     
@@ -219,7 +232,7 @@ export class TimePickerComponent implements OnInit, OnChanges {
   
   seleccionarOpcion(opcion: TimeOption): void {
     this.isSelectingOption = true;
-    const timeStr = `${String(opcion.hour24).padStart(2, '0')}:${String(opcion.minute).padStart(2, '0')}`;
+    const timeStr = `${String(opcion.hour24).padStart(2, '0')}:00`;
     this.valueChange.emit(timeStr);
     this.lastValidValue.set(timeStr);
     // display ya está en formato 24h

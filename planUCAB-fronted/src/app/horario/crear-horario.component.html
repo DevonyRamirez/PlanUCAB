@@ -14,12 +14,6 @@
           <small *ngIf="form.get('materia')?.touched && form.get('materia')?.hasError('required')" style="color:#d32f2f">La materia es requerida</small>
         </label>
 
-        <label>
-          Aula
-          <input type="text" formControlName="aula" />
-          <small *ngIf="form.get('aula')?.touched && form.get('aula')?.hasError('required')" style="color:#d32f2f">El aula es requerida</small>
-        </label>
-
         <div formArrayName="horarios" class="horarios-container">
           <div *ngFor="let horario of horariosArray.controls; let i = index" [formGroupName]="i" class="horario-item">
             <div class="horario-header">
@@ -36,7 +30,13 @@
               <small *ngIf="horario.get('diaSemana')?.touched && horario.get('diaSemana')?.hasError('required')" style="color:#d32f2f">El día es requerido</small>
             </label>
 
-            <label>
+            <label class="aula">
+              Aula
+              <input type="text" formControlName="aula" />
+              <small *ngIf="horario.get('aula')?.touched && horario.get('aula')?.hasError('required')" style="color:#d32f2f">El aula es requerida</small>
+            </label>
+
+            <label class="hora">
               Hora
               <div class="actions" style="gap:12px">
                 <div style="flex:1">

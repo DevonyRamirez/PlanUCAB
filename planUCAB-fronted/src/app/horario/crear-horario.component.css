@@ -74,7 +74,7 @@ select {
 }
 
 .materia-select {
-  height: 120px;
+  height: 40px;
   overflow-y: auto;
 }
 
@@ -250,6 +250,16 @@ button[type="submit"]:hover {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   animation: slideUp 0.3s ease-out;
   overflow: hidden;
+}
+
+.aula
+{
+  margin-top: 10px;
+}
+
+.hora 
+{
+  margin-top: 15px;
 }
 
 .error-modal-header {

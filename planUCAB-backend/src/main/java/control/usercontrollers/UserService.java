@@ -25,13 +25,13 @@ public class UserService {
         }
 
         // Validar longitud del nombre de usuario
-        if (request.getUsername().length() > 30) {
-            throw new EventException("El nombre de usuario no puede tener más de 30 caracteres");
+        if (request.getUsername().length() < 10) {
+            throw new EventException("El nombre de usuario debe tener al menos 10 caracteres");
         }
 
         // Validar longitud de la contraseña
-        if (request.getPassword().length() > 10) {
-            throw new EventException("La contraseña no puede tener más de 10 caracteres");
+        if (request.getPassword().length() < 10) {
+            throw new EventException("La contraseña debe tener al menos 10 caracteres");
         }
 
         User user = new User();

@@ -1,1 +1,18 @@
-{}
+{
+  "4" : [ {
+    "id" : 1,
+    "userId" : 4,
+    "titulo" : "Entrega Primer Sprint",
+    "materias" : [ {
+      "nombre" : "Ingeniería de Software",
+      "porcentaje" : 9.0
+    } ],
+    "nota" : 0.0,
+    "profesor" : "MAPO",
+    "salon" : "L2012",
+    "descripcion" : "Con el poder de la fe",
+    "startDateTime" : "2025-11-13T09:00:00",
+    "endDateTime" : "2025-11-13T11:00:00",
+    "colorHex" : "#24D510"
+  } ]
+}

@@ -1,1 +1,12 @@
-{}
+{
+  "4" : [ {
+    "id" : 1,
+    "userId" : 4,
+    "name" : "Reunión Tutorías",
+    "location" : "Salón Huawei",
+    "description" : "La profe me va a funar",
+    "startDateTime" : "2025-11-10T12:00:00",
+    "endDateTime" : "2025-11-10T13:00:00",
+    "colorHex" : "#F9B11F"
+  } ]
+}

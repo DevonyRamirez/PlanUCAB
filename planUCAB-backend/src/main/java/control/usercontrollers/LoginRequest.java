@@ -1,6 +1,7 @@
 package control.usercontrollers;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class LoginRequest {
 
@@ -8,6 +9,7 @@ public class LoginRequest {
     private String email;
 
     @NotBlank(message = "La contraseña es requerida")
+    @Size(min = 10, message = "La contraseña debe tener al menos 10 caracteres")
     private String password;
 
     public String getEmail() {
