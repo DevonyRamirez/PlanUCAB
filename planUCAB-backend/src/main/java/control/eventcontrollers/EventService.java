@@ -45,7 +45,7 @@ public class EventService {
         LocalTime start = parseTime24(request.getStartTime());
         LocalTime end = parseTime24(request.getEndTime());
         if (end.isBefore(start) || end.equals(start)) {
-            throw new InvalidEventTimeException("endTime must be after startTime");
+            throw new InvalidEventTimeException("la hora de fin debe ser después de la hora de inicio");
         }
         LocalDateTime startDateTime = LocalDateTime.of(date, start);
         LocalDateTime endDateTime = LocalDateTime.of(date, end);

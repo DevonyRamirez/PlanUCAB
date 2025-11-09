@@ -61,7 +61,9 @@ export class LoginComponent {
       error: (err) => {
         console.error('Error al iniciar sesión', err);
         this.mostrarError = true;
-        if (err.error?.message) {
+        if (err.status === 0 || err.status === undefined) {
+          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+        } else if (err.error?.message) {
           this.mensajeError = err.error.message;
         } else {
           this.mensajeError = 'Error al iniciar sesión. Verifica tus credenciales.';
@@ -101,7 +103,9 @@ export class LoginComponent {
       error: (err) => {
         console.error('Error al registrar', err);
         this.mostrarError = true;
-        if (err.error?.message) {
+        if (err.status === 0 || err.status === undefined) {
+          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+        } else if (err.error?.message) {
           this.mensajeError = err.error.message;
         } else {
           this.mensajeError = 'Error al registrar usuario. Verifica los datos ingresados.';

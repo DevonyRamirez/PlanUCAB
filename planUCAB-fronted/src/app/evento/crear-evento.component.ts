@@ -84,62 +84,7 @@ export class CrearEventoComponent implements OnInit {
     // Normalizar horas a formato 24h (HH:mm)
     const normalizedStartTime = this.normalizeTime(startTime);
     const normalizedEndTime = this.normalizeTime(endTime);
-    // Validar rango de horas en cliente
-    const start = new Date(`1970-01-01T${normalizedStartTime}`);
-    const end = new Date(`1970-01-01T${normalizedEndTime}`);
-    if (!(start < end)) {
-      this.mensajeError = 'La hora de fin debe ser mayor a la hora de inicio';
-      this.mostrarError = true;
-      return;
-    }
-    // Validar conflictos con eventos existentes
-    const fechaEvento = new Date(date + 'T' + normalizedStartTime);
-    const fechaFinEvento = new Date(date + 'T' + normalizedEndTime);
-    
-    for (const eventoExistente of this.eventosExistentes) {
-      const fechaExistente = new Date(eventoExistente.startDateTime);
-      const fechaFinExistente = new Date(eventoExistente.endDateTime);
-      
-      // Verificar si es el mismo día
-      if (fechaEvento.toDateString() === fechaExistente.toDateString()) {
-        // Verificar solapamiento: (start < existenteEnd) && (end > existenteStart)
-        if (fechaEvento < fechaFinExistente && fechaFinEvento > fechaExistente) {
-          this.mensajeError = `El evento entra en conflicto con '${eventoExistente.name}' (${this.formatTime(fechaExistente)} - ${this.formatTime(fechaFinExistente)})`;
-          this.mostrarError = true;
-          return;
-        }
-      }
-    }
-
-    // Validar conflictos con horarios del mismo día de la semana
-    const diaSemanaEvento = fechaEvento.getDay(); // 0 = Domingo, 1 = Lunes, etc.
-    const diaSemanaMap: { [key: number]: string } = {
-      0: 'Domingo',
-      1: 'Lunes',
-      2: 'Martes',
-      3: 'Miércoles',
-      4: 'Jueves',
-      5: 'Viernes',
-      6: 'Sábado'
-    };
-    const nombreDiaSemana = diaSemanaMap[diaSemanaEvento];
-
-    for (const horarioExistente of this.horariosExistentes) {
-      if (horarioExistente.diaSemana === nombreDiaSemana) {
-        const horarioInicio = new Date(`1970-01-01T${horarioExistente.startTime}`);
-        const horarioFin = new Date(`1970-01-01T${horarioExistente.endTime}`);
-        const eventoInicio = new Date(`1970-01-01T${normalizedStartTime}`);
-        const eventoFin = new Date(`1970-01-01T${normalizedEndTime}`);
-        
-        // Verificar solapamiento: (start < horarioFin) && (end > horarioInicio)
-        if (eventoInicio < horarioFin && eventoFin > horarioInicio) {
-          this.mensajeError = `El evento entra en conflicto con el horario '${horarioExistente.materia}' (${horarioExistente.startTime} - ${horarioExistente.endTime})`;
-          this.mostrarError = true;
-          return;
-        }
-      }
-    }
-    
+    // La validación de conflictos se hace en el backend
     // Convertir strings vacíos a null para campos opcionales
     const locationValue = location?.trim() || null;
     const descriptionValue = description?.trim() || null;
@@ -210,10 +155,6 @@ export class CrearEventoComponent implements OnInit {
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
     return t;
-  }
-
-  private formatTime(date: Date): string {
-    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   }
 }
 

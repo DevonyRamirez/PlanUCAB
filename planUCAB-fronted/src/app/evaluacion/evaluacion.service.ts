@@ -2,17 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-export interface MateriaEvaluacion {
-  nombre: string;
-  porcentaje: number;
-}
-
 export interface CreateEvaluacionPayload {
   titulo: string;
-  materias: MateriaEvaluacion[];
+  materia: string;
+  porcentaje: number;
   nota: number; // En base a 20
   profesor: string;
-  salon: string;
+  location: string;
   descripcion?: string;
   date: string;   // YYYY-MM-DD
   startTime: string;   // HH:mm
@@ -24,10 +20,11 @@ export interface Evaluacion {
   id: number;
   userId: number;
   titulo: string;
-  materias: MateriaEvaluacion[];
+  materia: string;
+  porcentaje: number;
   nota: number;
   profesor: string;
-  salon: string;
+  location: string;
   descripcion?: string;
   startDateTime: string; // ISO 8601
   endDateTime: string;   // ISO 8601

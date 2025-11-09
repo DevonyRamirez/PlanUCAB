@@ -13,22 +13,22 @@ public class CreateEventRequest {
 
     @NotBlank
     // Formato esperado: YYYY-MM-DD
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "date must be in format YYYY-MM-DD")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "la fecha debe estar en el formato aaaa-mm-dd")
     private String date;
 
     @NotBlank
-    @Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "startTime must be HH:mm (24h)")
+    @Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "la hora de inicio debe estar en el formato hh:mm (formato militar)")
     private String startTime;
 
     @NotBlank
-    @Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "endTime must be HH:mm (24h)")
+    @Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "la hora de fin debe estar en el formato hh:mm (formato militar)")
     private String endTime;
 
     private String description;
 
     @NotNull
     // Color hexadecimal como #RRGGBB
-    @Pattern(regexp = "^#([A-Fa-f0-9]{6})$", message = "color must be in hex #RRGGBB")
+    @Pattern(regexp = "^#([A-Fa-f0-9]{6})$", message = "El color debe estar en hexadecimal #RRGGBB")
     private String colorHex;
 
     public String getName() {

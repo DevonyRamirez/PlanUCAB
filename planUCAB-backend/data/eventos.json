@@ -1,12 +1,22 @@
 {
+  "2" : [ {
+    "id" : 2,
+    "userId" : 2,
+    "colorHex" : "#F42525",
+    "location" : "Mi casita",
+    "name" : "Hola Mundo",
+    "description" : "Fiesta en mi casa o algo",
+    "startDateTime" : "2025-11-10T06:00:00",
+    "endDateTime" : "2025-11-10T08:00:00"
+  } ],
   "4" : [ {
     "id" : 1,
     "userId" : 4,
-    "name" : "Reunión Tutorías",
+    "colorHex" : "#F9B11F",
     "location" : "Salón Huawei",
+    "name" : "Reunión Tutorías",
     "description" : "La profe me va a funar",
     "startDateTime" : "2025-11-10T12:00:00",
-    "endDateTime" : "2025-11-10T13:00:00",
-    "colorHex" : "#F9B11F"
+    "endDateTime" : "2025-11-10T13:00:00"
   } ]
 }

@@ -10,17 +10,17 @@ public class CreateHorarioRequest {
     private String materia;
 
     @NotBlank
-    private String aula;
+    private String location;
 
     @NotBlank
     private String diaSemana; // Lunes, Martes, etc.
 
     @NotBlank
-    @Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "startTime must be HH:mm (24h)")
+    @Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "la hora de inicio debe tener formato militar (hh:mm)")
     private String startTime;
 
     @NotBlank
-    @Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "endTime must be HH:mm (24h)")
+    @Pattern(regexp = "^([01]\\d|2[0-3]):[0-5]\\d$", message = "la hora de fin debe tener formato militar (hh:mm)")
     private String endTime;
 
     private String profesor;
@@ -28,7 +28,7 @@ public class CreateHorarioRequest {
     private String tipoClase;
 
     @NotNull
-    @Pattern(regexp = "^#([A-Fa-f0-9]{6})$", message = "color must be in hex #RRGGBB")
+    @Pattern(regexp = "^#([A-Fa-f0-9]{6})$", message = "el color debe estar en formato hexadecimal #RRGGBB")
     private String colorHex;
 
     public String getMateria() {
@@ -39,12 +39,12 @@ public class CreateHorarioRequest {
         this.materia = materia;
     }
 
-    public String getAula() {
-        return aula;
+    public String getLocation() {
+        return location;
     }
 
-    public void setAula(String aula) {
-        this.aula = aula;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getDiaSemana() {

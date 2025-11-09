@@ -177,7 +177,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         id: evaluacion.id,
         userId: evaluacion.userId,
         name: evaluacion.titulo,
-        location: evaluacion.salon || '',
+        location: evaluacion.location || '',
         description: evaluacion.descripcion || '',
         startDateTime: evaluacion.startDateTime,
         endDateTime: evaluacion.endDateTime,
@@ -287,7 +287,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         id: horario.id! + 1000000, // ID virtual para distinguir de eventos reales
         userId: horario.userId,
         name: horario.materia,
-        location: horario.aula,
+        location: horario.location,
         description: horario.profesor ? `Profesor: ${horario.profesor}` : undefined,
         startDateTime: fechaInicio.toISOString(),
         endDateTime: fechaFin.toISOString(),
@@ -342,7 +342,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     // Buscar en horarios (buscar en todas las semanas posibles)
     const horarioEncontrado = this.horarios().find(h => 
       (h.materia || '').toLowerCase().includes(terminoLower) ||
-      (h.aula || '').toLowerCase().includes(terminoLower)
+      (h.location || '').toLowerCase().includes(terminoLower)
     );
 
     if (horarioEncontrado) {
@@ -357,11 +357,9 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     const evaluacionEncontrada = this.evaluaciones().find(ev => {
       const tituloMatch = (ev.titulo || '').toLowerCase().includes(terminoLower);
       const profesorMatch = (ev.profesor || '').toLowerCase().includes(terminoLower);
-      const salonMatch = (ev.salon || '').toLowerCase().includes(terminoLower);
-      const materiaMatch = ev.materias.some(m => 
-        (m.nombre || '').toLowerCase().includes(terminoLower)
-      );
-      return tituloMatch || profesorMatch || salonMatch || materiaMatch;
+      const locationMatch = (ev.location || '').toLowerCase().includes(terminoLower);
+      const materiaMatch = (ev.materia || '').toLowerCase().includes(terminoLower);
+      return tituloMatch || profesorMatch || locationMatch || materiaMatch;
     });
 
     if (evaluacionEncontrada) {

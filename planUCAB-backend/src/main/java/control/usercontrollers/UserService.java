@@ -14,24 +14,9 @@ public class UserService {
     }
 
     public UserResponse register(CreateUserRequest request) {
-        // Validar que el email termine en @est.ucab.edu.ve
-        if (!request.getEmail().toLowerCase().endsWith("@est.ucab.edu.ve")) {
-            throw new EventException("El correo debe ser del dominio @est.ucab.edu.ve");
-        }
-
         // Validar que el email no esté registrado
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new EventException("El correo electrónico ya está registrado");
-        }
-
-        // Validar longitud del nombre de usuario
-        if (request.getUsername().length() < 10) {
-            throw new EventException("El nombre de usuario debe tener al menos 10 caracteres");
-        }
-
-        // Validar longitud de la contraseña
-        if (request.getPassword().length() < 10) {
-            throw new EventException("La contraseña debe tener al menos 10 caracteres");
         }
 
         User user = new User();

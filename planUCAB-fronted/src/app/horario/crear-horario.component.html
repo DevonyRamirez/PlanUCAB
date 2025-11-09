@@ -31,9 +31,9 @@
             </label>
 
             <label class="aula">
-              Aula
-              <input type="text" formControlName="aula" />
-              <small *ngIf="horario.get('aula')?.touched && horario.get('aula')?.hasError('required')" style="color:#d32f2f">El aula es requerida</small>
+              Ubicación
+              <input type="text" formControlName="location" />
+              <small *ngIf="horario.get('location')?.touched && horario.get('location')?.hasError('required')" style="color:#d32f2f">La ubicación es requerida</small>
             </label>
 
             <label class="hora">

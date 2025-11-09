@@ -126,11 +126,9 @@
               </div>
       <div class="event-details-body">
         <div class="event-detail-item">
-          <div class="event-detail-label">Materias</div>
+          <div class="event-detail-label">Materia</div>
           <div class="event-detail-value">
-            <div *ngFor="let materia of evaluacionSeleccionada()?.materias" class="materia-detail">
-              {{ materia.nombre }} - {{ materia.porcentaje }}%
-            </div>
+            {{ evaluacionSeleccionada()?.materia }}
           </div>
         </div>
         
@@ -145,8 +143,8 @@
         </div>
         
         <div class="event-detail-item">
-          <div class="event-detail-label">Salón</div>
-          <div class="event-detail-value">{{ evaluacionSeleccionada()?.salon }}</div>
+          <div class="event-detail-label">Ubicación</div>
+          <div class="event-detail-value">{{ evaluacionSeleccionada()?.location }}</div>
         </div>
         
         <div class="event-detail-item">

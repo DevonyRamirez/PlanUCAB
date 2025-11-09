@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 export interface CreateHorarioPayload {
   materia: string;
-  aula: string;
+  location: string;
   diaSemana: string;   // Lunes, Martes, Miércoles, etc.
   startTime: string;   // HH:mm
   endTime: string;     // HH:mm
@@ -17,7 +17,7 @@ export interface Horario {
   id: number;
   userId: number;
   materia: string;
-  aula: string;
+  location: string;
   diaSemana: string;
   startTime: string;
   endTime: string;

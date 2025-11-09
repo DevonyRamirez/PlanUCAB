@@ -17,7 +17,8 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private authService: AuthService
-  ) {
+  ) 
+  {
     // Usar effect para reaccionar a cambios en el signal
     effect(() => {
       const user = this.authService.currentUser();

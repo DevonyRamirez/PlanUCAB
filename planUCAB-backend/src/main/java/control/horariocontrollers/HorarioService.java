@@ -42,7 +42,7 @@ public class HorarioService {
         LocalTime start = parseTime24(request.getStartTime());
         LocalTime end = parseTime24(request.getEndTime());
         if (end.isBefore(start) || end.equals(start)) {
-            throw new InvalidEventTimeException("endTime must be after startTime");
+            throw new InvalidEventTimeException("la hora de fin debe ser posterior a la hora de inicio");
         }
 
         // Verificar conflictos con otros horarios del mismo día de la semana
@@ -90,7 +90,7 @@ public class HorarioService {
 
         Horario horario = new Horario();
         horario.setMateria(request.getMateria());
-        horario.setAula(request.getAula());
+        horario.setLocation(request.getLocation());
         horario.setDiaSemana(request.getDiaSemana());
         horario.setStartTime(request.getStartTime());
         horario.setEndTime(request.getEndTime());

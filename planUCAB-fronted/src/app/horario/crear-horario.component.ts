@@ -64,7 +64,7 @@ export class CrearHorarioComponent implements OnInit {
   createHorarioGroup(): FormGroup {
     return this.fb.group({
       diaSemana: ['', [Validators.required]],
-      aula: ['', [Validators.required, Validators.maxLength(50)]],
+      location: ['', [Validators.required, Validators.maxLength(50)]],
       startTime: ['', [Validators.required]],
       endTime: ['', [Validators.required]]
     });
@@ -97,7 +97,7 @@ export class CrearHorarioComponent implements OnInit {
       
       this.horariosArray.controls.forEach((control, index) => {
         if (control.get('diaSemana')?.hasError('required')) faltantes.push(`día ${index + 1}`);
-        if (control.get('aula')?.hasError('required')) faltantes.push(`aula día ${index + 1}`);
+        if (control.get('location')?.hasError('required')) faltantes.push(`ubicación día ${index + 1}`);
         if (control.get('startTime')?.hasError('required')) faltantes.push(`hora inicio ${index + 1}`);
         if (control.get('endTime')?.hasError('required')) faltantes.push(`hora fin ${index + 1}`);
       });
@@ -120,68 +120,10 @@ export class CrearHorarioComponent implements OnInit {
       const normalizedStartTime = this.normalizeTime(horario.startTime);
       const normalizedEndTime = this.normalizeTime(horario.endTime);
       
-      const start = new Date(`1970-01-01T${normalizedStartTime}`);
-      const end = new Date(`1970-01-01T${normalizedEndTime}`);
-      
-      if (!(start < end)) {
-        this.mensajeError = `El horario ${i + 1}: La hora de fin debe ser mayor a la hora de inicio`;
-        this.mostrarError = true;
-        return;
-      }
-
-      // Validar conflictos con horarios existentes del mismo día
-      for (const horarioExistente of this.horariosExistentes) {
-        if (horarioExistente.diaSemana === horario.diaSemana) {
-          const existenteStart = new Date(`1970-01-01T${horarioExistente.startTime}`);
-          const existenteEnd = new Date(`1970-01-01T${horarioExistente.endTime}`);
-          
-          // Verificar solapamiento: (start < existenteEnd) && (end > existenteStart)
-          if (start < existenteEnd && end > existenteStart) {
-            this.mensajeError = `El horario ${i + 1} (${horario.diaSemana}) entra en conflicto con '${horarioExistente.materia}' (${horarioExistente.startTime} - ${horarioExistente.endTime})`;
-            this.mostrarError = true;
-            return;
-          }
-        }
-      }
-
-      // Validar conflictos con eventos del mismo día de la semana
-      const diaSemanaMap: { [key: string]: number } = {
-        'Lunes': 1,
-        'Martes': 2,
-        'Miércoles': 3,
-        'Jueves': 4,
-        'Viernes': 5,
-        'Sábado': 6,
-        'Domingo': 0
-      };
-      const diaSemanaNum = diaSemanaMap[horario.diaSemana];
-
-      for (const eventoExistente of this.eventosExistentes) {
-        const fechaEvento = new Date(eventoExistente.startDateTime);
-        const diaSemanaEvento = fechaEvento.getDay();
-        
-        if (diaSemanaEvento === diaSemanaNum) {
-          const horaEventoInicio = String(fechaEvento.getHours()).padStart(2, '0');
-          const minEventoInicio = String(fechaEvento.getMinutes()).padStart(2, '0');
-          const fechaFinEvento = new Date(eventoExistente.endDateTime);
-          const horaEventoFin = String(fechaFinEvento.getHours()).padStart(2, '0');
-          const minEventoFin = String(fechaFinEvento.getMinutes()).padStart(2, '0');
-          
-          const eventoInicio = new Date(`1970-01-01T${horaEventoInicio}:${minEventoInicio}`);
-          const eventoFin = new Date(`1970-01-01T${horaEventoFin}:${minEventoFin}`);
-          
-          // Verificar solapamiento: (start < eventoFin) && (end > eventoInicio)
-          if (start < eventoFin && end > eventoInicio) {
-            this.mensajeError = `El horario ${i + 1} (${horario.diaSemana}) entra en conflicto con el evento '${eventoExistente.name}' (${this.formatTime(fechaEvento)} - ${this.formatTime(fechaFinEvento)})`;
-            this.mostrarError = true;
-            return;
-          }
-        }
-      }
-      
+      // La validación de conflictos se hace en el backend
       horariosValidos.push({
         materia,
-        aula: horario.aula,
+        location: horario.location,
         diaSemana: horario.diaSemana,
         startTime: normalizedStartTime,
         endTime: normalizedEndTime,
@@ -256,9 +198,9 @@ export class CrearHorarioComponent implements OnInit {
       tipoClase: '',
       colorHex: '#2196F3'
     });
-    this.horariosArray.at(0).reset({
-      diaSemana: '',
-      aula: '',
+      this.horariosArray.at(0).reset({
+        diaSemana: '',
+        location: '',
       startTime: '',
       endTime: ''
     });
@@ -285,10 +227,6 @@ export class CrearHorarioComponent implements OnInit {
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
     return t;
-  }
-
-  private formatTime(date: Date): string {
-    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   }
 }
 

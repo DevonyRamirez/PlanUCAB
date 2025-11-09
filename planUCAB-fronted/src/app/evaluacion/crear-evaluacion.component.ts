@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EvaluacionService, CreateEvaluacionPayload, MateriaEvaluacion, Evaluacion } from './evaluacion.service';
+import { EvaluacionService, CreateEvaluacionPayload, Evaluacion } from './evaluacion.service';
 import { HorarioService, Horario } from '../horario/horario.service';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
@@ -43,7 +43,7 @@ export class CrearEvaluacionComponent implements OnInit {
     porcentaje: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
     nota: [0, [Validators.required, Validators.min(0), Validators.max(20)]],
     profesor: ['', [Validators.required, Validators.maxLength(100)]],
-    salon: ['', [Validators.required, Validators.maxLength(50)]],
+    location: ['', [Validators.required, Validators.maxLength(50)]],
     descripcion: ['', [Validators.maxLength(1000)]],
     date: ['', [Validators.required]],
     startTime: ['', [Validators.required]],
@@ -98,12 +98,11 @@ export class CrearEvaluacionComponent implements OnInit {
       return;
     }
 
-    // Sumar solo los porcentajes de las evaluaciones que contienen la materia seleccionada
+    // Sumar solo los porcentajes de las evaluaciones que tienen la materia seleccionada
     this.sumaPorcentajesExistentesMateria = this.evaluacionesExistentes.reduce((sum, evaluacion) => {
-      // Buscar si la evaluación tiene la materia seleccionada
-      const materiaEnEvaluacion = evaluacion.materias.find(m => m.nombre === materiaSeleccionada);
-      if (materiaEnEvaluacion) {
-        return sum + (materiaEnEvaluacion.porcentaje || 0);
+      // Verificar si la evaluación tiene la materia seleccionada
+      if (evaluacion.materia === materiaSeleccionada) {
+        return sum + (evaluacion.porcentaje || 0);
       }
       return sum;
     }, 0);
@@ -148,7 +147,7 @@ export class CrearEvaluacionComponent implements OnInit {
       if (this.form.get('porcentaje')?.hasError('required')) faltantes.push('Porcentaje');
       if (this.form.get('nota')?.hasError('required')) faltantes.push('Nota');
       if (this.form.get('profesor')?.hasError('required')) faltantes.push('Profesor');
-      if (this.form.get('salon')?.hasError('required')) faltantes.push('Salón');
+      if (this.form.get('location')?.hasError('required')) faltantes.push('Ubicación');
       if (this.form.get('date')?.hasError('required')) faltantes.push('Fecha');
       if (this.form.get('startTime')?.hasError('required')) faltantes.push('Hora de inicio');
       if (this.form.get('endTime')?.hasError('required')) faltantes.push('Hora de fin');
@@ -187,17 +186,14 @@ export class CrearEvaluacionComponent implements OnInit {
     }
 
     const formValue = this.form.value;
-    const materias: MateriaEvaluacion[] = [{
-      nombre: materiaValue,
-      porcentaje: porcentajeValue
-    }];
 
     const payload: CreateEvaluacionPayload = {
       titulo: formValue.titulo || '',
-      materias: materias,
+      materia: materiaValue,
+      porcentaje: porcentajeValue,
       nota: formValue.nota || 0,
       profesor: formValue.profesor || '',
-      salon: formValue.salon || '',
+      location: formValue.location || '',
       descripcion: formValue.descripcion || '',
       date: this.normalizeDate(formValue.date || ''),
       startTime: this.normalizeTime(formValue.startTime || ''),
@@ -222,7 +218,9 @@ export class CrearEvaluacionComponent implements OnInit {
       error: (err) => {
         console.error('Error al crear la evaluación', err);
         this.mostrarError = true;
-        if (err.error?.message) {
+        if (err.status === 0 || err.status === undefined) {
+          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+        } else if (err.error?.message) {
           this.mensajeError = err.error.message;
         } else {
           this.mensajeError = 'Error al crear la evaluación. Verifica los datos ingresados.';
@@ -245,7 +243,7 @@ export class CrearEvaluacionComponent implements OnInit {
       porcentaje: 0,
       nota: 0,
       profesor: '',
-      salon: '',
+      location: '',
       descripcion: '',
       date: '',
       startTime: '',

@@ -1,8 +1,6 @@
 package control.evaluacioncontrollers;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import java.util.List;
 
 public class CreateEvaluacionRequest {
 
@@ -10,10 +8,13 @@ public class CreateEvaluacionRequest {
     @Size(max = 100, message = "El título no puede tener más de 100 caracteres")
     private String titulo;
 
-    @NotNull(message = "Las materias son requeridas")
-    @NotEmpty(message = "Debe tener al menos una materia")
-    @Valid
-    private List<MateriaRequest> materias;
+    @NotBlank(message = "La materia es requerida")
+    private String materia;
+
+    @NotNull(message = "El porcentaje es requerido")
+    @DecimalMin(value = "0.0", message = "El porcentaje debe ser mayor o igual a 0")
+    @DecimalMax(value = "100.0", message = "El porcentaje debe ser menor o igual a 100")
+    private Double porcentaje;
 
     @NotNull(message = "La nota es requerida")
     @DecimalMin(value = "0.0", message = "La nota debe ser mayor o igual a 0")
@@ -24,14 +25,14 @@ public class CreateEvaluacionRequest {
     @Size(max = 100, message = "El profesor no puede tener más de 100 caracteres")
     private String profesor;
 
-    @NotBlank(message = "El salón es requerido")
-    @Size(max = 50, message = "El salón no puede tener más de 50 caracteres")
-    private String salon;
+    @NotBlank(message = "La ubicación es requerida")
+    @Size(max = 50, message = "La ubicación no puede tener más de 50 caracteres")
+    private String location;
 
     private String descripcion;
 
     @NotBlank(message = "La fecha es requerida")
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "La fecha debe estar en formato YYYY-MM-DD")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "La fecha debe estar en formato aaaa-mm-dd")
     private String date;
 
     @NotBlank(message = "La hora de inicio es requerida")
@@ -46,32 +47,6 @@ public class CreateEvaluacionRequest {
     @Pattern(regexp = "^#([A-Fa-f0-9]{6})$", message = "El color debe estar en formato hexadecimal (#RRGGBB)")
     private String colorHex;
 
-    public static class MateriaRequest {
-        @NotBlank(message = "El nombre de la materia es requerido")
-        private String nombre;
-
-        @NotNull(message = "El porcentaje es requerido")
-        @DecimalMin(value = "0.0", message = "El porcentaje debe ser mayor o igual a 0")
-        @DecimalMax(value = "100.0", message = "El porcentaje debe ser menor o igual a 100")
-        private Double porcentaje;
-
-        public String getNombre() {
-            return nombre;
-        }
-
-        public void setNombre(String nombre) {
-            this.nombre = nombre;
-        }
-
-        public Double getPorcentaje() {
-            return porcentaje;
-        }
-
-        public void setPorcentaje(Double porcentaje) {
-            this.porcentaje = porcentaje;
-        }
-    }
-
     public String getTitulo() {
         return titulo;
     }
@@ -80,12 +55,20 @@ public class CreateEvaluacionRequest {
         this.titulo = titulo;
     }
 
-    public List<MateriaRequest> getMaterias() {
-        return materias;
+    public String getMateria() {
+        return materia;
     }
 
-    public void setMaterias(List<MateriaRequest> materias) {
-        this.materias = materias;
+    public void setMateria(String materia) {
+        this.materia = materia;
+    }
+
+    public Double getPorcentaje() {
+        return porcentaje;
+    }
+
+    public void setPorcentaje(Double porcentaje) {
+        this.porcentaje = porcentaje;
     }
 
     public Double getNota() {
@@ -104,12 +87,12 @@ public class CreateEvaluacionRequest {
         this.profesor = profesor;
     }
 
-    public String getSalon() {
-        return salon;
+    public String getLocation() {
+        return location;
     }
 
-    public void setSalon(String salon) {
-        this.salon = salon;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getDescripcion() {
