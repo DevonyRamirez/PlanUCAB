@@ -264,11 +264,26 @@ export class CrearEvaluacionComponent implements OnInit {
 
   private normalizeTime(time: string): string {
     if (!time) return '';
-    // Si ya está en formato HH:mm, devolverlo
-    if (/^\d{2}:\d{2}$/.test(time)) {
-      return time;
+    // Si ya está en formato HH:mm o H:mm, devolverlo normalizado
+    if (/^\d{1,2}:\d{2}$/.test(time.trim())) {
+      const [hStr, mStr] = time.trim().split(':');
+      const h = parseInt(hStr, 10);
+      const m = parseInt(mStr, 10) || 0;
+      // Mantener minutos exactos sin redondear
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
-    // Intentar parsear otros formatos si es necesario
+    // Si tiene formato AM/PM, convertirlo
+    const ampm = /\s*(AM|PM)$/i;
+    if (ampm.test(time)) {
+      const [timePart, mer] = time.trim().split(/\s+/);
+      const [hStr, mStr] = timePart.split(':');
+      let h = parseInt(hStr, 10);
+      const m = parseInt(mStr, 10) || 0;
+      const upper = mer.toUpperCase();
+      if (upper === 'PM' && h !== 12) h += 12;
+      if (upper === 'AM' && h === 12) h = 0;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
     return time;
   }
 

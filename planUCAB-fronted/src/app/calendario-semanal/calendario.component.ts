@@ -7,6 +7,7 @@ import { CalendarioMensualComponent } from '../calendario-mensual/calendario-men
 import { CrearEventoComponent } from '../evento/crear-evento.component';
 import { CrearHorarioComponent } from '../horario/crear-horario.component';
 import { CrearEvaluacionComponent } from '../evaluacion/crear-evaluacion.component';
+import { MateriasModalComponent } from '../materia/materias-modal.component';
 import { BusquedaComunicacionService } from '../barra-busqueda/busqueda-comunicacion.service';
 import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
@@ -30,7 +31,7 @@ function addDays(date: Date, days: number): Date {
 @Component({
   selector: 'app-calendario',
   standalone: true,
-  imports: [CommonModule, CalendarioMensualComponent, CrearEventoComponent, CrearHorarioComponent, CrearEvaluacionComponent],
+  imports: [CommonModule, CalendarioMensualComponent, CrearEventoComponent, CrearHorarioComponent, CrearEvaluacionComponent, MateriasModalComponent],
   templateUrl: './calendario.component.html',
   styleUrl: './calendario.component.css'
 })
@@ -47,6 +48,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   mostrarModalCrear = signal(false);
   mostrarModalCrearHorario = signal(false);
   mostrarModalCrearEvaluacion = signal(false);
+  mostrarModalMaterias = signal(false);
   eventoSeleccionado = signal<Event | null>(null);
   evaluacionSeleccionada = signal<Evaluacion | null>(null);
   mostrarErrorBusqueda = signal(false);
@@ -168,6 +170,14 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   cerrarModalCrearEvaluacion(): void {
     this.mostrarModalCrearEvaluacion.set(false);
+  }
+
+  abrirModalMaterias(): void {
+    this.mostrarModalMaterias.set(true);
+  }
+
+  cerrarModalMaterias(): void {
+    this.mostrarModalMaterias.set(false);
   }
 
   onEvaluacionCreada(): void {

@@ -25,6 +25,7 @@ export class CalendarioMensualComponent {
   @Output() crearEvento = new EventEmitter<void>();
   @Output() crearHorario = new EventEmitter<void>();
   @Output() crearEvaluacion = new EventEmitter<void>();
+  @Output() verMaterias = new EventEmitter<void>();
   @Output() fechaSeleccionada = new EventEmitter<Date>();
   mesActual = signal(startOfMonth(new Date()));
   fechaSeleccionadaSignal = signal<Date | null>(null);
@@ -118,6 +119,10 @@ export class CalendarioMensualComponent {
     this.cerrarMenu();
   }
 
+  onVerMaterias(): void {
+    this.verMaterias.emit();
+  }
+
   @HostListener('document:click', ['$event'])
   cerrarMenuSiClickFuera(event: Event): void {
     const target = event.target as HTMLElement;
@@ -125,7 +130,5 @@ export class CalendarioMensualComponent {
       this.cerrarMenu();
     }
   }
-
-
 }
 

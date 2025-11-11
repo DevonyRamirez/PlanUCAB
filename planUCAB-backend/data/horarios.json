@@ -1,59 +1,14 @@
 {
-  "1" : [ {
-    "id" : 5,
-    "userId" : 1,
-    "colorHex" : "#2196F3",
-    "location" : "A",
-    "materia" : "Ingeniería de Software",
-    "diaSemana" : "Lunes",
-    "startTime" : "07:00",
-    "endTime" : "09:00",
-    "profesor" : null,
-    "tipoClase" : null
-  } ],
   "2" : [ {
     "id" : 1,
     "userId" : 2,
-    "colorHex" : "#2196F3",
-    "location" : "L2012",
-    "materia" : "Ingeniería de Software",
-    "diaSemana" : "Lunes",
-    "startTime" : "11:00",
-    "endTime" : "12:00",
-    "profesor" : null,
-    "tipoClase" : null
-  }, {
-    "id" : 2,
-    "userId" : 2,
-    "colorHex" : "#8BF31B",
-    "location" : "L2012",
+    "colorHex" : "#C920F3",
+    "location" : "l2314",
     "materia" : "Interacción Humano - Computador",
-    "diaSemana" : "Martes",
-    "startTime" : "07:00",
-    "endTime" : "08:00",
-    "profesor" : "Chacón",
+    "diaSemana" : "Jueves",
+    "startTime" : "00:00",
+    "endTime" : "05:00",
+    "profesor" : "Jijijiji",
     "tipoClase" : "Teoría"
-  }, {
-    "id" : 3,
-    "userId" : 2,
-    "colorHex" : "#8BF31B",
-    "location" : "L1212",
-    "materia" : "Interacción Humano - Computador",
-    "diaSemana" : "Viernes",
-    "startTime" : "16:00",
-    "endTime" : "18:00",
-    "profesor" : "Chacón",
-    "tipoClase" : "Teoría"
-  }, {
-    "id" : 4,
-    "userId" : 2,
-    "colorHex" : "#2196F3",
-    "location" : "L1010",
-    "materia" : "Ingeniería de Software",
-    "diaSemana" : "Martes",
-    "startTime" : "10:00",
-    "endTime" : "12:00",
-    "profesor" : null,
-    "tipoClase" : null
   } ]
 }

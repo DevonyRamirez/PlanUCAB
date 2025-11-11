@@ -143,6 +143,7 @@ export class CrearEventoComponent implements OnInit {
   }
 
   private normalizeTime(t: string): string {
+    if (!t) return '';
     const ampm = /\s*(AM|PM)$/i;
     if (ampm.test(t)) {
       const [time, mer] = t.trim().split(/\s+/);
@@ -152,6 +153,14 @@ export class CrearEventoComponent implements OnInit {
       const upper = mer.toUpperCase();
       if (upper === 'PM' && h !== 12) h += 12;
       if (upper === 'AM' && h === 12) h = 0;
+      // Mantener minutos exactos sin redondear
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+    // Si ya está en formato HH:mm, devolverlo tal cual
+    if (/^\d{1,2}:\d{2}$/.test(t.trim())) {
+      const [hStr, mStr] = t.trim().split(':');
+      const h = parseInt(hStr, 10);
+      const m = parseInt(mStr, 10) || 0;
       return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
     }
     return t;

@@ -1,0 +1,36 @@
+[ {
+  "id" : 1,
+  "nombre" : "Ingeniería de Software",
+  "semestre" : "4to Semestre",
+  "uc" : 5
+}, {
+  "id" : 2,
+  "nombre" : "Programación Orientada a la Web",
+  "semestre" : "4to Semestre",
+  "uc" : 4
+}, {
+  "id" : 3,
+  "nombre" : "Organización del Computador",
+  "semestre" : "4to Semestre",
+  "uc" : 4
+}, {
+  "id" : 4,
+  "nombre" : "Interacción Humano - Computador",
+  "semestre" : "4to Semestre",
+  "uc" : 3
+}, {
+  "id" : 5,
+  "nombre" : "Cálculo Vectorial",
+  "semestre" : "4to Semestre",
+  "uc" : 4
+}, {
+  "id" : 6,
+  "nombre" : "Ingeniería Económica",
+  "semestre" : "4to Semestre",
+  "uc" : 3
+}, {
+  "id" : 7,
+  "nombre" : "Ecuaciones Diferenciales Ordinarias",
+  "semestre" : "4to Semestre",
+  "uc" : 4
+} ]

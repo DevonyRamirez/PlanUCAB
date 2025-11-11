@@ -27,7 +27,7 @@ export class TimePickerComponent implements OnInit, OnChanges {
   lastValidValue = signal('');
   isSelectingOption = false;
   
-  // Generar todas las opciones de hora en intervalos de 1 hora
+  // Generar todas las opciones de hora en intervalos de 1 hora (solo para el selector)
   opcionesHora: TimeOption[] = (() => {
     const opciones: TimeOption[] = [];
     for (let h = 0; h < 24; h++) {
@@ -49,14 +49,12 @@ export class TimePickerComponent implements OnInit, OnChanges {
   horaSeleccionada = computed(() => {
     if (!this.value) return null;
     const [h, m] = this.value.split(':');
-    let hour24 = parseInt(h, 10);
+    const hour24 = parseInt(h, 10);
     const minute = parseInt(m, 10) || 0;
-    // Si hay minutos, redondear a la hora más cercana
-    if (minute >= 30) {
-      hour24 = (hour24 + 1) % 24;
-    }
-    // Buscar por hour24 con minutos 0
-    return this.opcionesHora.find(op => op.hour24 === hour24 && op.minute === 0) || null;
+    // Buscar la opción más cercana (solo para resaltar en el selector)
+    // Si tiene minutos, buscar la hora completa más cercana
+    const roundedHour = minute >= 30 ? (hour24 + 1) % 24 : hour24;
+    return this.opcionesHora.find(op => op.hour24 === roundedHour && op.minute === 0) || null;
   });
 
   // Filtrar opciones basándose en minTime
@@ -116,13 +114,12 @@ export class TimePickerComponent implements OnInit, OnChanges {
       this.inputValue.set('');
       return;
     }
-    // Mostrar en formato 24h (militar), redondeando a la hora más cercana
+    // Mostrar el valor exacto en formato 24h (HH:mm) sin redondear
     const [h, m] = this.value.split(':');
     const hour = parseInt(h, 10);
     const min = parseInt(m, 10) || 0;
-    // Redondear a la hora completa más cercana
-    const roundedHour = min >= 30 ? (hour + 1) % 24 : hour;
-    this.inputValue.set(`${String(roundedHour).padStart(2, '0')}:00`);
+    // Mantener el formato exacto que el usuario ingresó
+    this.inputValue.set(`${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`);
   }
   
   @HostListener('document:click', ['$event'])
@@ -181,21 +178,18 @@ export class TimePickerComponent implements OnInit, OnChanges {
     
     input = input.trim().toLowerCase();
     
-    // Formato: HH:mm (24h) o H:mm
+    // Formato: HH:mm (24h) o H:mm - Mantener minutos exactos
     let match = input.match(/^(\d{1,2}):(\d{2})$/);
     if (match) {
       let h = parseInt(match[1], 10);
       let m = parseInt(match[2], 10);
       if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
-        // Redondear a la hora más cercana
-        if (m >= 30) {
-          h = (h + 1) % 24;
-        }
-        return `${String(h).padStart(2, '0')}:00`;
+        // Mantener el formato exacto sin redondear
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
       }
     }
     
-    // Formato: h:mm am/pm o h am/pm o h:mmam/pm
+    // Formato: h:mm am/pm o h am/pm o h:mmam/pm - Mantener minutos exactos
     match = input.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/);
     if (match) {
       let h = parseInt(match[1], 10);
@@ -205,24 +199,27 @@ export class TimePickerComponent implements OnInit, OnChanges {
       if (h >= 1 && h <= 12 && m >= 0 && m <= 59) {
         if (ampm === 'pm' && h !== 12) h += 12;
         if (ampm === 'am' && h === 12) h = 0;
-        // Redondear a la hora más cercana
-        if (m >= 30) {
-          h = (h + 1) % 24;
-        }
-        return `${String(h).padStart(2, '0')}:00`;
+        // Mantener el formato exacto sin redondear
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
       }
     }
     
-    // Formato: HHmm (24h) o solo HH
-    match = input.match(/^(\d{1,2})(\d{2})?$/);
+    // Formato: HHmm (24h) - Mantener minutos exactos
+    match = input.match(/^(\d{1,2})(\d{2})$/);
     if (match) {
       let h = parseInt(match[1], 10);
-      let m = match[2] ? parseInt(match[2], 10) : 0;
+      let m = parseInt(match[2], 10);
+      if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
+        // Mantener el formato exacto sin redondear
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      }
+    }
+    
+    // Formato: solo HH (sin minutos, asumir 00)
+    match = input.match(/^(\d{1,2})$/);
+    if (match) {
+      let h = parseInt(match[1], 10);
       if (h >= 0 && h <= 23) {
-        // Redondear a la hora más cercana
-        if (m >= 30) {
-          h = (h + 1) % 24;
-        }
         return `${String(h).padStart(2, '0')}:00`;
       }
     }
@@ -235,7 +232,7 @@ export class TimePickerComponent implements OnInit, OnChanges {
     const timeStr = `${String(opcion.hour24).padStart(2, '0')}:00`;
     this.valueChange.emit(timeStr);
     this.lastValidValue.set(timeStr);
-    // display ya está en formato 24h
+    // display ya está en formato 24h (HH:00)
     this.inputValue.set(opcion.display);
     this.mostrarSelector.set(false);
     setTimeout(() => {

@@ -196,3 +196,38 @@
   color: #333;
 }
 
+/* Botón Ver Materias */
+.calendario-mensual__ver-materias-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  margin-top: 1rem;
+  background: #39b5e6;
+  border: none;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(57, 181, 230, 0.35);
+}
+
+.calendario-mensual__ver-materias-btn:hover {
+  background: #2fa1ce;
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(47, 161, 206, 0.4);
+}
+
+.calendario-mensual__ver-materias-btn svg {
+  flex-shrink: 0;
+  stroke: #fff;
+}
+
+.calendario-mensual__ver-materias-btn span {
+  flex: 1;
+  text-align: center;
+}
+

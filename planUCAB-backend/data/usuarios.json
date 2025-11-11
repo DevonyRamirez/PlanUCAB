@@ -3,4 +3,14 @@
   "username" : "diegoprieto",
   "email" : "daprieto.24@est.ucab.edu.ve",
   "password" : "DApv0310**"
+}, {
+  "id" : 2,
+  "username" : "Devony Ramirez",
+  "email" : "daramirez.24@est.ucab.edu.ve",
+  "password" : "Dev123#o"
+}, {
+  "id" : 3,
+  "username" : "massielperozo",
+  "email" : "mpperozo.22@est.ucab.edu.ve",
+  "password" : "Devomimami1"
 } ]

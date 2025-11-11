@@ -1,7 +1,7 @@
 <div class="calendario-semanal">
   <aside class="calendario-semanal__sidebar">
     <div class="calendario-semanal__sidebar-content">
-      <app-calendario-mensual (crearEvento)="abrirModalCrear()" (crearHorario)="abrirModalCrearHorario()" (crearEvaluacion)="abrirModalCrearEvaluacion()" (fechaSeleccionada)="navegarAFecha($event)"></app-calendario-mensual>
+      <app-calendario-mensual (crearEvento)="abrirModalCrear()" (crearHorario)="abrirModalCrearHorario()" (crearEvaluacion)="abrirModalCrearEvaluacion()" (verMaterias)="abrirModalMaterias()" (fechaSeleccionada)="navegarAFecha($event)"></app-calendario-mensual>
     </div>
     <div class="calendario-semanal__sidebar-footer">
       <button (click)="cerrarSesion()" class="calendario-semanal__logout-btn">
@@ -77,6 +77,9 @@
   <app-crear-evento *ngIf="mostrarModalCrear()" [eventosExistentes]="eventos()" [horariosExistentes]="horarios()" (eventoCreado)="onEventoCreado()" (cerrar)="cerrarModalCrear()"></app-crear-evento>
   <app-crear-horario *ngIf="mostrarModalCrearHorario()" [horariosExistentes]="horarios()" [eventosExistentes]="eventos()" (horarioCreado)="onHorarioCreado()" (cerrar)="cerrarModalCrearHorario()"></app-crear-horario>
   <app-crear-evaluacion *ngIf="mostrarModalCrearEvaluacion()" (evaluacionCreada)="onEvaluacionCreada()" (cerrar)="cerrarModalCrearEvaluacion()"></app-crear-evaluacion>
+
+<!-- Modal Materias -->
+<app-materias-modal *ngIf="mostrarModalMaterias()" (cerrar)="cerrarModalMaterias()"></app-materias-modal>
   
   <!-- Mensaje de error de búsqueda -->
   <div class="error-busqueda-overlay" *ngIf="mostrarErrorBusqueda()" (click)="mostrarErrorBusqueda.set(false)">
