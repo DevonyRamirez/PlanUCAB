@@ -1,0 +1,27 @@
+<div class="page">
+  <div class="header-row">
+    <h2>Evaluaciones</h2>
+    <div>
+      <button (click)="abrirCrear()">Nueva evaluación</button>
+    </div>
+  </div>
+
+  <div *ngIf="(evaluaciones() || []).length === 0" class="empty">No hay evaluaciones</div>
+
+  <ul class="list">
+    <li *ngFor="let ev of evaluaciones()" class="list-item">
+      <div class="color" [style.background]="ev.colorHex"></div>
+      <div class="meta">
+        <div class="title">{{ ev.name }} <small class="subject">{{ ev.subject }}</small></div>
+        <div class="info">{{ ev.classroom }} — {{ ev.startDateTime | date:'short' }} - {{ ev.endDateTime | date:'short' }}</div>
+      </div>
+      <div class="weight">{{ ev.porcentageWeight }}%</div>
+      <div class="actions-inline">
+        <button (click)="editar(ev)">Editar</button>
+        <button (click)="eliminar(ev)" style="background:#f44336; margin-left:8px">Eliminar</button>
+      </div>
+    </li>
+  </ul>
+
+  <app-crear-evaluacion *ngIf="mostrarCrear()" [evaluation]="seleccion()" (evaluacionCreada)="onCreado()" (cerrar)="cerrarCrear()"></app-crear-evaluacion>
+</div>

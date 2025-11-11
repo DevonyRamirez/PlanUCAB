@@ -22,11 +22,9 @@ public class EvaluationService {
 
     public Evaluation createEvaluation(Long userId, CreateEvaluationRequest request) {
         LocalDate date = LocalDate.parse(request.getDate());
+        // Parsing times here to build LocalDateTime. Validation of time order is handled by the DTO
         LocalTime start = parseTime24(request.getStartTime());
         LocalTime end = parseTime24(request.getEndTime());
-        if (end.isBefore(start) || end.equals(start)) {
-            throw new InvalidEvaluationTimeException("endTime must be after startTime");
-        }
         LocalDateTime startDateTime = LocalDateTime.of(date, start);
         LocalDateTime endDateTime = LocalDateTime.of(date, end);
 
@@ -45,6 +43,33 @@ public class EvaluationService {
 
     public List<Evaluation> getEvaluationsByUser(Long userId) {
         return evaluationRepository.findByUserId(userId);
+    }
+
+    public Evaluation updateEvaluation(Long userId, Long evaluationId, CreateEvaluationRequest request) {
+        LocalDate date = LocalDate.parse(request.getDate());
+        LocalTime start = parseTime24(request.getStartTime());
+        LocalTime end = parseTime24(request.getEndTime());
+        if (end.isBefore(start) || end.equals(start)) {
+            throw new InvalidEvaluationTimeException("endTime must be after startTime");
+        }
+        LocalDateTime startDateTime = LocalDateTime.of(date, start);
+        LocalDateTime endDateTime = LocalDateTime.of(date, end);
+
+        Evaluation evaluation = new Evaluation();
+        evaluation.setName(request.getName());
+        evaluation.setSubject(request.getSubject());
+        evaluation.setClassroom(request.getClassroom());
+        evaluation.setDescription(request.getDescription());
+        evaluation.setStartDateTime(startDateTime);
+        evaluation.setEndDateTime(endDateTime);
+        evaluation.setColorHex(request.getColorHex());
+        evaluation.setPorcentageWeight(request.getPorcentageWeight());
+
+        return evaluationRepository.update(userId, evaluationId, evaluation);
+    }
+
+    public void deleteEvaluation(Long userId, Long evaluationId) {
+        evaluationRepository.delete(userId, evaluationId);
     }
 
     private LocalTime parseTime24(String input) {

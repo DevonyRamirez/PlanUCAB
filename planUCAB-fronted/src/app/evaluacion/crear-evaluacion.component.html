@@ -1,0 +1,88 @@
+<div class="modal-overlay" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>{{ editMode ? 'Editar Evaluación' : 'Crear Evaluación' }}</h2>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
+      <label>
+        Título
+        <input type="text" formControlName="name" />
+        <small *ngIf="form.get('name')?.touched && form.get('name')?.hasError('required')" style="color:#d32f2f">El título es requerido</small>
+      </label>
+
+      <label>
+        Aula
+        <input type="text" formControlName="classroom" />
+      </label>
+
+      <label>
+        Materia
+        <input type="text" formControlName="subject" />
+      </label>
+
+      <label>
+        Fecha
+        <app-date-picker [value]="form.get('date')?.value || ''" (valueChange)="form.patchValue({date: $event})"></app-date-picker>
+        <small *ngIf="form.get('date')?.touched && form.get('date')?.hasError('required')" style="color:#d32f2f">La fecha es requerida</small>
+      </label>
+
+      <label>
+        Hora
+        <div class="actions" style="gap:12px">
+          <div style="flex:1">
+            <div style="font-size:12px; font-weight:600; margin-bottom:4px">Inicio</div>
+            <app-time-picker [value]="form.get('startTime')?.value || ''" (valueChange)="form.patchValue({startTime: $event})"></app-time-picker>
+            <small *ngIf="form.get('startTime')?.touched && form.get('startTime')?.hasError('required')" style="color:#d32f2f; font-size:11px">La hora de inicio es requerida</small>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:12px; font-weight:600; margin-bottom:4px">Fin</div>
+            <app-time-picker [value]="form.get('endTime')?.value || ''" (valueChange)="form.patchValue({endTime: $event})"></app-time-picker>
+            <small *ngIf="form.get('endTime')?.touched && form.get('endTime')?.hasError('required')" style="color:#d32f2f; font-size:11px">La hora de fin es requerida</small>
+          </div>
+        </div>
+      </label>
+
+      <label>
+        Porcentaje
+        <input type="number" formControlName="porcentageWeight" min="0" max="100" />
+        <small *ngIf="form.get('porcentageWeight')?.touched && form.get('porcentageWeight')?.hasError('required')" style="color:#d32f2f">El porcentaje es requerido</small>
+      </label>
+
+      <label>
+        Descripción
+        <textarea formControlName="description" rows="3"></textarea>
+      </label>
+
+      <label>
+        Color
+        <app-color-picker [value]="form.get('colorHex')?.value || '#2196F3'" (valueChange)="form.patchValue({colorHex: $event})"></app-color-picker>
+      </label>
+
+      <div class="modal-buttons">
+        <button type="button" (click)="cancelar()">Cancelar</button>
+        <button type="submit">{{ editMode ? 'Guardar cambios' : 'Crear evaluación' }}</button>
+      </div>
+      <div class="mensaje" [style.color]="mensaje.startsWith('Error') ? '#d32f2f' : '#333'">{{ mensaje }}</div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de Error -->
+<div class="error-modal-overlay" *ngIf="mostrarError" (click)="cerrarError()">
+  <div class="error-modal-content" (click)="$event.stopPropagation()">
+    <div class="error-modal-header">
+      <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h3>Error</h3>
+    </div>
+    <div class="error-modal-body">
+      <p>{{ mensajeError }}</p>
+    </div>
+    <div class="error-modal-footer">
+      <button type="button" class="error-modal-button" (click)="cerrarError()">Entendido</button>
+    </div>
+  </div>
+</div>

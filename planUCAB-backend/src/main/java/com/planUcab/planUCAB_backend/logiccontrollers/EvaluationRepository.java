@@ -82,6 +82,36 @@ public class EvaluationRepository {
         }
     }
 
+    public Evaluation update(Long userId, Long evaluationId, Evaluation updated) {
+        List<Evaluation> list = userIdToEvaluations.get(userId);
+        if (list == null) {
+            throw new com.planUcab.planUCAB_backend.exceptions.EvaluationException("Evaluation not found for user: " + userId);
+        }
+        for (int i = 0; i < list.size(); i++) {
+            Evaluation existing = list.get(i);
+            if (existing.getId() != null && existing.getId().equals(evaluationId)) {
+                updated.setId(evaluationId);
+                updated.setUserId(userId);
+                list.set(i, updated);
+                persist();
+                return updated;
+            }
+        }
+        throw new com.planUcab.planUCAB_backend.exceptions.EvaluationException("Evaluation not found: " + evaluationId);
+    }
+
+    public void delete(Long userId, Long evaluationId) {
+        List<Evaluation> list = userIdToEvaluations.get(userId);
+        if (list == null) {
+            throw new com.planUcab.planUCAB_backend.exceptions.EvaluationException("Evaluation not found for user: " + userId);
+        }
+        boolean removed = list.removeIf(e -> e.getId() != null && e.getId().equals(evaluationId));
+        if (!removed) {
+            throw new com.planUcab.planUCAB_backend.exceptions.EvaluationException("Evaluation not found: " + evaluationId);
+        }
+        persist();
+    }
+
     
 
 }

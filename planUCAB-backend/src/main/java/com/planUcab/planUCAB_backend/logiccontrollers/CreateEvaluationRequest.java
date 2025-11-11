@@ -1,5 +1,12 @@
 package com.planUcab.planUCAB_backend.logiccontrollers;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -36,7 +43,9 @@ public class CreateEvaluationRequest {
     
     private String description;
 
-    @NotBlank
+    @NotNull
+    @DecimalMin(value = "0.0", message = "porcentageWeight must be >= 0")
+    @DecimalMax(value = "100.0", message = "porcentageWeight must be <= 100")
     private Double porcentageWeight;
 
     public String getSubject() {
@@ -95,6 +104,20 @@ public class CreateEvaluationRequest {
     }
     public void setPorcentageWeight(Double porcentageWeight) {
         this.porcentageWeight = porcentageWeight;
+    }
+
+    @AssertTrue(message = "endTime must be after startTime")
+    public boolean isEndAfterStart() {
+        if (this.startTime == null || this.endTime == null) return true;
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+        try {
+            LocalTime s = LocalTime.parse(this.startTime, fmt);
+            LocalTime e = LocalTime.parse(this.endTime, fmt);
+            return e.isAfter(s);
+        } catch (DateTimeParseException ex) {
+            // If parsing fails, let other @Pattern validations handle format errors
+            return true;
+        }
     }
 
 }

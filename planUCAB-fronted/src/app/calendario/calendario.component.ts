@@ -2,6 +2,7 @@ import { Component, OnInit, computed, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EventoService, Event } from '../evento/evento.service';
 import { HorarioService, Horario } from '../horario/horario.service';
+import { EvaluacionService, Evaluation } from '../evaluacion/evaluacion.service';
 import { CalendarioMensualComponent } from './calendario-mensual.component';
 import { CrearEventoComponent } from '../evento/crear-evento.component';
 import { CrearHorarioComponent } from '../horario/crear-horario.component';
@@ -38,6 +39,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   semanaInicio = signal(startOfWeek(new Date()));
   diasSemana = computed(() => Array.from({ length: 7 }).map((_, i) => addDays(this.semanaInicio(), i)));
   eventos = signal<Event[]>([]);
+  evaluaciones = signal<Evaluation[]>([]);
   horarios = signal<Horario[]>([]);
   mostrarModalCrear = signal(false);
   mostrarModalCrearHorario = signal(false);
@@ -51,18 +53,30 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   eventosYHorarios = computed(() => {
     const eventos = this.eventos();
     const horariosVirtuales = this.convertirHorariosAEventos();
-    return [...eventos, ...horariosVirtuales];
+    const evals = this.evaluaciones().map(e => ({
+      id: e.id,
+      userId: e.userId,
+      name: e.name,
+      location: e.classroom || e.subject || '',
+      description: e.description || e.subject || '',
+      startDateTime: e.startDateTime,
+      endDateTime: e.endDateTime,
+      colorHex: e.colorHex
+    } as Event));
+    return [...eventos, ...evals, ...horariosVirtuales];
   });
 
   constructor(
     private eventoService: EventoService,
     private horarioService: HorarioService,
-    private busquedaComunicacion: BusquedaComunicacionService
+    private busquedaComunicacion: BusquedaComunicacionService,
+    private evaluacionService: EvaluacionService
   ) {}
 
   ngOnInit(): void { 
     this.cargar(); 
     this.cargarHorarios();
+    this.cargarEvaluaciones();
     // Suscribirse a eventos de búsqueda
     this.busquedaSubscription = this.busquedaComunicacion.busqueda$.subscribe(
       termino => this.onBuscar(termino)
@@ -79,6 +93,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   cargarHorarios(): void {
     this.horarioService.obtenerHorarios(this.usuarioId).subscribe((horarios) => this.horarios.set(horarios));
+  }
+
+  cargarEvaluaciones(): void {
+    this.evaluacionService.obtenerEvaluaciones(this.usuarioId).subscribe((evs) => this.evaluaciones.set(evs || []), err => {
+      console.error('Error cargando evaluaciones', err);
+    });
   }
 
   siguienteSemana(): void { this.semanaInicio.set(addDays(this.semanaInicio(), 7)); }
