@@ -1,4 +1,14 @@
 {
+  "1" : [ {
+    "id" : 5,
+    "userId" : 1,
+    "colorHex" : "#2196F3",
+    "location" : "Mi casa",
+    "name" : "Evento ",
+    "description" : null,
+    "startDateTime" : "2025-11-19T12:00:00",
+    "endDateTime" : "2025-11-19T12:30:00"
+  } ],
   "2" : [ {
     "id" : 1,
     "userId" : 2,

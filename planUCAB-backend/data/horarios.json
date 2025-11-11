@@ -1,4 +1,37 @@
 {
+  "1" : [ {
+    "id" : 3,
+    "userId" : 1,
+    "colorHex" : "#F320F3",
+    "location" : "L2012",
+    "materia" : {
+      "id" : 1,
+      "nombre" : "Ingeniería de Software",
+      "semestre" : "4to semestre",
+      "uc" : 5
+    },
+    "diaSemana" : "Martes",
+    "startTime" : "07:00",
+    "endTime" : "09:00",
+    "profesor" : "MAPO",
+    "tipoClase" : "Teoría"
+  }, {
+    "id" : 4,
+    "userId" : 1,
+    "colorHex" : "#F320F3",
+    "location" : "L2012",
+    "materia" : {
+      "id" : 1,
+      "nombre" : "Ingeniería de Software",
+      "semestre" : "4to semestre",
+      "uc" : 5
+    },
+    "diaSemana" : "Jueves",
+    "startTime" : "09:00",
+    "endTime" : "11:00",
+    "profesor" : "MAPO",
+    "tipoClase" : "Teoría"
+  } ],
   "2" : [ {
     "id" : 1,
     "userId" : 2,
@@ -29,7 +62,7 @@
     "diaSemana" : "Lunes",
     "startTime" : "00:00",
     "endTime" : "01:40",
-    "profesor" : null,
-    "tipoClase" : null
+    "profesor" : "null",
+    "tipoClase" : "null"
   } ]
 }

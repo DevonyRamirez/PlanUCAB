@@ -1,11 +1,35 @@
 {
+  "1" : [ {
+    "id" : 3,
+    "userId" : 1,
+    "colorHex" : "#FF9800",
+    "location" : "A3-24",
+    "titulo" : "Primer Sprint",
+    "materia" : {
+      "id" : 1,
+      "nombre" : "Ingeniería de Software",
+      "semestre" : "4to semestre",
+      "uc" : 5
+    },
+    "porcentaje" : 9.0,
+    "nota" : 0.0,
+    "profesor" : "MAPO",
+    "descripcion" : "Recemos",
+    "startDateTime" : "2025-11-13T09:00:00",
+    "endDateTime" : "2025-11-13T11:00:00"
+  } ],
   "2" : [ {
     "id" : 1,
     "userId" : 2,
     "colorHex" : "#FF9800",
     "location" : "L2315",
     "titulo" : "Entrega de mapo",
-    "materia" : "Interacción Humano - Computador",
+    "materia" : {
+      "id" : 4,
+      "nombre" : "Interacción Humano - Computador",
+      "semestre" : "4to semestre",
+      "uc" : 3
+    },
     "porcentaje" : 30.0,
     "nota" : 0.0,
     "profesor" : "Mapo",
@@ -18,7 +42,12 @@
     "colorHex" : "#FF9800",
     "location" : "a321",
     "titulo" : "hOAL",
-    "materia" : "Ingeniería Económica",
+    "materia" : {
+      "id" : 6,
+      "nombre" : "Ingeniería Económica",
+      "semestre" : "4to semestre",
+      "uc" : 3
+    },
     "porcentaje" : 10.0,
     "nota" : 0.0,
     "profesor" : "Quintero",

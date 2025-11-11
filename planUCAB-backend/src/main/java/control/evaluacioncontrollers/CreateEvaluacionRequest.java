@@ -1,7 +1,6 @@
 package control.evaluacioncontrollers;
 
 import jakarta.validation.constraints.*;
-import jakarta.validation.Valid;
 import model.Materia;
 
 public class CreateEvaluacionRequest {
@@ -11,7 +10,6 @@ public class CreateEvaluacionRequest {
     private String titulo;
 
     @NotNull(message = "La materia es requerida")
-    @Valid
     private Materia materia;
 
     @NotNull(message = "El porcentaje es requerido")
