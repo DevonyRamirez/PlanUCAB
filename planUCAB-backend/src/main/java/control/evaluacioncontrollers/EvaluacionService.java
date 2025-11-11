@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import model.Evaluacion;
+import model.Materia;
 import exceptions.InvalidEventTimeException;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +24,13 @@ public class EvaluacionService {
         // Obtener todas las evaluaciones existentes del usuario
         List<Evaluacion> evaluacionesExistentes = evaluacionRepository.findByUserId(userId);
 
-        String nombreMateria = request.getMateria();
+        Materia materiaNueva = request.getMateria();
+        String nombreMateria = materiaNueva.getNombre();
         Double porcentajeNuevaMateria = request.getPorcentaje();
 
         // Calcular la suma de porcentajes de las evaluaciones existentes para esta materia específica
         double sumaPorcentajesExistentesMateria = evaluacionesExistentes.stream()
-                .filter(eval -> nombreMateria.equals(eval.getMateria())) // Filtrar solo la materia actual
+                .filter(eval -> eval.getMateria() != null && nombreMateria.equals(eval.getMateria().getNombre())) // Filtrar solo la materia actual
                 .mapToDouble(eval -> eval.getPorcentaje() != null ? eval.getPorcentaje() : 0.0)
                 .sum();
 
@@ -55,9 +57,10 @@ public class EvaluacionService {
         // Validar que no exista otra evaluación con el mismo nombre, fecha y materia
         String tituloNueva = request.getTitulo();
         for (Evaluacion evaluacionExistente : evaluacionesExistentes) {
-            if (tituloNueva.equals(evaluacionExistente.getTitulo()) &&
+            if (evaluacionExistente.getMateria() != null &&
+                tituloNueva.equals(evaluacionExistente.getTitulo()) &&
                 date.equals(evaluacionExistente.getStartDateTime().toLocalDate()) &&
-                nombreMateria.equals(evaluacionExistente.getMateria())) {
+                nombreMateria.equals(evaluacionExistente.getMateria().getNombre())) {
                 throw new IllegalArgumentException(
                     String.format("Ya existe una evaluación con el nombre '%s', fecha '%s' y materia '%s' en esta cuenta",
                         tituloNueva, date.toString(), nombreMateria)

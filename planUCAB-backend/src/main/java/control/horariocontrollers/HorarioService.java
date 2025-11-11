@@ -55,9 +55,10 @@ public class HorarioService {
                 
                 // Verificar solapamiento: (start < existenteEnd) && (end > existenteStart)
                 if (start.isBefore(existenteEnd) && end.isAfter(existenteStart)) {
+                    String nombreMateria = horarioExistente.getMateria() != null ? horarioExistente.getMateria().getNombre() : "Desconocida";
                     throw new ScheduleConflictException(
                         String.format("El horario entra en conflicto con '%s' (%s - %s)", 
-                            horarioExistente.getMateria(),
+                            nombreMateria,
                             horarioExistente.getStartTime(),
                             horarioExistente.getEndTime())
                     );

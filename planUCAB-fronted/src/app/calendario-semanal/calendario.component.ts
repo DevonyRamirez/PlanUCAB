@@ -301,7 +301,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       const eventoVirtual: Event = {
         id: horario.id! + 1000000, // ID virtual para distinguir de eventos reales
         userId: horario.userId,
-        name: horario.materia,
+        name: horario.materia?.nombre || 'Materia desconocida',
         location: horario.location,
         description: horario.profesor ? `Profesor: ${horario.profesor}` : undefined,
         startDateTime: fechaInicio.toISOString(),
@@ -355,10 +355,11 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     // Buscar en horarios (buscar en todas las semanas posibles)
-    const horarioEncontrado = this.horarios().find(h => 
-      (h.materia || '').toLowerCase().includes(terminoLower) ||
-      (h.location || '').toLowerCase().includes(terminoLower)
-    );
+    const horarioEncontrado = this.horarios().find(h => {
+      const nombreMateria = typeof h.materia === 'string' ? h.materia : h.materia?.nombre || '';
+      return nombreMateria.toLowerCase().includes(terminoLower) ||
+             (h.location || '').toLowerCase().includes(terminoLower);
+    });
 
     if (horarioEncontrado) {
       // Los horarios se repiten semanalmente, así que navegar a la primera semana del período
@@ -373,7 +374,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       const tituloMatch = (ev.titulo || '').toLowerCase().includes(terminoLower);
       const profesorMatch = (ev.profesor || '').toLowerCase().includes(terminoLower);
       const locationMatch = (ev.location || '').toLowerCase().includes(terminoLower);
-      const materiaMatch = (ev.materia || '').toLowerCase().includes(terminoLower);
+      const nombreMateria = typeof ev.materia === 'string' ? ev.materia : ev.materia?.nombre || '';
+      const materiaMatch = nombreMateria.toLowerCase().includes(terminoLower);
       return tituloMatch || profesorMatch || locationMatch || materiaMatch;
     });
 

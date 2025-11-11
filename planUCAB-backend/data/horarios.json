@@ -4,11 +4,32 @@
     "userId" : 2,
     "colorHex" : "#C920F3",
     "location" : "l2314",
-    "materia" : "Interacción Humano - Computador",
+    "materia" : {
+      "id" : 4,
+      "nombre" : "Interacción Humano - Computador",
+      "semestre" : "4to semestre",
+      "uc" : 3
+    },
     "diaSemana" : "Jueves",
     "startTime" : "00:00",
     "endTime" : "05:00",
     "profesor" : "Jijijiji",
     "tipoClase" : "Teoría"
+  }, {
+    "id" : 2,
+    "userId" : 2,
+    "colorHex" : "#2196F3",
+    "location" : "olo",
+    "materia" : {
+      "id" : 7,
+      "nombre" : "Ecuaciones Diferenciales Ordinarias",
+      "semestre" : "4to semestre",
+      "uc" : 4
+    },
+    "diaSemana" : "Lunes",
+    "startTime" : "00:00",
+    "endTime" : "01:40",
+    "profesor" : null,
+    "tipoClase" : null
   } ]
 }

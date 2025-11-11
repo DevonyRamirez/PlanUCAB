@@ -144,9 +144,9 @@
               </div>
       <div class="event-details-body">
         <div class="event-detail-item">
-          <div class="event-detail-label">Materias</div>
+          <div class="event-detail-label">Materia</div>
           <div class="event-detail-value">
-            {{ evaluacionSeleccionada()?.materia }}
+            {{ evaluacionSeleccionada()?.materia?.nombre || evaluacionSeleccionada()?.materia }}
           </div>
         </div>
         

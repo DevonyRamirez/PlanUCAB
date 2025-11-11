@@ -2,18 +2,18 @@ package model;
 
 public class Horario extends Bloque {
 
-    private String materia;
+    private Materia materia;
     private String diaSemana; // Lunes, Martes, etc.
     private String startTime; // HH:mm
     private String endTime;   // HH:mm
     private String profesor;
     private String tipoClase;
 
-    public String getMateria() {
+    public Materia getMateria() {
         return materia;
     }
 
-    public void setMateria(String materia) {
+    public void setMateria(Materia materia) {
         this.materia = materia;
     }
 

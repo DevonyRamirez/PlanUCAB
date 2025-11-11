@@ -9,7 +9,9 @@
           Materia
           <select formControlName="materia" class="materia-select">
             <option value="">Selecciona una materia</option>
-            <option *ngFor="let materia of materias" [value]="materia">{{ materia }}</option>
+            <option *ngFor="let materia of materiasDisponibles" [value]="materia.nombre">
+              {{ materia.nombre }}
+            </option>
           </select>
           <small *ngIf="form.get('materia')?.touched && form.get('materia')?.hasError('required')" style="color:#d32f2f">La materia es requerida</small>
         </label>

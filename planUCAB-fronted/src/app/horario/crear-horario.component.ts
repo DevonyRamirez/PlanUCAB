@@ -6,6 +6,7 @@ import { Event } from '../evento/evento.service';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
 import { AuthService } from '../auth/auth.service';
+import { MateriaService, Materia } from '../materia/materia.service';
 
 @Component({
   selector: 'app-crear-horario',
@@ -24,15 +25,7 @@ export class CrearHorarioComponent implements OnInit {
   mensajeError = '';
 
   diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-  materias = [
-    'Ingeniería de Software',
-    'Programación Orientada a la Web',
-    'Organización del Computador',
-    'Interacción Humano - Computador',
-    'Cálculo Vectorial',
-    'Ingeniería Económica',
-    'Ecuaciones Diferenciales Ordinarias'
-  ];
+  materiasDisponibles: Materia[] = [];
   tiposClase = ['Teoría', 'Práctica', 'Taller'];
 
   form = this.fb.group({
@@ -47,7 +40,8 @@ export class CrearHorarioComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private horarioService: HorarioService,
-    private authService: AuthService
+    private authService: AuthService,
+    private materiaService: MateriaService
   ) {}
 
   ngOnInit(): void {
@@ -55,6 +49,7 @@ export class CrearHorarioComponent implements OnInit {
     if (userId) {
       this.form.patchValue({ userId });
     }
+    this.cargarMaterias();
   }
 
   get horariosArray(): FormArray {
@@ -78,6 +73,18 @@ export class CrearHorarioComponent implements OnInit {
     if (this.horariosArray.length > 1) {
       this.horariosArray.removeAt(index);
     }
+  }
+
+  cargarMaterias(): void {
+    this.materiaService.obtenerMaterias().subscribe({
+      next: (materias) => {
+        this.materiasDisponibles = materias.sort((a, b) => a.nombre.localeCompare(b.nombre));
+      },
+      error: (err) => {
+        console.error('Error al cargar materias', err);
+        this.materiasDisponibles = [];
+      }
+    });
   }
 
   getDiasDisponibles(index: number): string[] {
@@ -113,6 +120,21 @@ export class CrearHorarioComponent implements OnInit {
     const { userId, materia, profesor, tipoClase, colorHex } = this.form.value as any;
     const horarios = this.horariosArray.value as any[];
     
+    // Validar que se haya seleccionado una materia
+    if (!materia) {
+      this.mensajeError = 'Debes seleccionar una materia';
+      this.mostrarError = true;
+      return;
+    }
+
+    // Buscar el objeto Materia completo basado en el nombre seleccionado
+    const materiaCompleta = this.materiasDisponibles.find(m => m.nombre === materia);
+    if (!materiaCompleta) {
+      this.mensajeError = 'La materia seleccionada no es válida';
+      this.mostrarError = true;
+      return;
+    }
+    
     // Validar todos los horarios
     const horariosValidos: any[] = [];
     for (let i = 0; i < horarios.length; i++) {
@@ -122,7 +144,7 @@ export class CrearHorarioComponent implements OnInit {
       
       // La validación de conflictos se hace en el backend
       horariosValidos.push({
-        materia,
+        materia: materiaCompleta,
         location: horario.location,
         diaSemana: horario.diaSemana,
         startTime: normalizedStartTime,

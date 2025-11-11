@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Materia } from '../materia/materia.service';
 
 export interface CreateHorarioPayload {
-  materia: string;
+  materia: Materia;
   location: string;
   diaSemana: string;   // Lunes, Martes, Miércoles, etc.
   startTime: string;   // HH:mm
@@ -16,7 +17,7 @@ export interface CreateHorarioPayload {
 export interface Horario {
   id: number;
   userId: number;
-  materia: string;
+  materia: Materia;
   location: string;
   diaSemana: string;
   startTime: string;

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class Evaluacion extends Bloque {
 
     private String titulo;
-    private String materia;
+    private Materia materia;
     private Double porcentaje;
     private Double nota; // En base a 20
     private String profesor;
@@ -21,11 +21,11 @@ public class Evaluacion extends Bloque {
         this.titulo = titulo;
     }
 
-    public String getMateria() {
+    public Materia getMateria() {
         return materia;
     }
 
-    public void setMateria(String materia) {
+    public void setMateria(Materia materia) {
         this.materia = materia;
     }
 

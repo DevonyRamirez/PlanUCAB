@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Materia } from '../materia/materia.service';
 
 export interface CreateEvaluacionPayload {
   titulo: string;
-  materia: string;
+  materia: Materia;
   porcentaje: number;
   nota: number; // En base a 20
   profesor: string;
@@ -20,7 +21,7 @@ export interface Evaluacion {
   id: number;
   userId: number;
   titulo: string;
-  materia: string;
+  materia: Materia;
   porcentaje: number;
   nota: number;
   profesor: string;

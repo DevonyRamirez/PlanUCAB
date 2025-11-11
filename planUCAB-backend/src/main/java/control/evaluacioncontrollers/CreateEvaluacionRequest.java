@@ -1,6 +1,8 @@
 package control.evaluacioncontrollers;
 
 import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
+import model.Materia;
 
 public class CreateEvaluacionRequest {
 
@@ -8,8 +10,9 @@ public class CreateEvaluacionRequest {
     @Size(max = 100, message = "El título no puede tener más de 100 caracteres")
     private String titulo;
 
-    @NotBlank(message = "La materia es requerida")
-    private String materia;
+    @NotNull(message = "La materia es requerida")
+    @Valid
+    private Materia materia;
 
     @NotNull(message = "El porcentaje es requerido")
     @DecimalMin(value = "0.0", message = "El porcentaje debe ser mayor o igual a 0")
@@ -55,11 +58,11 @@ public class CreateEvaluacionRequest {
         this.titulo = titulo;
     }
 
-    public String getMateria() {
+    public Materia getMateria() {
         return materia;
     }
 
-    public void setMateria(String materia) {
+    public void setMateria(Materia materia) {
         this.materia = materia;
     }
 

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EvaluacionService, CreateEvaluacionPayload, Evaluacion } from './evaluacion.service';
-import { HorarioService, Horario } from '../horario/horario.service';
+import { MateriaService, Materia } from '../materia/materia.service';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
@@ -18,20 +18,11 @@ import { AuthService } from '../auth/auth.service';
 export class CrearEvaluacionComponent implements OnInit {
   @Output() evaluacionCreada = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
-  
+
   mensaje = '';
   mostrarError = false;
   mensajeError = '';
-  materiasDisponibles: string[] = [];
-  materiasBase: string[] = [
-    'Ingeniería de Software',
-    'Programación Orientada a la Web',
-    'Organización del Computador',
-    'Interacción Humano - Computador',
-    'Cálculo Vectorial',
-    'Ingeniería Económica',
-    'Ecuaciones Diferenciales Ordinarias'
-  ];
+  materiasDisponibles: Materia[] = [];
   porcentaje = 0;
   sumaPorcentajesExistentesMateria = 0;
   evaluacionesExistentes: Evaluacion[] = [];
@@ -54,7 +45,7 @@ export class CrearEvaluacionComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private evaluacionService: EvaluacionService,
-    private horarioService: HorarioService,
+    private materiaService: MateriaService,
     private authService: AuthService
   ) {}
 
@@ -62,9 +53,9 @@ export class CrearEvaluacionComponent implements OnInit {
     const userId = this.authService.getCurrentUserId();
     if (userId) {
       this.form.patchValue({ userId });
-      this.cargarMaterias(userId);
+      this.cargarMaterias();
       this.cargarEvaluacionesExistentes(userId);
-      
+
       // Suscribirse a cambios en el porcentaje para actualizar
       this.form.get('porcentaje')?.valueChanges.subscribe((value) => {
         this.porcentaje = value || 0;
@@ -98,50 +89,47 @@ export class CrearEvaluacionComponent implements OnInit {
       return;
     }
 
+    // Obtener el nombre de la materia seleccionada (puede ser string o objeto Materia)
+    const nombreMateriaSeleccionada = this.getMateriaNombre(materiaSeleccionada);
+
     // Sumar solo los porcentajes de las evaluaciones que tienen la materia seleccionada
     this.sumaPorcentajesExistentesMateria = this.evaluacionesExistentes.reduce((sum, evaluacion) => {
       // Verificar si la evaluación tiene la materia seleccionada
-      if (evaluacion.materia === materiaSeleccionada) {
+      const nombreMateriaEvaluacion = typeof evaluacion.materia === 'string'
+        ? evaluacion.materia
+        : evaluacion.materia?.nombre;
+
+      if (nombreMateriaEvaluacion === nombreMateriaSeleccionada) {
         return sum + (evaluacion.porcentaje || 0);
       }
       return sum;
     }, 0);
   }
 
-  cargarMaterias(userId: number): void {
-    this.horarioService.obtenerHorarios(userId).subscribe({
-      next: (horarios: Horario[]) => {
-        // Obtener materias únicas del horario
-        const materiasSet = new Set<string>();
-        horarios.forEach(horario => {
-          if (horario.materia) {
-            materiasSet.add(horario.materia);
-          }
-        });
-        
-        // Combinar las materias base con las materias de los horarios
-        const todasLasMaterias = new Set<string>();
-        // Agregar materias base
-        this.materiasBase.forEach(materia => todasLasMaterias.add(materia));
-        // Agregar materias de los horarios
-        materiasSet.forEach(materia => todasLasMaterias.add(materia));
-        
-        // Ordenar alfabéticamente
-        this.materiasDisponibles = Array.from(todasLasMaterias).sort();
+  cargarMaterias(): void {
+    this.materiaService.obtenerMaterias().subscribe({
+      next: (materias) => {
+        this.materiasDisponibles = materias;
       },
       error: (err) => {
         console.error('Error al cargar materias', err);
-        // Si hay error al cargar horarios, usar solo las materias base
-        this.materiasDisponibles = [...this.materiasBase].sort();
+        this.materiasDisponibles = [];
       }
     });
+  }
+
+  // Helper para obtener el nombre desde el control de materia.
+  // El valor puede ser un string (nombre) o un objeto Materia; esto evita que TS infiera 'never'.
+  private getMateriaNombre(materiaValue: string | null | undefined | any): string {
+    if (!materiaValue) return '';
+    return typeof materiaValue === 'string' ? materiaValue : (materiaValue as Materia)?.nombre ?? '';
   }
 
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       const faltantes: string[] = [];
-      
+
       if (this.form.get('titulo')?.hasError('required')) faltantes.push('Título');
       if (this.form.get('materia')?.hasError('required')) faltantes.push('Materia');
       if (this.form.get('porcentaje')?.hasError('required')) faltantes.push('Porcentaje');
@@ -151,19 +139,35 @@ export class CrearEvaluacionComponent implements OnInit {
       if (this.form.get('date')?.hasError('required')) faltantes.push('Fecha');
       if (this.form.get('startTime')?.hasError('required')) faltantes.push('Hora de inicio');
       if (this.form.get('endTime')?.hasError('required')) faltantes.push('Hora de fin');
-      
+
       this.mostrarError = true;
       this.mensajeError = `Por favor completa los siguientes campos: ${faltantes.join(', ')}`;
       return;
     }
 
     const porcentajeValue = this.form.get('porcentaje')?.value || 0;
-    const materiaValue = this.form.get('materia')?.value || '';
+    const materiaSeleccionada = this.form.get('materia')?.value;
 
     // Validar que el porcentaje no exceda 100%
     if (porcentajeValue > 100) {
       this.mostrarError = true;
       this.mensajeError = `El porcentaje (${porcentajeValue.toFixed(2)}%) no puede exceder el 100%.`;
+      return;
+    }
+
+    // Validar que se haya seleccionado una materia
+    if (!materiaSeleccionada) {
+      this.mostrarError = true;
+      this.mensajeError = 'Debes seleccionar una materia';
+      return;
+    }
+
+  // Buscar el objeto Materia completo basado en el nombre seleccionado
+  const nombreSeleccionado = this.getMateriaNombre(materiaSeleccionada);
+  const materiaCompleta = this.materiasDisponibles.find(m => m.nombre === nombreSeleccionado);
+    if (!materiaCompleta) {
+      this.mostrarError = true;
+      this.mensajeError = 'La materia seleccionada no es válida';
       return;
     }
 
@@ -174,14 +178,14 @@ export class CrearEvaluacionComponent implements OnInit {
     const sumaTotal = this.sumaPorcentajesExistentesMateria + porcentajeValue;
     if (sumaTotal > 100) {
       this.mostrarError = true;
-      this.mensajeError = `La suma total de porcentajes para la materia "${materiaValue}" (${this.sumaPorcentajesExistentesMateria.toFixed(2)}% existentes + ${porcentajeValue.toFixed(2)}% nueva = ${sumaTotal.toFixed(2)}%) excede el 100%. Cada materia puede tener un máximo de 100% distribuido entre sus evaluaciones.`;
+      this.mensajeError = `La suma total de porcentajes para la materia "${materiaCompleta.nombre}" (${this.sumaPorcentajesExistentesMateria.toFixed(2)}% existentes + ${porcentajeValue.toFixed(2)}% nueva = ${sumaTotal.toFixed(2)}%) excede el 100%. Cada materia puede tener un máximo de 100% distribuido entre sus evaluaciones.`;
       return;
     }
 
-    // Validar que la materia y porcentaje sean válidos
-    if (!materiaValue || porcentajeValue <= 0) {
+    // Validar que el porcentaje sea válido
+    if (porcentajeValue <= 0) {
       this.mostrarError = true;
-      this.mensajeError = 'La materia y el porcentaje deben ser válidos (porcentaje mayor a 0)';
+      this.mensajeError = 'El porcentaje debe ser mayor a 0';
       return;
     }
 
@@ -189,7 +193,7 @@ export class CrearEvaluacionComponent implements OnInit {
 
     const payload: CreateEvaluacionPayload = {
       titulo: formValue.titulo || '',
-      materia: materiaValue,
+      materia: materiaCompleta,
       porcentaje: porcentajeValue,
       nota: formValue.nota || 0,
       profesor: formValue.profesor || '',

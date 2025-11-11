@@ -3,11 +3,14 @@ package control.horariocontrollers;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.Valid;
+import model.Materia;
 
 public class CreateHorarioRequest {
 
-    @NotBlank
-    private String materia;
+    @NotNull
+    @Valid
+    private Materia materia;
 
     @NotBlank
     private String location;
@@ -31,11 +34,11 @@ public class CreateHorarioRequest {
     @Pattern(regexp = "^#([A-Fa-f0-9]{6})$", message = "el color debe estar en formato hexadecimal #RRGGBB")
     private String colorHex;
 
-    public String getMateria() {
+    public Materia getMateria() {
         return materia;
     }
 
-    public void setMateria(String materia) {
+    public void setMateria(Materia materia) {
         this.materia = materia;
     }
 
