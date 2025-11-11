@@ -9,6 +9,7 @@ import java.util.List;
 import model.Evaluacion;
 import model.Materia;
 import exceptions.InvalidEventTimeException;
+import exceptions.ScheduleConflictException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,17 +55,26 @@ public class EvaluacionService {
         LocalDateTime startDateTime = LocalDateTime.of(date, start);
         LocalDateTime endDateTime = LocalDateTime.of(date, end);
 
-        // Validar que no exista otra evaluación con el mismo nombre, fecha y materia
-        String tituloNueva = request.getTitulo();
+        // Validar choque de horario con otras evaluaciones del mismo día
         for (Evaluacion evaluacionExistente : evaluacionesExistentes) {
-            if (evaluacionExistente.getMateria() != null &&
-                tituloNueva.equals(evaluacionExistente.getTitulo()) &&
-                date.equals(evaluacionExistente.getStartDateTime().toLocalDate()) &&
-                nombreMateria.equals(evaluacionExistente.getMateria().getNombre())) {
-                throw new IllegalArgumentException(
-                    String.format("Ya existe una evaluación con el nombre '%s', fecha '%s' y materia '%s' en esta cuenta",
-                        tituloNueva, date.toString(), nombreMateria)
-                );
+            LocalDateTime existenteStart = evaluacionExistente.getStartDateTime();
+            LocalDateTime existenteEnd = evaluacionExistente.getEndDateTime();
+            
+            // Verificar si es el mismo día
+            if (existenteStart.toLocalDate().equals(date)) {
+                // Verificar solapamiento: (start < existenteEnd) && (end > existenteStart)
+                if (startDateTime.isBefore(existenteEnd) && endDateTime.isAfter(existenteStart)) {
+                    String nombreMateriaExistente = evaluacionExistente.getMateria() != null 
+                        ? evaluacionExistente.getMateria().getNombre() 
+                        : "Desconocida";
+                    throw new ScheduleConflictException(
+                        String.format("La evaluación entra en conflicto de horario con '%s' de %s (%s - %s)", 
+                            evaluacionExistente.getTitulo(),
+                            nombreMateriaExistente,
+                            formatTime(existenteStart.toLocalTime()),
+                            formatTime(existenteEnd.toLocalTime()))
+                    );
+                }
             }
         }
 
@@ -91,6 +101,11 @@ public class EvaluacionService {
     private LocalTime parseTime24(String input) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
         return LocalTime.parse(input, fmt);
+    }
+
+    private String formatTime(LocalTime time) {
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+        return time.format(fmt);
     }
 }
 

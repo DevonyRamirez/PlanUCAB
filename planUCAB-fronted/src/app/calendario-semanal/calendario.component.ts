@@ -400,5 +400,3 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
   }
 }
-
-
