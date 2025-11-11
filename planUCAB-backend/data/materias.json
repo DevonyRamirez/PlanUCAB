@@ -40,12 +40,5 @@
     "nombre": "Ecuaciones Diferenciales Ordinarias",
     "semestre": "4to semestre",
     "uc": 4
-  },
-  {
-    "id": 8,
-    "nombre": "Algoritmos y Estructuras de Datos Avanzadas",
-    "semestre": "4to semestre",
-    "uc": 6
   }
-  
 ]
