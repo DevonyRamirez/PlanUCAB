@@ -1,4 +1,23 @@
 {
+  "1" : [ {
+    "id" : 3,
+    "userId" : 1,
+    "colorHex" : "#F35820",
+    "location" : "Aula Magna",
+    "name" : "Evento Diego",
+    "description" : null,
+    "startDateTime" : "2025-11-10T09:00:00",
+    "endDateTime" : "2025-11-10T11:00:00"
+  }, {
+    "id" : 4,
+    "userId" : 1,
+    "colorHex" : "#26F282",
+    "location" : null,
+    "name" : "Prueba Pasado",
+    "description" : null,
+    "startDateTime" : "2025-11-01T08:00:00",
+    "endDateTime" : "2025-11-01T10:00:00"
+  } ],
   "2" : [ {
     "id" : 2,
     "userId" : 2,

@@ -1,4 +1,16 @@
 {
+  "1" : [ {
+    "id" : 5,
+    "userId" : 1,
+    "colorHex" : "#2196F3",
+    "location" : "A",
+    "materia" : "Ingeniería de Software",
+    "diaSemana" : "Lunes",
+    "startTime" : "07:00",
+    "endTime" : "09:00",
+    "profesor" : null,
+    "tipoClase" : null
+  } ],
   "2" : [ {
     "id" : 1,
     "userId" : 2,

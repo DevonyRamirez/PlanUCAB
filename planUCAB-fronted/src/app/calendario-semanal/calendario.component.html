@@ -33,27 +33,42 @@
     </div>
 
     <div class="calendar">
-      <div class="calendar__hours-label"></div>
-      <div *ngFor="let d of diasSemana()" class="calendar__day-label">
-        {{ formatDayName(d) }}
+      <!-- Mensaje cuando no hay información -->
+      <div *ngIf="!tieneInformacion()" class="empty-calendar-message">
+        <div class="empty-calendar-content">
+          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="empty-calendar-icon">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <p class="empty-calendar-text">No tiene información registrada en la agenda. Presione "Crear" para iniciar.</p>
+        </div>
       </div>
 
-      <!-- Columna de horas -->
-      <div class="hours-col">
-        <div *ngFor="let h of horas" class="hours-col__cell">{{ formatHour(h) }}</div>
-      </div>
+      <div *ngIf="tieneInformacion()" class="calendar-content">
+        <div class="calendar__hours-label"></div>
+        <div *ngFor="let d of diasSemana()" class="calendar__day-label">
+          {{ formatDayName(d) }}
+        </div>
 
-      <!-- Columnas de días con overlay absoluto para eventos -->
-      <div *ngFor="let d of diasSemana()" class="day-col">
-        <!-- rejilla de fondo por hora -->
-        <div *ngFor="let h of horas" class="day-col__grid-cell"></div>
-        <!-- overlay de eventos -->
-        <div class="events-layer">
-          <div *ngFor="let ev of eventosYHorarios()" [style.display]="estaEnDia(ev, d) ? 'block' : 'none'"
-               [style.top]="topPercent(ev)" [style.height]="heightPercent(ev)" [style.background]="ev.colorHex"
-               class="event"
-               (click)="abrirDetallesEvento(ev)">
-            {{ ev.name }}
+        <!-- Columna de horas -->
+        <div class="hours-col">
+          <div *ngFor="let h of horas" class="hours-col__cell">{{ formatHour(h) }}</div>
+        </div>
+
+        <!-- Columnas de días con overlay absoluto para eventos -->
+        <div *ngFor="let d of diasSemana()" class="day-col">
+          <!-- rejilla de fondo por hora -->
+          <div *ngFor="let h of horas" class="day-col__grid-cell"></div>
+          <!-- overlay de eventos -->
+          <div class="events-layer">
+            <div *ngFor="let ev of eventosYHorarios()" [style.display]="estaEnDia(ev, d) ? 'block' : 'none'"
+                 [style.top]="topPercent(ev)" [style.height]="heightPercent(ev)" [style.background]="ev.colorHex"
+                 class="event"
+                 (click)="abrirDetallesEvento(ev)">
+              {{ ev.name }}
+            </div>
           </div>
         </div>
       </div>
@@ -126,7 +141,7 @@
               </div>
       <div class="event-details-body">
         <div class="event-detail-item">
-          <div class="event-detail-label">Materia</div>
+          <div class="event-detail-label">Materias</div>
           <div class="event-detail-value">
             {{ evaluacionSeleccionada()?.materia }}
           </div>

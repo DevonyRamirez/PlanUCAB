@@ -38,6 +38,19 @@
     "descripcion" : "",
     "startDateTime" : "2025-11-12T08:00:00",
     "endDateTime" : "2025-11-12T10:00:00"
+  }, {
+    "id" : 6,
+    "userId" : 1,
+    "colorHex" : "#FA9600",
+    "location" : "L2012",
+    "titulo" : "Prueba Duplicado",
+    "materia" : "Cálculo Vectorial",
+    "porcentaje" : 10.0,
+    "nota" : 0.0,
+    "profesor" : "Elvira",
+    "descripcion" : "",
+    "startDateTime" : "2025-11-05T07:00:00",
+    "endDateTime" : "2025-11-05T09:00:00"
   } ],
   "2" : [ {
     "id" : 4,

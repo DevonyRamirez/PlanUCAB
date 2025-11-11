@@ -50,6 +50,12 @@ public class EventService {
         LocalDateTime startDateTime = LocalDateTime.of(date, start);
         LocalDateTime endDateTime = LocalDateTime.of(date, end);
 
+        // Validar que el evento no esté en el pasado
+        LocalDateTime now = LocalDateTime.now();
+        if (startDateTime.isBefore(now)) {
+            throw new InvalidEventTimeException("No se pueden crear eventos en el pasado");
+        }
+
         // Verificar conflictos con otros eventos del mismo día
         List<Event> eventosExistentes = eventRepository.findByUserId(userId);
         for (Event eventoExistente : eventosExistentes) {

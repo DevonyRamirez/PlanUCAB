@@ -62,6 +62,11 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     return [...eventos, ...horariosVirtuales, ...evaluacionesVirtuales];
   });
 
+  // Verificar si hay información registrada
+  tieneInformacion = computed(() => {
+    return this.eventos().length > 0 || this.horarios().length > 0 || this.evaluaciones().length > 0;
+  });
+
   constructor(
     private eventoService: EventoService,
     private horarioService: HorarioService,

@@ -52,6 +52,19 @@ public class EvaluacionService {
         LocalDateTime startDateTime = LocalDateTime.of(date, start);
         LocalDateTime endDateTime = LocalDateTime.of(date, end);
 
+        // Validar que no exista otra evaluación con el mismo nombre, fecha y materia
+        String tituloNueva = request.getTitulo();
+        for (Evaluacion evaluacionExistente : evaluacionesExistentes) {
+            if (tituloNueva.equals(evaluacionExistente.getTitulo()) &&
+                date.equals(evaluacionExistente.getStartDateTime().toLocalDate()) &&
+                nombreMateria.equals(evaluacionExistente.getMateria())) {
+                throw new IllegalArgumentException(
+                    String.format("Ya existe una evaluación con el nombre '%s', fecha '%s' y materia '%s' en esta cuenta",
+                        tituloNueva, date.toString(), nombreMateria)
+                );
+            }
+        }
+
         Evaluacion evaluacion = new Evaluacion();
         evaluacion.setUserId(userId);
         evaluacion.setTitulo(request.getTitulo());

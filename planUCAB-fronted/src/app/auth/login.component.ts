@@ -27,22 +27,52 @@ export class LoginComponent {
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email, this.validateUcabEmail]],
-      password: ['', [Validators.required, Validators.minLength(10)]]
+      password: ['', [Validators.required, this.validatePassword]]
     });
 
     this.registerForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(10)]],
       email: ['', [Validators.required, Validators.email, this.validateUcabEmail]],
-      password: ['', [Validators.required, Validators.minLength(10)]]
-    });
+      password: ['', [Validators.required, this.validatePassword]],
+      confirmPassword: ['', [Validators.required]]
+    }, { validators: this.passwordMatchValidator });
   }
 
-  validateUcabEmail(control: any) {
+  validateUcabEmail = (control: any) => {
     const email = control.value;
     if (!email) {
       return null;
     }
     return email.endsWith('@est.ucab.edu.ve') ? null : { invalidUcabEmail: true };
+  }
+
+  validatePassword = (control: any) => {
+    const password = control.value;
+    if (!password) {
+      return null;
+    }
+    if (password.length < 8) {
+      return { minLength: true };
+    }
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    
+    if (!hasUpperCase || !hasLowerCase || !hasNumber) {
+      return { invalidPassword: true };
+    }
+    return null;
+  }
+
+  passwordMatchValidator = (group: any) => {
+    const password = group.get('password');
+    const confirmPassword = group.get('confirmPassword');
+    
+    if (!password || !confirmPassword) {
+      return null;
+    }
+    
+    return password.value === confirmPassword.value ? null : { passwordMismatch: true };
   }
 
   onLogin(): void {
@@ -81,6 +111,12 @@ export class LoginComponent {
     }
 
     const { username, email, password } = this.registerForm.value;
+    // Verificar que las contraseñas coincidan
+    if (this.registerForm.hasError('passwordMismatch')) {
+      this.mostrarError = true;
+      this.mensajeError = 'Las contraseñas no coinciden';
+      return;
+    }
     this.authService.register({ username, email, password }).subscribe({
       next: () => {
         // Cambiar a la pestaña de iniciar sesión

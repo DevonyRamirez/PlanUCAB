@@ -50,12 +50,15 @@
           type="password" 
           id="login-password" 
           formControlName="password" 
-          placeholder="Mínimo 10 caracteres" />
+          placeholder="Mínimo 8 caracteres, mayúsculas, minúsculas y números" />
         <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('required')" class="error-text">
           La contraseña es requerida
         </small>
-        <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('minlength')" class="error-text">
-          La contraseña debe tener al menos 10 caracteres
+        <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('minLength')" class="error-text">
+          La contraseña debe tener al menos 8 caracteres
+        </small>
+        <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.hasError('invalidPassword')" class="error-text">
+          La contraseña debe contener mayúsculas, minúsculas y números
         </small>
       </div>
 
@@ -102,12 +105,30 @@
           type="password" 
           id="register-password" 
           formControlName="password" 
-          placeholder="Mínimo 10 caracteres" />
+          placeholder="Mínimo 8 caracteres, mayúsculas, minúsculas y números" />
         <small *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('required')" class="error-text">
           La contraseña es requerida
         </small>
-        <small *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minlength')" class="error-text">
-          La contraseña debe tener al menos 10 caracteres
+        <small *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('minLength')" class="error-text">
+          La contraseña debe tener al menos 8 caracteres
+        </small>
+        <small *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.hasError('invalidPassword')" class="error-text">
+          La contraseña debe contener mayúsculas, minúsculas y números
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="register-confirm-password">Confirmar Contraseña</label>
+        <input 
+          type="password" 
+          id="register-confirm-password" 
+          formControlName="confirmPassword" 
+          placeholder="Confirme su contraseña" />
+        <small *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.get('confirmPassword')?.hasError('required')" class="error-text">
+          La confirmación de contraseña es requerida
+        </small>
+        <small *ngIf="registerForm.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched" class="error-text">
+          Las contraseñas no coinciden
         </small>
       </div>
 
