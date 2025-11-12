@@ -1,0 +1,112 @@
+<div class="modal-overlay" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Crear Horario</h2>
+    </div>
+    <div class="modal-form-wrapper">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
+        <label>
+          Materia
+          <select formControlName="materia" class="materia-select">
+            <option value="">Selecciona una materia</option>
+            <option *ngFor="let materia of materiasDisponibles" [value]="materia.nombre">
+              {{ materia.nombre }}
+            </option>
+          </select>
+          <small *ngIf="form.get('materia')?.touched && form.get('materia')?.hasError('required')" style="color:#d32f2f">La materia es requerida</small>
+        </label>
+
+        <div formArrayName="horarios" class="horarios-container">
+          <div *ngFor="let horario of horariosArray.controls; let i = index" [formGroupName]="i" class="horario-item">
+            <div class="horario-header">
+              <h4>Día {{ i + 1 }}</h4>
+              <button type="button" *ngIf="horariosArray.length > 1" (click)="eliminarDia(i)" class="btn-eliminar">×</button>
+            </div>
+            
+            <label>
+              Día de la semana
+              <select formControlName="diaSemana">
+                <option value="">Selecciona un día</option>
+                <option *ngFor="let dia of getDiasDisponibles(i)" [value]="dia">{{ dia }}</option>
+              </select>
+              <small *ngIf="horario.get('diaSemana')?.touched && horario.get('diaSemana')?.hasError('required')" style="color:#d32f2f">El día es requerido</small>
+            </label>
+
+            <label class="aula">
+              Ubicación
+              <input type="text" formControlName="location" />
+              <small *ngIf="horario.get('location')?.touched && horario.get('location')?.hasError('required')" style="color:#d32f2f">La ubicación es requerida</small>
+            </label>
+
+            <label class="hora">
+              Hora
+              <div class="actions" style="gap:12px">
+                <div style="flex:1">
+                  <div style="font-size:12px; font-weight:600; margin-bottom:4px">Inicio</div>
+                  <app-time-picker [value]="horario.get('startTime')?.value || ''" (valueChange)="horario.patchValue({startTime: $event})"></app-time-picker>
+                  <small *ngIf="horario.get('startTime')?.touched && horario.get('startTime')?.hasError('required')" style="color:#d32f2f; font-size:11px">La hora de inicio es requerida</small>
+                </div>
+                <div style="flex:1">
+                  <div style="font-size:12px; font-weight:600; margin-bottom:4px">Fin</div>
+                  <app-time-picker 
+                    [value]="horario.get('endTime')?.value || ''" 
+                    [minTime]="horario.get('startTime')?.value || null"
+                    (valueChange)="horario.patchValue({endTime: $event})"></app-time-picker>
+                  <small *ngIf="horario.get('endTime')?.touched && horario.get('endTime')?.hasError('required')" style="color:#d32f2f; font-size:11px">La hora de fin es requerida</small>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <button type="button" (click)="agregarDia()" class="btn-add-day" *ngIf="horariosArray.length < 3">
+          + Añadir otro día
+        </button>
+
+        <label>
+          Profesor
+          <input type="text" formControlName="profesor" />
+        </label>
+
+        <label>
+          Tipo de clase
+          <select formControlName="tipoClase">
+            <option value="">Selecciona un tipo (opcional)</option>
+            <option *ngFor="let tipo of tiposClase" [value]="tipo">{{ tipo }}</option>
+          </select>
+        </label>
+
+        <label>
+          Color
+          <app-color-picker [value]="form.get('colorHex')?.value || '#2196F3'" (valueChange)="form.patchValue({colorHex: $event})"></app-color-picker>
+        </label>
+
+        <div class="modal-buttons">
+          <button type="button" (click)="cancelar()">Cancelar</button>
+          <button type="submit">Crear horario(s)</button>
+        </div>
+        <div class="mensaje" [style.color]="mensaje.startsWith('Error') ? '#d32f2f' : '#333'">{{ mensaje }}</div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Error -->
+<div class="error-modal-overlay" *ngIf="mostrarError" (click)="cerrarError()">
+  <div class="error-modal-content" (click)="$event.stopPropagation()">
+    <div class="error-modal-header">
+      <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h3>Error</h3>
+    </div>
+    <div class="error-modal-body">
+      <p>{{ mensajeError }}</p>
+    </div>
+    <div class="error-modal-footer">
+      <button type="button" class="error-modal-button" (click)="cerrarError()">Entendido</button>
+    </div>
+  </div>
+</div>

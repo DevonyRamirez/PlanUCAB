@@ -1,0 +1,126 @@
+<div class="modal-overlay" (click)="cerrarModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Crear Evaluación</h2>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
+      <label>
+        Título
+        <input type="text" formControlName="titulo" maxlength="100" />
+        <small *ngIf="form.get('titulo')?.touched && form.get('titulo')?.hasError('required')" style="color:#d32f2f">El título es requerido</small>
+        <small *ngIf="form.get('titulo')?.touched && form.get('titulo')?.hasError('maxlength')" style="color:#d32f2f">El título no puede tener más de 100 caracteres</small>
+      </label>
+
+      <label>
+        Materia
+        <select formControlName="materia" class="materia-select">
+          <option value="">Seleccionar materia</option>
+          <option *ngFor="let materia of materiasDisponibles" [value]="materia.nombre">
+            {{ materia.nombre }}
+          </option>
+        </select>
+        <small *ngIf="form.get('materia')?.touched && form.get('materia')?.hasError('required')" style="color:#d32f2f">La materia es requerida</small>
+      </label>
+
+      <label>
+        Porcentaje
+        <input 
+          type="number" 
+          formControlName="porcentaje"
+          min="0" 
+          max="100" 
+          step="0.01"
+          placeholder="%" />
+        <small *ngIf="form.get('porcentaje')?.touched && form.get('porcentaje')?.hasError('required')" style="color:#d32f2f">El porcentaje es requerido</small>
+        <small *ngIf="form.get('porcentaje')?.touched && (form.get('porcentaje')?.hasError('min') || form.get('porcentaje')?.hasError('max'))" style="color:#d32f2f">El porcentaje debe estar entre 0 y 100</small>
+        <div class="suma-total-porcentajes" *ngIf="form.get('materia')?.value" [class.suma-total-porcentajes--error]="(sumaPorcentajesExistentesMateria + porcentaje) > 100" style="margin-top: 8px;">
+          <div class="suma-total-label">Suma total de evaluaciones para esta materia:</div>
+          <div class="suma-total-value">
+            {{ sumaPorcentajesExistentesMateria.toFixed(2) }}% (existentes) + {{ porcentaje.toFixed(2) }}% (nueva) = {{ (sumaPorcentajesExistentesMateria + porcentaje).toFixed(2) }}%
+          </div>
+          <span *ngIf="(sumaPorcentajesExistentesMateria + porcentaje) > 100" class="error-text"> (Excede el 100% - Cada materia puede tener un máximo de 100% en total)</span>
+        </div>
+      </label>
+
+      <label>
+        Nota (Base 20)
+        <input type="number" formControlName="nota" min="0" max="20" step="0.01" />
+        <small *ngIf="form.get('nota')?.touched && form.get('nota')?.hasError('required')" style="color:#d32f2f">La nota es requerida</small>
+        <small *ngIf="form.get('nota')?.touched && (form.get('nota')?.hasError('min') || form.get('nota')?.hasError('max'))" style="color:#d32f2f">La nota debe estar entre 0 y 20</small>
+      </label>
+
+      <label>
+        Profesor
+        <input type="text" formControlName="profesor" maxlength="100" />
+        <small *ngIf="form.get('profesor')?.touched && form.get('profesor')?.hasError('required')" style="color:#d32f2f">El profesor es requerido</small>
+      </label>
+
+      <label>
+        Ubicación
+        <input type="text" formControlName="location" maxlength="50" />
+        <small *ngIf="form.get('location')?.touched && form.get('location')?.hasError('required')" style="color:#d32f2f">La ubicación es requerida</small>
+      </label>
+
+      <label>
+        Fecha
+        <app-date-picker [value]="form.get('date')?.value || ''" (valueChange)="form.patchValue({date: $event})"></app-date-picker>
+        <small *ngIf="form.get('date')?.touched && form.get('date')?.hasError('required')" style="color:#d32f2f">La fecha es requerida</small>
+      </label>
+
+      <label>
+        Hora
+        <div class="evaluacion-time-fields">
+          <div class="evaluacion-time-field">
+            <div class="evaluacion-time-label">Inicio</div>
+            <app-time-picker [value]="form.get('startTime')?.value || ''" (valueChange)="form.patchValue({startTime: $event})"></app-time-picker>
+            <small *ngIf="form.get('startTime')?.touched && form.get('startTime')?.hasError('required')" class="error-message">La hora de inicio es requerida</small>
+          </div>
+          <div class="evaluacion-time-field">
+            <div class="evaluacion-time-label">Fin</div>
+            <app-time-picker
+              [value]="form.get('endTime')?.value || ''"
+              [minTime]="form.get('startTime')?.value || null"
+              (valueChange)="form.patchValue({endTime: $event})"></app-time-picker>
+            <small *ngIf="form.get('endTime')?.touched && form.get('endTime')?.hasError('required')" class="error-message">La hora de fin es requerida</small>
+          </div>
+        </div>
+      </label>
+
+      <label>
+        Descripción
+        <textarea formControlName="descripcion" rows="3" maxlength="1000"></textarea>
+      </label>
+
+      <label>
+        Color
+        <app-color-picker [value]="form.get('colorHex')?.value || '#FF9800'" (valueChange)="form.patchValue({colorHex: $event})"></app-color-picker>
+      </label>
+
+      <div class="modal-buttons">
+        <button type="button" (click)="cancelar()">Cancelar</button>
+        <button type="submit">Crear evaluación</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal de Error -->
+<div class="error-modal-overlay" *ngIf="mostrarError" (click)="cerrarError()">
+  <div class="error-modal-content" (click)="$event.stopPropagation()">
+    <div class="error-modal-header">
+      <svg class="error-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h3>Error</h3>
+    </div>
+    <div class="error-modal-body">
+      <p>{{ mensajeError }}</p>
+    </div>
+    <div class="error-modal-footer">
+      <button type="button" class="error-modal-button" (click)="cerrarError()">Entendido</button>
+    </div>
+  </div>
+</div>
+

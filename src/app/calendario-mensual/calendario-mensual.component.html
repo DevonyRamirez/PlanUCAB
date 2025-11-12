@@ -1,0 +1,53 @@
+<div class="calendario-mensual">
+  <div class="calendario-mensual__top">
+    <button (click)="toggleMenu()" class="calendario-mensual__add-btn">
+      <img src="assets/agregar.svg" alt="Agregar" class="calendario-mensual__add-icon" />
+      <span class="calendario-mensual__add-text">Crear</span>
+    </button>
+    <div class="calendario-mensual__menu" *ngIf="mostrarMenu()">
+      <button (click)="onCrearEvento()" class="calendario-mensual__menu-item">Crear evento</button>
+      <button (click)="onCrearHorario()" class="calendario-mensual__menu-item">Crear horario</button>
+      <button (click)="onCrearEvaluacion()" class="calendario-mensual__menu-item">Crear evaluación</button>
+    </div>
+  </div>
+
+  <div class="calendario-mensual__header">
+    <button (click)="mesAnterior()" class="calendario-mensual__nav">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+        <path d="M24,12A12,12,0,1,0,12,24,12.013,12.013,0,0,0,24,12ZM8,12a2.993,2.993,0,0,1,.752-1.987c.291-.327.574-.637.777-.84L12.353,6.3a1,1,0,0,1,1.426,1.4L10.95,10.58c-.187.188-.441.468-.7.759a1,1,0,0,0,0,1.323c.258.29.512.57.693.752L13.779,16.3a1,1,0,0,1-1.426,1.4L9.524,14.822c-.2-.2-.48-.507-.769-.833A2.99,2.99,0,0,1,8,12Z"/>
+      </svg>
+    </button>
+    <h3 class="calendario-mensual__titulo">{{ nombreMes() }}</h3>
+    <button (click)="mesSiguiente()" class="calendario-mensual__nav">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+        <path d="M0,12A12,12,0,1,0,12,0,12.013,12.013,0,0,0,0,12Zm16,0a2.993,2.993,0,0,1-.752,1.987c-.291.327-.574.637-.777.84L11.647,17.7a1,1,0,1,1-1.426-1.4L13.05,13.42c.187-.188.441-.468.7-.759a1,1,0,0,0,0-1.323c-.258-.29-.512-.57-.693-.752L10.221,7.7a1,1,0,1,1,1.426-1.4l2.829,2.879c.2.2.48.507.769.833A2.99,2.99,0,0,1,16,12Z"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="calendario-mensual__dias-semana">
+    <div *ngFor="let d of diasSemana" class="calendario-mensual__dia-label">{{ d }}</div>
+  </div>
+
+  <div class="calendario-mensual__grid">
+    <button
+      *ngFor="let dia of diasMes()"
+      (click)="seleccionarDia(dia)"
+      [class.calendario-mensual__dia--otro-mes]="!esMesActual(dia)"
+      [class.calendario-mensual__dia--hoy]="esHoy(dia)"
+      [class.calendario-mensual__dia--seleccionado]="esSeleccionado(dia)"
+      class="calendario-mensual__dia">
+      {{ dia?.getDate() }}
+    </button>
+  </div>
+
+  <!-- Botón Ver Materias -->
+  <button class="calendario-mensual__ver-materias-btn" (click)="onVerMaterias()">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    </svg>
+    <span>Ver Materias</span>
+  </button>
+</div>
+
