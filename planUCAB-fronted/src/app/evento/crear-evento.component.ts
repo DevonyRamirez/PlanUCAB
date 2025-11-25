@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EventoService, Event } from './evento.service';
-import { Horario } from '../horario/horario.service';
+import { EventoService, Event } from '../service/evento.service';
+import { Horario } from '../service/horario.service';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
@@ -101,9 +101,9 @@ export class CrearEventoComponent implements OnInit {
         error: (err) => {
           console.error('Error al crear evento', err);
           let mensajeError = 'Error al crear el evento';
-          
+
           if (err.status === 0 || err.status === undefined) {
-            mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+            mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
           } else if (err.status === 409) {
             // Conflicto de horarios
             mensajeError = err.error?.message || 'El evento entra en conflicto con otro evento existente';
@@ -114,7 +114,7 @@ export class CrearEventoComponent implements OnInit {
           } else if (err.message) {
             mensajeError = `Error: ${err.message}`;
           }
-          
+
           this.mensajeError = mensajeError;
           this.mostrarError = true;
         }

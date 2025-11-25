@@ -11,7 +11,7 @@ export interface Materia {
 
 @Injectable({ providedIn: 'root' })
 export class MateriaService {
-  private readonly baseUrl = 'http://localhost:8080/api/materias';
+  private readonly baseUrl = 'http://localhost:8081/api/materias';
 
   constructor(private http: HttpClient) {}
 

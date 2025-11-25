@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MateriaService, Materia } from './materia.service';
+import { MateriaService, Materia } from '../service/materia.service';
 
 @Component({
   selector: 'app-materias-modal',
@@ -11,7 +11,7 @@ import { MateriaService, Materia } from './materia.service';
 })
 export class MateriasModalComponent implements OnInit {
   @Output() cerrar = new EventEmitter<void>();
-  
+
   materias: Materia[] = [];
   cargando = true;
   error = '';

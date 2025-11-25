@@ -1,14 +1,14 @@
 import { Component, OnInit, computed, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EventoService, Event } from '../evento/evento.service';
-import { HorarioService, Horario } from '../horario/horario.service';
-import { EvaluacionService, Evaluacion } from '../evaluacion/evaluacion.service';
+import { EventoService, Event } from '../service/evento.service';
+import { HorarioService, Horario } from '../service/horario.service';
+import { EvaluacionService, Evaluacion } from '../service/evaluacion.service';
 import { CalendarioMensualComponent } from '../calendario-mensual/calendario-mensual.component';
 import { CrearEventoComponent } from '../evento/crear-evento.component';
 import { CrearHorarioComponent } from '../horario/crear-horario.component';
 import { CrearEvaluacionComponent } from '../evaluacion/crear-evaluacion.component';
 import { MateriasModalComponent } from '../materia/materias-modal.component';
-import { BusquedaComunicacionService } from '../barra-busqueda/busqueda-comunicacion.service';
+import { BusquedaComunicacionService } from '../service/busqueda-comunicacion.service';
 import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -53,9 +53,9 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   evaluacionSeleccionada = signal<Evaluacion | null>(null);
   mostrarErrorBusqueda = signal(false);
   mensajeErrorBusqueda = signal('');
-  
+
   private busquedaSubscription?: Subscription;
-  
+
   // Combinar eventos, horarios y evaluaciones convertidos a eventos virtuales
   eventosYHorarios = computed(() => {
     const eventos = this.eventos();
@@ -96,8 +96,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.busquedaSubscription?.unsubscribe();
   }
 
-  cargar(): void { 
-    this.eventoService.obtenerEventos(this.usuarioId).subscribe((evs) => this.eventos.set(evs)); 
+  cargar(): void {
+    this.eventoService.obtenerEventos(this.usuarioId).subscribe((evs) => this.eventos.set(evs));
   }
 
   cargarHorarios(): void {
@@ -110,7 +110,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   siguienteSemana(): void { this.semanaInicio.set(addDays(this.semanaInicio(), 7)); }
   anteriorSemana(): void { this.semanaInicio.set(addDays(this.semanaInicio(), -7)); }
-  
+
   navegarAFecha(fecha: Date): void {
     const semana = startOfWeek(fecha);
     this.semanaInicio.set(semana);
@@ -285,7 +285,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       // Encontrar el día de la semana correspondiente en la semana actual
       const diasSemana = this.diasSemana();
       const diaSemanaActual = diasSemana.find(d => d.getDay() === diaSemanaNum);
-      
+
       if (!diaSemanaActual) return;
 
       // Crear un evento virtual para este horario en esta semana
@@ -341,8 +341,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     if (!terminoLower) return;
 
     // Buscar en eventos reales
-    const eventoEncontrado = this.eventos().find(e => 
-      (e.name || '').toLowerCase().includes(terminoLower) || 
+    const eventoEncontrado = this.eventos().find(e =>
+      (e.name || '').toLowerCase().includes(terminoLower) ||
       (e.location || '').toLowerCase().includes(terminoLower)
     );
 

@@ -15,7 +15,7 @@ import control.horariocontrollers.HorarioRepository;
 import org.springframework.stereotype.Service;
 
 import exceptions.InvalidEventTimeException;
-import exceptions.ScheduleConflictException;
+import exceptions.HorarioConflictoExcepcion;
 
 @Service
 public class EventService {
@@ -66,7 +66,7 @@ public class EventService {
             if (existenteStart.toLocalDate().equals(date)) {
                 // Verificar solapamiento: (start < existenteEnd) && (end > existenteStart)
                 if (startDateTime.isBefore(existenteEnd) && endDateTime.isAfter(existenteStart)) {
-                    throw new ScheduleConflictException(
+                    throw new HorarioConflictoExcepcion(
                         String.format("El evento entra en conflicto con '%s' (%s - %s)", 
                             eventoExistente.getName(),
                             formatTime(existenteStart.toLocalTime()),
@@ -87,7 +87,7 @@ public class EventService {
                 
                 // Verificar solapamiento: (start < horarioEnd) && (end > horarioStart)
                 if (start.isBefore(horarioEnd) && end.isAfter(horarioStart)) {
-                    throw new ScheduleConflictException(
+                    throw new HorarioConflictoExcepcion(
                         String.format("El evento entra en conflicto con el horario '%s' (%s - %s)", 
                             horarioExistente.getMateria(),
                             horarioExistente.getStartTime(),

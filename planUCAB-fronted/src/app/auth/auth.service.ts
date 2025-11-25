@@ -22,7 +22,7 @@ export interface LoginRequest {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = 'http://localhost:8081/api';
   private readonly STORAGE_KEY = 'planUCAB_user';
   private readonly STORAGE_KEY_ID = 'planUCAB_user_id';
   private readonly STORAGE_KEY_PASSWORD = 'planUCAB_password';

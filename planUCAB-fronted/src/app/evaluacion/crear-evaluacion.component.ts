@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EvaluacionService, CreateEvaluacionPayload, Evaluacion } from './evaluacion.service';
-import { MateriaService, Materia } from '../materia/materia.service';
+import { EvaluacionService, CreateEvaluacionPayload, Evaluacion } from '../service/evaluacion.service';
+import { MateriaService, Materia } from '../service/materia.service';
 import { DatePickerComponent } from '../date-picker/date-picker.component';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
@@ -223,7 +223,7 @@ export class CrearEvaluacionComponent implements OnInit {
         console.error('Error al crear la evaluación', err);
         this.mostrarError = true;
         if (err.status === 0 || err.status === undefined) {
-          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
         } else if (err.error?.message) {
           this.mensajeError = err.error.message;
         } else {

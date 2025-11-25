@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormArray, FormGroup } from '@angular/forms';
-import { HorarioService, Horario } from './horario.service';
-import { Event } from '../evento/evento.service';
+import { HorarioService, Horario } from '../service/horario.service';
+import { Event } from '../service/evento.service';
 import { TimePickerComponent } from '../time-picker/time-picker.component';
 import { ColorPickerComponent } from '../color-picker/color-picker.component';
 import { AuthService } from '../auth/auth.service';
-import { MateriaService, Materia } from '../materia/materia.service';
+import { MateriaService, Materia } from '../service/materia.service';
 
 @Component({
   selector: 'app-crear-horario',
@@ -92,7 +92,7 @@ export class CrearHorarioComponent implements OnInit {
     const diasOcupados = this.horariosArray.controls
       .map((control, i) => i !== index ? control.get('diaSemana')?.value : null)
       .filter(dia => dia && dia !== '');
-    
+
     return this.diasSemana.filter(dia => !diasOcupados.includes(dia) || dia === diaSeleccionado);
   }
 
@@ -101,14 +101,14 @@ export class CrearHorarioComponent implements OnInit {
       this.form.markAllAsTouched();
       const faltantes: string[] = [];
       if (this.form.get('materia')?.hasError('required')) faltantes.push('materia');
-      
+
       this.horariosArray.controls.forEach((control, index) => {
         if (control.get('diaSemana')?.hasError('required')) faltantes.push(`día ${index + 1}`);
         if (control.get('location')?.hasError('required')) faltantes.push(`ubicación día ${index + 1}`);
         if (control.get('startTime')?.hasError('required')) faltantes.push(`hora inicio ${index + 1}`);
         if (control.get('endTime')?.hasError('required')) faltantes.push(`hora fin ${index + 1}`);
       });
-      
+
       const mensajeValidacion = faltantes.length
         ? `Por favor rellena: ${faltantes.join(', ')}`
         : 'Hay campos inválidos. Verifica el formulario.';
@@ -119,7 +119,7 @@ export class CrearHorarioComponent implements OnInit {
 
     const { userId, materia, profesor, tipoClase, colorHex } = this.form.value as any;
     const horarios = this.horariosArray.value as any[];
-    
+
     // Validar que se haya seleccionado una materia
     if (!materia) {
       this.mensajeError = 'Debes seleccionar una materia';
@@ -134,14 +134,14 @@ export class CrearHorarioComponent implements OnInit {
       this.mostrarError = true;
       return;
     }
-    
+
     // Validar todos los horarios
     const horariosValidos: any[] = [];
     for (let i = 0; i < horarios.length; i++) {
       const horario = horarios[i];
       const normalizedStartTime = this.normalizeTime(horario.startTime);
       const normalizedEndTime = this.normalizeTime(horario.endTime);
-      
+
       // La validación de conflictos se hace en el backend
       horariosValidos.push({
         materia: materiaCompleta,
@@ -156,7 +156,7 @@ export class CrearHorarioComponent implements OnInit {
     }
 
     // Crear todos los horarios
-    const crearHorarios = horariosValidos.map(payload => 
+    const crearHorarios = horariosValidos.map(payload =>
       this.horarioService.crearHorario(Number(userId), payload)
     );
 
@@ -180,9 +180,9 @@ export class CrearHorarioComponent implements OnInit {
         error: (err) => {
           console.error('Error al crear horario', err);
           let mensajeError = `Error al crear el horario ${creados + 1}`;
-          
+
           if (err.status === 0 || err.status === undefined) {
-            mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+            mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
           } else if (err.status === 409) {
             // Conflicto de horarios
             mensajeError = err.error?.message || 'El horario entra en conflicto con otro horario existente';
@@ -193,7 +193,7 @@ export class CrearHorarioComponent implements OnInit {
           } else if (err.message) {
             mensajeError = `Error: ${err.message}`;
           }
-          
+
           this.mensajeError = mensajeError;
           this.mostrarError = true;
         }

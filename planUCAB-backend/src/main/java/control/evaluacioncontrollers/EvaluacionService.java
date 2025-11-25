@@ -9,7 +9,7 @@ import java.util.List;
 import model.Evaluacion;
 import model.Materia;
 import exceptions.InvalidEventTimeException;
-import exceptions.ScheduleConflictException;
+import exceptions.HorarioConflictoExcepcion;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -67,7 +67,7 @@ public class EvaluacionService {
                     String nombreMateriaExistente = evaluacionExistente.getMateria() != null 
                         ? evaluacionExistente.getMateria().getNombre() 
                         : "Desconocida";
-                    throw new ScheduleConflictException(
+                    throw new HorarioConflictoExcepcion(
                         String.format("La evaluación entra en conflicto de horario con '%s' de %s (%s - %s)", 
                             evaluacionExistente.getTitulo(),
                             nombreMateriaExistente,

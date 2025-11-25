@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BusquedaComunicacionService } from './busqueda-comunicacion.service';
+import { BusquedaComunicacionService } from '../service/busqueda-comunicacion.service';
 
 @Component({
   selector: 'app-barra-busqueda',
@@ -14,7 +14,7 @@ export class BarraBusquedaComponent implements OnChanges {
   @Output() buscar = new EventEmitter<string>();
   @Input() mostrarErrorExterno = false;
   @Input() mensajeErrorExterno = '';
-  
+
   terminoBusqueda = '';
   mostrarError = false;
   mensajeError = '';

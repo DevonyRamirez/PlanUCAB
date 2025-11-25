@@ -64,5 +64,21 @@
     "endTime" : "01:40",
     "profesor" : "null",
     "tipoClase" : "null"
+  }, {
+    "id" : 5,
+    "userId" : 2,
+    "colorHex" : "#B953D5",
+    "location" : "L2311",
+    "materia" : {
+      "id" : 1,
+      "nombre" : "Ingeniería de Software",
+      "semestre" : "4to semestre",
+      "uc" : 5
+    },
+    "diaSemana" : "Martes",
+    "startTime" : "07:00",
+    "endTime" : "09:00",
+    "profesor" : "María Angélica Pérez de Ovalles",
+    "tipoClase" : "Teoría"
   } ]
 }

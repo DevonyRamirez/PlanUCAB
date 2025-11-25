@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Materia } from '../materia/materia.service';
+import { Materia } from './materia.service';
 
 export interface CreateHorarioPayload {
   materia: Materia;
@@ -29,7 +29,7 @@ export interface Horario {
 
 @Injectable({ providedIn: 'root' })
 export class HorarioService {
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = 'http://localhost:8081/api';
 
   constructor(private http: HttpClient) {}
 

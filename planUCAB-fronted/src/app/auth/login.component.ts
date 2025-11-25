@@ -92,7 +92,7 @@ export class LoginComponent {
         console.error('Error al iniciar sesión', err);
         this.mostrarError = true;
         if (err.status === 0 || err.status === undefined) {
-          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
         } else if (err.error?.message) {
           this.mensajeError = err.error.message;
         } else {
@@ -140,7 +140,7 @@ export class LoginComponent {
         console.error('Error al registrar', err);
         this.mostrarError = true;
         if (err.status === 0 || err.status === undefined) {
-          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8080';
+          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
         } else if (err.error?.message) {
           this.mensajeError = err.error.message;
         } else {

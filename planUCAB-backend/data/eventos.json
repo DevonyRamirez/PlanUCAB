@@ -45,5 +45,32 @@
     "description" : "ksmdkw",
     "startDateTime" : "2025-11-12T04:00:00",
     "endDateTime" : "2025-11-12T06:00:00"
+  }, {
+    "id" : 6,
+    "userId" : 2,
+    "colorHex" : "#20F3D4",
+    "location" : "Las Mercedes, Caracas",
+    "name" : "Notion",
+    "description" : "Vestimenta casual",
+    "startDateTime" : "2025-11-26T18:00:00",
+    "endDateTime" : "2025-11-26T20:00:00"
+  }, {
+    "id" : 7,
+    "userId" : 2,
+    "colorHex" : "#2196F3",
+    "location" : "Las Mercedes, Caracas",
+    "name" : "Notion",
+    "description" : "Vestimenta casual",
+    "startDateTime" : "2025-11-27T14:00:00",
+    "endDateTime" : "2025-11-27T17:00:00"
+  }, {
+    "id" : 8,
+    "userId" : 2,
+    "colorHex" : "#20F398",
+    "location" : "dheniw",
+    "name" : "miaosw",
+    "description" : "JSWHDIIOW",
+    "startDateTime" : "2025-11-26T00:00:00",
+    "endDateTime" : "2025-11-26T04:00:00"
   } ]
 }

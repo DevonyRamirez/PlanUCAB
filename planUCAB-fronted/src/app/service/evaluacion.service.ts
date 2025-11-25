@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Materia } from '../materia/materia.service';
+import { Materia } from './materia.service';
 
 export interface CreateEvaluacionPayload {
   titulo: string;
@@ -34,7 +34,7 @@ export interface Evaluacion {
 
 @Injectable({ providedIn: 'root' })
 export class EvaluacionService {
-  private readonly baseUrl = 'http://localhost:8080/api';
+  private readonly baseUrl = 'http://localhost:8081/api';
 
   constructor(private http: HttpClient) {}
 

@@ -19,8 +19,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(ScheduleConflictException.class)
-    public ResponseEntity<ErrorResponse> handleScheduleConflictException(ScheduleConflictException ex) {
+    @ExceptionHandler(HorarioConflictoExcepcion.class)
+    public ResponseEntity<ErrorResponse> handleScheduleConflictException(HorarioConflictoExcepcion ex) {
         ErrorResponse error = new ErrorResponse(ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
