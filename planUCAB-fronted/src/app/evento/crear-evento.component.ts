@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EventoService, Event } from '../service/evento.service';
 import { Horario } from '../service/horario.service';
-import { DatePickerComponent } from '../date-picker/date-picker.component';
-import { TimePickerComponent } from '../time-picker/time-picker.component';
-import { ColorPickerComponent } from '../color-picker/color-picker.component';
-import { AuthService } from '../auth/auth.service';
+import { DatePickerComponent } from '../generic-components/date-picker/date-picker.component';
+import { TimePickerComponent } from '../generic-components/time-picker/time-picker.component';
+import { ColorPickerComponent } from '../generic-components/color-picker/color-picker.component';
+import { AuthService } from '../service/auth.service';
 
 @Component({
   selector: 'app-crear-evento',

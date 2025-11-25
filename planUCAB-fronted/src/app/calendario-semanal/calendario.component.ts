@@ -9,7 +9,7 @@ import { CrearHorarioComponent } from '../horario/crear-horario.component';
 import { CrearEvaluacionComponent } from '../evaluacion/crear-evaluacion.component';
 import { MateriasModalComponent } from '../materia/materias-modal.component';
 import { BusquedaComunicacionService } from '../service/busqueda-comunicacion.service';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../service/auth.service';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 

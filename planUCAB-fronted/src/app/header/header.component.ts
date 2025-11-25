@@ -2,7 +2,7 @@ import { Component, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BarraBusquedaComponent } from '../barra-busqueda/barra-busqueda.component';
 import { CuentaComponent } from '../cuenta/cuenta.component';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../service/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -17,7 +17,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private authService: AuthService
-  ) 
+  )
   {
     // Usar effect para reaccionar a cambios en el signal
     effect(() => {

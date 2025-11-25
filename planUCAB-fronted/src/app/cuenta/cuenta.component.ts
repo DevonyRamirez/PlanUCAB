@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, SimpleChanges, effect, signal, computed, 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../auth/auth.service';
+import { AuthService } from '../service/auth.service';
 
 @Component({
   selector: 'app-cuenta',
@@ -60,15 +60,15 @@ export class CuentaComponent implements OnInit, OnChanges {
   displayedPassword = computed(() => {
     const isVisible = this.mostrarContrasena();
     const password = this.currentPassword();
-    
+
     if (!password) {
       return '••••••••••';
     }
-    
+
     if (isVisible) {
       return password;
     }
-    
+
     return '•'.repeat(password.length);
   });
 

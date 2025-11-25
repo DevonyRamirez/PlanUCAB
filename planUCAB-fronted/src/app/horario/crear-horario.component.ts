@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormArray, FormGroup } from '@angular/forms';
 import { HorarioService, Horario } from '../service/horario.service';
 import { Event } from '../service/evento.service';
-import { TimePickerComponent } from '../time-picker/time-picker.component';
-import { ColorPickerComponent } from '../color-picker/color-picker.component';
-import { AuthService } from '../auth/auth.service';
+import { TimePickerComponent } from '../generic-components/time-picker/time-picker.component';
+import { ColorPickerComponent } from '../generic-components/color-picker/color-picker.component';
+import { AuthService } from '../service/auth.service';
 import { MateriaService, Materia } from '../service/materia.service';
 
 @Component({
