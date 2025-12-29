@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -35,6 +36,11 @@ public class EventController {
     @GetMapping
     public List<Event> getEvents(@PathVariable Long userId) {
         return eventService.getEventsByUser(userId);
+    }
+
+    @PutMapping("/{eventId}")
+    public Event updateEvent(@PathVariable Long userId, @PathVariable Long eventId, @Valid @RequestBody CreateEventRequest request) {
+        return eventService.updateEvent(userId, eventId, request);
     }
 }
 

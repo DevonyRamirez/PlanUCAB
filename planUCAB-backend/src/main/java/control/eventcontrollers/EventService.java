@@ -112,6 +112,79 @@ public class EventService {
         return eventRepository.findByUserId(userId);
     }
 
+    public Event updateEvent(Long userId, Long eventId, CreateEventRequest request) {
+        // Verificar que el evento existe
+        Event eventoExistente = eventRepository.findById(userId, eventId);
+        if (eventoExistente == null) {
+            throw new IllegalArgumentException("Evento no encontrado");
+        }
+
+        LocalDate date = LocalDate.parse(request.getDate());
+        LocalTime start = parseTime24(request.getStartTime());
+        LocalTime end = parseTime24(request.getEndTime());
+        if (end.isBefore(start) || end.equals(start)) {
+            throw new InvalidEventTimeException("la hora de fin debe ser después de la hora de inicio");
+        }
+        LocalDateTime startDateTime = LocalDateTime.of(date, start);
+        LocalDateTime endDateTime = LocalDateTime.of(date, end);
+
+        // Verificar conflictos con otros eventos del mismo día (excluyendo el evento actual)
+        List<Event> eventosExistentes = eventRepository.findByUserId(userId);
+        for (Event otroEvento : eventosExistentes) {
+            // Saltar el evento que estamos editando
+            if (otroEvento.getId() != null && otroEvento.getId().equals(eventId)) {
+                continue;
+            }
+            
+            LocalDateTime existenteStart = otroEvento.getStartDateTime();
+            LocalDateTime existenteEnd = otroEvento.getEndDateTime();
+            
+            // Verificar si es el mismo día
+            if (existenteStart.toLocalDate().equals(date)) {
+                // Verificar solapamiento: (start < existenteEnd) && (end > existenteStart)
+                if (startDateTime.isBefore(existenteEnd) && endDateTime.isAfter(existenteStart)) {
+                    throw new HorarioConflictoExcepcion(
+                        String.format("El evento entra en conflicto con '%s' (%s - %s)", 
+                            otroEvento.getName(),
+                            formatTime(existenteStart.toLocalTime()),
+                            formatTime(existenteEnd.toLocalTime()))
+                    );
+                }
+            }
+        }
+
+        // Verificar conflictos con horarios del mismo día de la semana
+        DayOfWeek diaSemanaEvento = date.getDayOfWeek();
+        List<Horario> horariosExistentes = horarioRepository.findByUserId(userId);
+        for (Horario horarioExistente : horariosExistentes) {
+            DayOfWeek diaSemanaHorario = DIA_SEMANA_MAP.get(horarioExistente.getDiaSemana());
+            if (diaSemanaHorario != null && diaSemanaHorario.equals(diaSemanaEvento)) {
+                LocalTime horarioStart = parseTime24(horarioExistente.getStartTime());
+                LocalTime horarioEnd = parseTime24(horarioExistente.getEndTime());
+                
+                // Verificar solapamiento: (start < horarioEnd) && (end > horarioStart)
+                if (start.isBefore(horarioEnd) && end.isAfter(horarioStart)) {
+                    throw new HorarioConflictoExcepcion(
+                        String.format("El evento entra en conflicto con el horario '%s' (%s - %s)", 
+                            horarioExistente.getMateria(),
+                            horarioExistente.getStartTime(),
+                            horarioExistente.getEndTime())
+                    );
+                }
+            }
+        }
+
+        Event updatedEvent = new Event();
+        updatedEvent.setName(request.getName());
+        updatedEvent.setLocation(request.getLocation());
+        updatedEvent.setDescription(request.getDescription());
+        updatedEvent.setStartDateTime(startDateTime);
+        updatedEvent.setEndDateTime(endDateTime);
+        updatedEvent.setColorHex(request.getColorHex());
+
+        return eventRepository.update(userId, eventId, updatedEvent);
+    }
+
     private LocalTime parseTime24(String input) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
         return LocalTime.parse(input, fmt);

@@ -51,6 +51,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   mostrarModalMaterias = signal(false);
   eventoSeleccionado = signal<Event | null>(null);
   evaluacionSeleccionada = signal<Evaluacion | null>(null);
+  eventoParaEditar = signal<Event | null>(null);
   mostrarErrorBusqueda = signal(false);
   mensajeErrorBusqueda = signal('');
 
@@ -145,10 +146,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   cerrarModalCrear(): void {
     this.mostrarModalCrear.set(false);
+    this.eventoParaEditar.set(null);
   }
 
   onEventoCreado(): void {
     this.cargar();
+    this.eventoParaEditar.set(null);
   }
 
   abrirModalCrearHorario(): void {
@@ -230,14 +233,31 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       this.evaluacionSeleccionada.set(evaluacion);
       this.eventoSeleccionado.set(null);
     } else {
-      this.eventoSeleccionado.set(evento);
-      this.evaluacionSeleccionada.set(null);
+      // Verificar si es un evento real (no un horario virtual)
+      // Los horarios virtuales tienen IDs > 1000000
+      if (evento.id < 1000000) {
+        this.eventoSeleccionado.set(evento);
+        this.evaluacionSeleccionada.set(null);
+      } else {
+        // Es un horario virtual, no se puede editar desde aquí
+        this.eventoSeleccionado.set(null);
+        this.evaluacionSeleccionada.set(null);
+      }
     }
   }
 
   cerrarDetallesEvento(): void {
     this.eventoSeleccionado.set(null);
     this.evaluacionSeleccionada.set(null);
+  }
+
+  abrirEditarEvento(): void {
+    const evento = this.eventoSeleccionado();
+    if (evento) {
+      this.eventoParaEditar.set(evento);
+      this.cerrarDetallesEvento();
+      this.mostrarModalCrear.set(true);
+    }
   }
 
   formatEventDate(date: string): string {

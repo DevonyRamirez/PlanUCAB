@@ -1,7 +1,7 @@
 <div class="modal-overlay" (click)="cerrarModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Crear Evento</h2>
+      <h2>{{ eventoParaEditar ? 'Editar Evento' : 'Crear Evento' }}</h2>
     </div>
     <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
   <label>
@@ -52,7 +52,7 @@
 
   <div class="modal-buttons">
     <button type="button" (click)="cancelar()">Cancelar</button>
-    <button type="submit">Crear evento</button>
+    <button type="submit">{{ eventoParaEditar ? 'Actualizar evento' : 'Crear evento' }}</button>
   </div>
       <div class="mensaje" [style.color]="mensaje.startsWith('Error') ? '#d32f2f' : '#333'">{{ mensaje }}</div>
     </form>

@@ -36,6 +36,10 @@ export class EventoService {
   obtenerEventos(userId: number): Observable<Event[]> {
     return this.http.get<Event[]>(`${this.baseUrl}/users/${userId}/events`);
   }
+
+  actualizarEvento(userId: number, eventId: number, payload: CreateEventPayload): Observable<Event> {
+    return this.http.put<Event>(`${this.baseUrl}/users/${userId}/events/${eventId}`, payload);
+  }
 }
 
 

@@ -66,11 +66,20 @@
   }, {
     "id" : 8,
     "userId" : 2,
-    "colorHex" : "#20F398",
-    "location" : "dheniw",
-    "name" : "miaosw",
+    "colorHex" : "#EC20F3",
+    "location" : "Caracas",
+    "name" : "Hola",
     "description" : "JSWHDIIOW",
-    "startDateTime" : "2025-11-26T00:00:00",
+    "startDateTime" : "2025-11-26T03:00:00",
     "endDateTime" : "2025-11-26T04:00:00"
+  }, {
+    "id" : 9,
+    "userId" : 2,
+    "colorHex" : "#F32058",
+    "location" : "Carcas",
+    "name" : "Prueba 2",
+    "description" : "jeje",
+    "startDateTime" : "2025-12-29T03:00:00",
+    "endDateTime" : "2025-12-29T05:00:00"
   } ]
 }

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EventoService, Event } from '../service/evento.service';
@@ -15,9 +15,10 @@ import { AuthService } from '../service/auth.service';
   templateUrl: './crear-evento.component.html',
   styleUrl: './crear-evento.component.css'
 })
-export class CrearEventoComponent implements OnInit {
+export class CrearEventoComponent implements OnInit, OnChanges {
   @Input() eventosExistentes: Event[] = [];
   @Input() horariosExistentes: Horario[] = [];
+  @Input() eventoParaEditar: Event | null = null;
   @Output() eventoCreado = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
   mensaje = '';
@@ -63,6 +64,44 @@ export class CrearEventoComponent implements OnInit {
     if (userId) {
       this.form.patchValue({ userId });
     }
+    
+    // Si hay un evento para editar, cargar sus datos
+    if (this.eventoParaEditar) {
+      this.cargarDatosEvento();
+    }
+  }
+
+  ngOnChanges(): void {
+    // Si cambia el evento para editar, recargar los datos
+    if (this.eventoParaEditar) {
+      this.cargarDatosEvento();
+    }
+  }
+
+  private cargarDatosEvento(): void {
+    if (!this.eventoParaEditar) return;
+    
+    const evento = this.eventoParaEditar;
+    const startDate = new Date(evento.startDateTime);
+    const endDate = new Date(evento.endDateTime);
+    
+    // Formatear fecha como YYYY-MM-DD
+    const dateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
+    
+    // Formatear horas como HH:mm
+    const startTimeStr = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
+    const endTimeStr = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+    
+    this.form.patchValue({
+      userId: evento.userId,
+      name: evento.name,
+      location: evento.location || '',
+      date: dateStr,
+      startTime: startTimeStr,
+      endTime: endTimeStr,
+      description: evento.description || '',
+      colorHex: evento.colorHex || '#2196F3'
+    });
   }
 
   submit(): void {
@@ -88,16 +127,53 @@ export class CrearEventoComponent implements OnInit {
     // Convertir strings vacíos a null para campos opcionales
     const locationValue = location?.trim() || null;
     const descriptionValue = description?.trim() || null;
-    this.eventoService
-      .crearEvento(Number(userId), { name, location: locationValue, date, startTime: normalizedStartTime, endTime: normalizedEndTime, description: descriptionValue, colorHex })
-      .subscribe({
-        next: (ev) => {
-          this.mensaje = `Evento creado (#${ev.id})`;
-          setTimeout(() => {
-            this.eventoCreado.emit();
-            this.cerrarModal();
-          }, 1000);
-        },
+    
+    const payload = { name, location: locationValue, date, startTime: normalizedStartTime, endTime: normalizedEndTime, description: descriptionValue, colorHex };
+    
+    // Si hay un evento para editar, actualizar; si no, crear
+    if (this.eventoParaEditar) {
+      this.eventoService
+        .actualizarEvento(Number(userId), this.eventoParaEditar.id, payload)
+        .subscribe({
+          next: (ev) => {
+            this.mensaje = `Evento actualizado (#${ev.id})`;
+            setTimeout(() => {
+              this.eventoCreado.emit();
+              this.cerrarModal();
+            }, 1000);
+          },
+          error: (err) => {
+            console.error('Error al actualizar evento', err);
+            let mensajeError = 'Error al actualizar el evento';
+
+            if (err.status === 0 || err.status === undefined) {
+              mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
+            } else if (err.status === 409) {
+              // Conflicto de horarios
+              mensajeError = err.error?.message || 'El evento entra en conflicto con otro evento existente';
+            } else if (err.error?.message) {
+              mensajeError = `Error: ${err.error.message}`;
+            } else if (err.error?.errors) {
+              mensajeError = `Error de validación: ${JSON.stringify(err.error.errors)}`;
+            } else if (err.message) {
+              mensajeError = `Error: ${err.message}`;
+            }
+
+            this.mensajeError = mensajeError;
+            this.mostrarError = true;
+          }
+        });
+    } else {
+      this.eventoService
+        .crearEvento(Number(userId), payload)
+        .subscribe({
+          next: (ev) => {
+            this.mensaje = `Evento creado (#${ev.id})`;
+            setTimeout(() => {
+              this.eventoCreado.emit();
+              this.cerrarModal();
+            }, 1000);
+          },
         error: (err) => {
           console.error('Error al crear evento', err);
           let mensajeError = 'Error al crear el evento';
@@ -119,6 +195,7 @@ export class CrearEventoComponent implements OnInit {
           this.mostrarError = true;
         }
       });
+    }
   }
 
   cancelar(): void {

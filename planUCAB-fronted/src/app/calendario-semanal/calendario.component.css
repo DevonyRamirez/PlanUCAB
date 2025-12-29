@@ -327,6 +327,7 @@
   padding: 16px 24px 24px;
   display: flex;
   justify-content: center;
+  gap: 12px;
 }
 
 .event-details-close-btn {
@@ -343,6 +344,24 @@
 
 .event-details-close-btn:hover {
   background: #5a6268;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.event-details-edit-btn {
+  padding: 10px 32px;
+  border-radius: 8px;
+  border: none;
+  background: #2196F3;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.event-details-edit-btn:hover {
+  background: #1976D2;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }

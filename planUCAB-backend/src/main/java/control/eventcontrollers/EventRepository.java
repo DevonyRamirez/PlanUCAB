@@ -79,6 +79,42 @@ public class EventRepository {
                 : List.of();
     }
 
+    public Event findById(Long userId, Long eventId) {
+        List<Event> eventos = userIdToEvents.get(userId);
+        if (eventos == null) {
+            return null;
+        }
+        return eventos.stream()
+                .filter(e -> e.getId() != null && e.getId().equals(eventId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Event update(Long userId, Long eventId, Event updatedEvent) {
+        List<Event> eventos = userIdToEvents.get(userId);
+        if (eventos == null) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        
+        int index = -1;
+        for (int i = 0; i < eventos.size(); i++) {
+            if (eventos.get(i).getId() != null && eventos.get(i).getId().equals(eventId)) {
+                index = i;
+                break;
+            }
+        }
+        
+        if (index == -1) {
+            throw new IllegalArgumentException("Evento no encontrado");
+        }
+        
+        updatedEvent.setId(eventId);
+        updatedEvent.setUserId(userId);
+        eventos.set(index, updatedEvent);
+        persist();
+        return updatedEvent;
+    }
+
     private synchronized void persist() {
         Path path = Paths.get(storagePath);
         try {
