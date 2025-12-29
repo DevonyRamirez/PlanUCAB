@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EvaluacionService, CreateEvaluacionPayload, Evaluacion } from '../service/evaluacion.service';
@@ -15,7 +15,8 @@ import { AuthService } from '../service/auth.service';
   templateUrl: './crear-evaluacion.component.html',
   styleUrl: './crear-evaluacion.component.css'
 })
-export class CrearEvaluacionComponent implements OnInit {
+export class CrearEvaluacionComponent implements OnInit, OnChanges {
+  @Input() evaluacionParaEditar: Evaluacion | null = null;
   @Output() evaluacionCreada = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
 
@@ -66,6 +67,58 @@ export class CrearEvaluacionComponent implements OnInit {
         this.actualizarSumaPorcentajesMateria();
       });
     }
+    
+    // Si hay una evaluación para editar, cargar sus datos
+    if (this.evaluacionParaEditar) {
+      this.cargarDatosEvaluacion();
+    }
+  }
+
+  ngOnChanges(): void {
+    // Si cambia la evaluación para editar, recargar los datos
+    if (this.evaluacionParaEditar) {
+      this.cargarDatosEvaluacion();
+    }
+  }
+
+  private cargarDatosEvaluacion(): void {
+    if (!this.evaluacionParaEditar) return;
+    
+    const evaluacion = this.evaluacionParaEditar;
+    const startDate = new Date(evaluacion.startDateTime);
+    const endDate = new Date(evaluacion.endDateTime);
+    
+    // Formatear fecha como YYYY-MM-DD
+    const dateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
+    
+    // Formatear horas como HH:mm
+    const startTimeStr = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
+    const endTimeStr = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+    
+    // Obtener el nombre de la materia
+    const nombreMateria = typeof evaluacion.materia === 'string' 
+      ? evaluacion.materia 
+      : evaluacion.materia?.nombre || '';
+    
+    this.form.patchValue({
+      userId: evaluacion.userId,
+      titulo: evaluacion.titulo,
+      materia: nombreMateria,
+      porcentaje: evaluacion.porcentaje,
+      nota: evaluacion.nota,
+      profesor: evaluacion.profesor,
+      location: evaluacion.location,
+      descripcion: evaluacion.descripcion || '',
+      date: dateStr,
+      startTime: startTimeStr,
+      endTime: endTimeStr,
+      colorHex: evaluacion.colorHex || '#FF9800'
+    });
+    
+    // Actualizar la suma de porcentajes después de cargar los datos
+    setTimeout(() => {
+      this.actualizarSumaPorcentajesMateria();
+    }, 100);
   }
 
   cargarEvaluacionesExistentes(userId: number): void {
@@ -93,7 +146,13 @@ export class CrearEvaluacionComponent implements OnInit {
     const nombreMateriaSeleccionada = this.getMateriaNombre(materiaSeleccionada);
 
     // Sumar solo los porcentajes de las evaluaciones que tienen la materia seleccionada
+    // Excluir la evaluación que se está editando
     this.sumaPorcentajesExistentesMateria = this.evaluacionesExistentes.reduce((sum, evaluacion) => {
+      // Excluir la evaluación que se está editando
+      if (this.evaluacionParaEditar && evaluacion.id === this.evaluacionParaEditar.id) {
+        return sum;
+      }
+      
       // Verificar si la evaluación tiene la materia seleccionada
       const nombreMateriaEvaluacion = typeof evaluacion.materia === 'string'
         ? evaluacion.materia
@@ -212,25 +271,48 @@ export class CrearEvaluacionComponent implements OnInit {
       return;
     }
 
-    this.evaluacionService.crearEvaluacion(userId, payload).subscribe({
-      next: () => {
-        // Recargar evaluaciones existentes para actualizar el cálculo
-        this.cargarEvaluacionesExistentes(userId);
-        this.evaluacionCreada.emit();
-        this.cerrarModal();
-      },
-      error: (err) => {
-        console.error('Error al crear la evaluación', err);
-        this.mostrarError = true;
-        if (err.status === 0 || err.status === undefined) {
-          this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
-        } else if (err.error?.message) {
-          this.mensajeError = err.error.message;
-        } else {
-          this.mensajeError = 'Error al crear la evaluación. Verifica los datos ingresados.';
+    // Si hay una evaluación para editar, actualizar; si no, crear
+    if (this.evaluacionParaEditar) {
+      this.evaluacionService.actualizarEvaluacion(userId, this.evaluacionParaEditar.id, payload).subscribe({
+        next: () => {
+          // Recargar evaluaciones existentes para actualizar el cálculo
+          this.cargarEvaluacionesExistentes(userId);
+          this.evaluacionCreada.emit();
+          this.cerrarModal();
+        },
+        error: (err) => {
+          console.error('Error al actualizar la evaluación', err);
+          this.mostrarError = true;
+          if (err.status === 0 || err.status === undefined) {
+            this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
+          } else if (err.error?.message) {
+            this.mensajeError = err.error.message;
+          } else {
+            this.mensajeError = 'Error al actualizar la evaluación. Verifica los datos ingresados.';
+          }
         }
-      }
-    });
+      });
+    } else {
+      this.evaluacionService.crearEvaluacion(userId, payload).subscribe({
+        next: () => {
+          // Recargar evaluaciones existentes para actualizar el cálculo
+          this.cargarEvaluacionesExistentes(userId);
+          this.evaluacionCreada.emit();
+          this.cerrarModal();
+        },
+        error: (err) => {
+          console.error('Error al crear la evaluación', err);
+          this.mostrarError = true;
+          if (err.status === 0 || err.status === undefined) {
+            this.mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
+          } else if (err.error?.message) {
+            this.mensajeError = err.error.message;
+          } else {
+            this.mensajeError = 'Error al crear la evaluación. Verifica los datos ingresados.';
+          }
+        }
+      });
+    }
   }
 
   cancelar(): void {

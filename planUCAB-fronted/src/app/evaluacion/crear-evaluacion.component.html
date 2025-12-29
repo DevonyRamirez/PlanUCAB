@@ -1,7 +1,7 @@
 <div class="modal-overlay" (click)="cerrarModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Crear Evaluación</h2>
+      <h2>{{ evaluacionParaEditar ? 'Editar Evaluación' : 'Crear Evaluación' }}</h2>
     </div>
     <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
       <label>
@@ -36,7 +36,7 @@
         <div class="suma-total-porcentajes" *ngIf="form.get('materia')?.value" [class.suma-total-porcentajes--error]="(sumaPorcentajesExistentesMateria + porcentaje) > 100" style="margin-top: 8px;">
           <div class="suma-total-label">Suma total de evaluaciones para esta materia:</div>
           <div class="suma-total-value">
-            {{ sumaPorcentajesExistentesMateria.toFixed(2) }}% (existentes) + {{ porcentaje.toFixed(2) }}% (nueva) = {{ (sumaPorcentajesExistentesMateria + porcentaje).toFixed(2) }}%
+            {{ sumaPorcentajesExistentesMateria.toFixed(2) }}% (existentes) + {{ porcentaje.toFixed(2) }}% {{ evaluacionParaEditar ? '(editada)' : '(nueva)' }} = {{ (sumaPorcentajesExistentesMateria + porcentaje).toFixed(2) }}%
           </div>
           <span *ngIf="(sumaPorcentajesExistentesMateria + porcentaje) > 100" class="error-text"> (Excede el 100% - Cada materia puede tener un máximo de 100% en total)</span>
         </div>
@@ -98,7 +98,7 @@
 
       <div class="modal-buttons">
         <button type="button" (click)="cancelar()">Cancelar</button>
-        <button type="submit">Crear evaluación</button>
+        <button type="submit">{{ evaluacionParaEditar ? 'Actualizar evaluación' : 'Crear evaluación' }}</button>
       </div>
     </form>
   </div>

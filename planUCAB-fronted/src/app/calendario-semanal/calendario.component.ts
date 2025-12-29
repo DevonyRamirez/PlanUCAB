@@ -52,6 +52,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   eventoSeleccionado = signal<Event | null>(null);
   evaluacionSeleccionada = signal<Evaluacion | null>(null);
   eventoParaEditar = signal<Event | null>(null);
+  evaluacionParaEditar = signal<Evaluacion | null>(null);
   mostrarErrorBusqueda = signal(false);
   mensajeErrorBusqueda = signal('');
 
@@ -173,6 +174,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   cerrarModalCrearEvaluacion(): void {
     this.mostrarModalCrearEvaluacion.set(false);
+    this.evaluacionParaEditar.set(null);
   }
 
   abrirModalMaterias(): void {
@@ -185,6 +187,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   onEvaluacionCreada(): void {
     this.cargarEvaluaciones(); // Recargar evaluaciones
+    this.evaluacionParaEditar.set(null);
   }
 
   convertirEvaluacionesAEventos(): Event[] {
@@ -257,6 +260,15 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       this.eventoParaEditar.set(evento);
       this.cerrarDetallesEvento();
       this.mostrarModalCrear.set(true);
+    }
+  }
+
+  abrirEditarEvaluacion(): void {
+    const evaluacion = this.evaluacionSeleccionada();
+    if (evaluacion) {
+      this.evaluacionParaEditar.set(evaluacion);
+      this.cerrarDetallesEvento();
+      this.mostrarModalCrearEvaluacion.set(true);
     }
   }
 

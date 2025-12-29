@@ -45,5 +45,9 @@ export class EvaluacionService {
   obtenerEvaluaciones(userId: number): Observable<Evaluacion[]> {
     return this.http.get<Evaluacion[]>(`${this.baseUrl}/users/${userId}/evaluaciones`);
   }
+
+  actualizarEvaluacion(userId: number, evaluacionId: number, payload: CreateEvaluacionPayload): Observable<Evaluacion> {
+    return this.http.put<Evaluacion>(`${this.baseUrl}/users/${userId}/evaluaciones/${evaluacionId}`, payload);
+  }
 }
 

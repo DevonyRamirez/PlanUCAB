@@ -98,6 +98,91 @@ public class EvaluacionService {
         return evaluacionRepository.findByUserId(userId);
     }
 
+    public Evaluacion updateEvaluacion(Long userId, Long evaluacionId, CreateEvaluacionRequest request) {
+        // Verificar que la evaluación existe
+        Evaluacion evaluacionExistente = evaluacionRepository.findById(userId, evaluacionId);
+        if (evaluacionExistente == null) {
+            throw new IllegalArgumentException("Evaluación no encontrada");
+        }
+
+        // Obtener todas las evaluaciones existentes del usuario
+        List<Evaluacion> evaluacionesExistentes = evaluacionRepository.findByUserId(userId);
+
+        Materia materiaNueva = request.getMateria();
+        String nombreMateria = materiaNueva.getNombre();
+        Double porcentajeNuevaMateria = request.getPorcentaje();
+
+        // Calcular la suma de porcentajes de las evaluaciones existentes para esta materia específica
+        // Excluyendo la evaluación que estamos editando
+        double sumaPorcentajesExistentesMateria = evaluacionesExistentes.stream()
+                .filter(eval -> eval.getId() != null && !eval.getId().equals(evaluacionId)) // Excluir la evaluación actual
+                .filter(eval -> eval.getMateria() != null && nombreMateria.equals(eval.getMateria().getNombre()))
+                .mapToDouble(eval -> eval.getPorcentaje() != null ? eval.getPorcentaje() : 0.0)
+                .sum();
+
+        // Validar que la suma total (existentes de esta materia + nueva) no exceda 100%
+        double sumaTotal = sumaPorcentajesExistentesMateria + porcentajeNuevaMateria;
+        if (sumaTotal > 100.0) {
+            throw new IllegalArgumentException(
+                String.format("La suma total de porcentajes para la materia '%s' (%.2f%% existentes + %.2f%% nueva = %.2f%%) excede el 100%%. Cada materia puede tener un máximo de 100%% distribuido entre sus evaluaciones.", 
+                    nombreMateria, sumaPorcentajesExistentesMateria, porcentajeNuevaMateria, sumaTotal)
+            );
+        }
+
+        // Validar horas
+        LocalDate date = LocalDate.parse(request.getDate());
+        LocalTime start = parseTime24(request.getStartTime());
+        LocalTime end = parseTime24(request.getEndTime());
+        if (end.isBefore(start) || end.equals(start)) {
+            throw new InvalidEventTimeException("La hora de fin debe ser posterior a la hora de inicio");
+        }
+
+        LocalDateTime startDateTime = LocalDateTime.of(date, start);
+        LocalDateTime endDateTime = LocalDateTime.of(date, end);
+
+        // Validar choque de horario con otras evaluaciones del mismo día (excluyendo la actual)
+        for (Evaluacion otraEvaluacion : evaluacionesExistentes) {
+            // Saltar la evaluación que estamos editando
+            if (otraEvaluacion.getId() != null && otraEvaluacion.getId().equals(evaluacionId)) {
+                continue;
+            }
+            
+            LocalDateTime existenteStart = otraEvaluacion.getStartDateTime();
+            LocalDateTime existenteEnd = otraEvaluacion.getEndDateTime();
+            
+            // Verificar si es el mismo día
+            if (existenteStart.toLocalDate().equals(date)) {
+                // Verificar solapamiento: (start < existenteEnd) && (end > existenteStart)
+                if (startDateTime.isBefore(existenteEnd) && endDateTime.isAfter(existenteStart)) {
+                    String nombreMateriaExistente = otraEvaluacion.getMateria() != null 
+                        ? otraEvaluacion.getMateria().getNombre() 
+                        : "Desconocida";
+                    throw new HorarioConflictoExcepcion(
+                        String.format("La evaluación entra en conflicto de horario con '%s' de %s (%s - %s)", 
+                            otraEvaluacion.getTitulo(),
+                            nombreMateriaExistente,
+                            formatTime(existenteStart.toLocalTime()),
+                            formatTime(existenteEnd.toLocalTime()))
+                    );
+                }
+            }
+        }
+
+        Evaluacion updatedEvaluacion = new Evaluacion();
+        updatedEvaluacion.setTitulo(request.getTitulo());
+        updatedEvaluacion.setMateria(request.getMateria());
+        updatedEvaluacion.setPorcentaje(request.getPorcentaje());
+        updatedEvaluacion.setNota(request.getNota());
+        updatedEvaluacion.setProfesor(request.getProfesor());
+        updatedEvaluacion.setLocation(request.getLocation());
+        updatedEvaluacion.setDescripcion(request.getDescripcion());
+        updatedEvaluacion.setStartDateTime(startDateTime);
+        updatedEvaluacion.setEndDateTime(endDateTime);
+        updatedEvaluacion.setColorHex(request.getColorHex() != null ? request.getColorHex() : "#FF9800");
+
+        return evaluacionRepository.update(userId, evaluacionId, updatedEvaluacion);
+    }
+
     private LocalTime parseTime24(String input) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
         return LocalTime.parse(input, fmt);

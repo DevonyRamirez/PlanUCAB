@@ -156,6 +156,42 @@ public class EvaluacionRepository {
                 : List.of();
     }
 
+    public Evaluacion findById(Long userId, Long evaluacionId) {
+        List<Evaluacion> evaluaciones = userIdToEvaluaciones.get(userId);
+        if (evaluaciones == null) {
+            return null;
+        }
+        return evaluaciones.stream()
+                .filter(e -> e.getId() != null && e.getId().equals(evaluacionId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Evaluacion update(Long userId, Long evaluacionId, Evaluacion updatedEvaluacion) {
+        List<Evaluacion> evaluaciones = userIdToEvaluaciones.get(userId);
+        if (evaluaciones == null) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        
+        int index = -1;
+        for (int i = 0; i < evaluaciones.size(); i++) {
+            if (evaluaciones.get(i).getId() != null && evaluaciones.get(i).getId().equals(evaluacionId)) {
+                index = i;
+                break;
+            }
+        }
+        
+        if (index == -1) {
+            throw new IllegalArgumentException("Evaluación no encontrada");
+        }
+        
+        updatedEvaluacion.setId(evaluacionId);
+        updatedEvaluacion.setUserId(userId);
+        evaluaciones.set(index, updatedEvaluacion);
+        persist();
+        return updatedEvaluacion;
+    }
+
     private synchronized void persist() {
         Path path = Paths.get(storagePath);
         try {

@@ -76,7 +76,7 @@
   </main>
   <app-crear-evento *ngIf="mostrarModalCrear()" [eventosExistentes]="eventos()" [horariosExistentes]="horarios()" [eventoParaEditar]="eventoParaEditar()" (eventoCreado)="onEventoCreado()" (cerrar)="cerrarModalCrear()"></app-crear-evento>
   <app-crear-horario *ngIf="mostrarModalCrearHorario()" [horariosExistentes]="horarios()" [eventosExistentes]="eventos()" (horarioCreado)="onHorarioCreado()" (cerrar)="cerrarModalCrearHorario()"></app-crear-horario>
-  <app-crear-evaluacion *ngIf="mostrarModalCrearEvaluacion()" (evaluacionCreada)="onEvaluacionCreada()" (cerrar)="cerrarModalCrearEvaluacion()"></app-crear-evaluacion>
+  <app-crear-evaluacion *ngIf="mostrarModalCrearEvaluacion()" [evaluacionParaEditar]="evaluacionParaEditar()" (evaluacionCreada)="onEvaluacionCreada()" (cerrar)="cerrarModalCrearEvaluacion()"></app-crear-evaluacion>
 
 <!-- Modal Materias -->
 <app-materias-modal *ngIf="mostrarModalMaterias()" (cerrar)="cerrarModalMaterias()"></app-materias-modal>
@@ -184,6 +184,7 @@
         </div>
       </div>
       <div class="event-details-footer">
+        <button type="button" class="event-details-edit-btn" (click)="abrirEditarEvaluacion()">Editar</button>
         <button type="button" class="event-details-close-btn" (click)="cerrarDetallesEvento()">Cerrar</button>
       </div>
     </div>
