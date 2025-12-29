@@ -192,6 +192,20 @@ public class EvaluacionRepository {
         return updatedEvaluacion;
     }
 
+    public void delete(Long userId, Long evaluacionId) {
+        List<Evaluacion> evaluaciones = userIdToEvaluaciones.get(userId);
+        if (evaluaciones == null) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        
+        boolean removed = evaluaciones.removeIf(e -> e.getId() != null && e.getId().equals(evaluacionId));
+        if (!removed) {
+            throw new IllegalArgumentException("Evaluación no encontrada");
+        }
+        
+        persist();
+    }
+
     private synchronized void persist() {
         Path path = Paths.get(storagePath);
         try {

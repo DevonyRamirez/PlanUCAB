@@ -108,23 +108,5 @@
     "descripcion" : "",
     "startDateTime" : "2025-11-28T08:00:00",
     "endDateTime" : "2025-11-28T11:00:00"
-  }, {
-    "id" : 7,
-    "userId" : 2,
-    "colorHex" : "#FF9800",
-    "location" : "L23-10",
-    "titulo" : "Prueba 2",
-    "materia" : {
-      "id" : 5,
-      "nombre" : "Cálculo Vectorial",
-      "semestre" : "4to semestre",
-      "uc" : 4
-    },
-    "porcentaje" : 30.0,
-    "nota" : 0.0,
-    "profesor" : "jeje",
-    "descripcion" : "Ayuda",
-    "startDateTime" : "2025-12-30T06:00:00",
-    "endDateTime" : "2025-12-30T09:00:00"
   } ]
 }

@@ -183,6 +183,16 @@ public class EvaluacionService {
         return evaluacionRepository.update(userId, evaluacionId, updatedEvaluacion);
     }
 
+    public void deleteEvaluacion(Long userId, Long evaluacionId) {
+        // Verificar que la evaluación existe
+        Evaluacion evaluacionExistente = evaluacionRepository.findById(userId, evaluacionId);
+        if (evaluacionExistente == null) {
+            throw new IllegalArgumentException("Evaluación no encontrada");
+        }
+        
+        evaluacionRepository.delete(userId, evaluacionId);
+    }
+
     private LocalTime parseTime24(String input) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
         return LocalTime.parse(input, fmt);

@@ -57,6 +57,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   mensajeErrorBusqueda = signal('');
   mostrarConfirmacionEliminar = signal(false);
   eventoAEliminar = signal<Event | null>(null);
+  mostrarConfirmacionEliminarEvaluacion = signal(false);
+  evaluacionAEliminar = signal<Evaluacion | null>(null);
 
   private busquedaSubscription?: Subscription;
 
@@ -294,6 +296,37 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   cerrarConfirmacionEliminar(): void {
     this.mostrarConfirmacionEliminar.set(false);
     this.eventoAEliminar.set(null);
+  }
+
+  eliminarEvaluacion(): void {
+    const evaluacion = this.evaluacionSeleccionada();
+    if (!evaluacion) return;
+
+    this.evaluacionAEliminar.set(evaluacion);
+    this.mostrarConfirmacionEliminarEvaluacion.set(true);
+  }
+
+  confirmarEliminarEvaluacion(): void {
+    const evaluacion = this.evaluacionAEliminar();
+    if (!evaluacion) return;
+
+    this.evaluacionService.eliminarEvaluacion(this.usuarioId, evaluacion.id).subscribe({
+      next: () => {
+        this.cargarEvaluaciones(); // Recargar evaluaciones
+        this.cerrarDetallesEvento();
+        this.cerrarConfirmacionEliminarEvaluacion();
+      },
+      error: (err) => {
+        console.error('Error al eliminar evaluación', err);
+        this.cerrarConfirmacionEliminarEvaluacion();
+        alert('Error al eliminar la evaluación. Por favor, intenta nuevamente.');
+      }
+    });
+  }
+
+  cerrarConfirmacionEliminarEvaluacion(): void {
+    this.mostrarConfirmacionEliminarEvaluacion.set(false);
+    this.evaluacionAEliminar.set(null);
   }
 
   abrirEditarEvaluacion(): void {

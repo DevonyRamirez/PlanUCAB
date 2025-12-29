@@ -49,5 +49,9 @@ export class EvaluacionService {
   actualizarEvaluacion(userId: number, evaluacionId: number, payload: CreateEvaluacionPayload): Observable<Evaluacion> {
     return this.http.put<Evaluacion>(`${this.baseUrl}/users/${userId}/evaluaciones/${evaluacionId}`, payload);
   }
+
+  eliminarEvaluacion(userId: number, evaluacionId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/users/${userId}/evaluaciones/${evaluacionId}`);
+  }
 }
 

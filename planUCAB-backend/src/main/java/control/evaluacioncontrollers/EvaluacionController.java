@@ -5,6 +5,7 @@ import java.util.List;
 import model.Evaluacion;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,12 @@ public class EvaluacionController {
     @PutMapping("/{evaluacionId}")
     public Evaluacion updateEvaluacion(@PathVariable Long userId, @PathVariable Long evaluacionId, @Valid @RequestBody CreateEvaluacionRequest request) {
         return evaluacionService.updateEvaluacion(userId, evaluacionId, request);
+    }
+
+    @DeleteMapping("/{evaluacionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEvaluacion(@PathVariable Long userId, @PathVariable Long evaluacionId) {
+        evaluacionService.deleteEvaluacion(userId, evaluacionId);
     }
 }
 
