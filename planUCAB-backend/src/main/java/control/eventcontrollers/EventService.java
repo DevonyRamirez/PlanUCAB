@@ -185,6 +185,16 @@ public class EventService {
         return eventRepository.update(userId, eventId, updatedEvent);
     }
 
+    public void deleteEvent(Long userId, Long eventId) {
+        // Verificar que el evento existe
+        Event eventoExistente = eventRepository.findById(userId, eventId);
+        if (eventoExistente == null) {
+            throw new IllegalArgumentException("Evento no encontrado");
+        }
+        
+        eventRepository.delete(userId, eventId);
+    }
+
     private LocalTime parseTime24(String input) {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
         return LocalTime.parse(input, fmt);

@@ -5,6 +5,7 @@ import java.util.List;
 import model.Event;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,12 @@ public class EventController {
     @PutMapping("/{eventId}")
     public Event updateEvent(@PathVariable Long userId, @PathVariable Long eventId, @Valid @RequestBody CreateEventRequest request) {
         return eventService.updateEvent(userId, eventId, request);
+    }
+
+    @DeleteMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEvent(@PathVariable Long userId, @PathVariable Long eventId) {
+        eventService.deleteEvent(userId, eventId);
     }
 }
 

@@ -40,6 +40,10 @@ export class EventoService {
   actualizarEvento(userId: number, eventId: number, payload: CreateEventPayload): Observable<Event> {
     return this.http.put<Event>(`${this.baseUrl}/users/${userId}/events/${eventId}`, payload);
   }
+
+  eliminarEvento(userId: number, eventId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/users/${userId}/events/${eventId}`);
+  }
 }
 
 

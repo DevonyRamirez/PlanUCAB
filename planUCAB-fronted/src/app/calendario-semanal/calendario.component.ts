@@ -55,6 +55,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   evaluacionParaEditar = signal<Evaluacion | null>(null);
   mostrarErrorBusqueda = signal(false);
   mensajeErrorBusqueda = signal('');
+  mostrarConfirmacionEliminar = signal(false);
+  eventoAEliminar = signal<Event | null>(null);
 
   private busquedaSubscription?: Subscription;
 
@@ -261,6 +263,37 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       this.cerrarDetallesEvento();
       this.mostrarModalCrear.set(true);
     }
+  }
+
+  eliminarEvento(): void {
+    const evento = this.eventoSeleccionado();
+    if (!evento) return;
+
+    this.eventoAEliminar.set(evento);
+    this.mostrarConfirmacionEliminar.set(true);
+  }
+
+  confirmarEliminarEvento(): void {
+    const evento = this.eventoAEliminar();
+    if (!evento) return;
+
+    this.eventoService.eliminarEvento(this.usuarioId, evento.id).subscribe({
+      next: () => {
+        this.cargar(); // Recargar eventos
+        this.cerrarDetallesEvento();
+        this.cerrarConfirmacionEliminar();
+      },
+      error: (err) => {
+        console.error('Error al eliminar evento', err);
+        this.cerrarConfirmacionEliminar();
+        alert('Error al eliminar el evento. Por favor, intenta nuevamente.');
+      }
+    });
+  }
+
+  cerrarConfirmacionEliminar(): void {
+    this.mostrarConfirmacionEliminar.set(false);
+    this.eventoAEliminar.set(null);
   }
 
   abrirEditarEvaluacion(): void {

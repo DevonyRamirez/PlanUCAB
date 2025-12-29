@@ -115,6 +115,20 @@ public class EventRepository {
         return updatedEvent;
     }
 
+    public void delete(Long userId, Long eventId) {
+        List<Event> eventos = userIdToEvents.get(userId);
+        if (eventos == null) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        
+        boolean removed = eventos.removeIf(e -> e.getId() != null && e.getId().equals(eventId));
+        if (!removed) {
+            throw new IllegalArgumentException("Evento no encontrado");
+        }
+        
+        persist();
+    }
+
     private synchronized void persist() {
         Path path = Paths.get(storagePath);
         try {

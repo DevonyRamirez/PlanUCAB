@@ -132,6 +132,7 @@
       </div>
       <div class="event-details-footer">
         <button type="button" class="event-details-edit-btn" (click)="abrirEditarEvento()">Editar</button>
+        <button type="button" class="event-details-delete-btn" (click)="eliminarEvento()">Eliminar</button>
         <button type="button" class="event-details-close-btn" (click)="cerrarDetallesEvento()">Cerrar</button>
       </div>
     </div>
@@ -186,6 +187,28 @@
       <div class="event-details-footer">
         <button type="button" class="event-details-edit-btn" (click)="abrirEditarEvaluacion()">Editar</button>
         <button type="button" class="event-details-close-btn" (click)="cerrarDetallesEvento()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Confirmación de Eliminación -->
+  <div class="confirm-modal-overlay" *ngIf="mostrarConfirmacionEliminar()" (click)="cerrarConfirmacionEliminar()">
+    <div class="confirm-modal-content" (click)="$event.stopPropagation()">
+      <div class="confirm-modal-header">
+        <svg class="confirm-icon" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <h3>Confirmar Eliminación</h3>
+      </div>
+      <div class="confirm-modal-body">
+        <p>¿Estás seguro de que deseas eliminar el evento <strong>"{{ eventoAEliminar()?.name }}"</strong>?</p>
+        <p style="color: #d32f2f; font-weight: 600; margin-top: 8px;">Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="confirm-modal-footer">
+        <button type="button" class="confirm-modal-cancel-btn" (click)="cerrarConfirmacionEliminar()">Cancelar</button>
+        <button type="button" class="confirm-modal-confirm-btn" (click)="confirmarEliminarEvento()">Eliminar</button>
       </div>
     </div>
   </div>
