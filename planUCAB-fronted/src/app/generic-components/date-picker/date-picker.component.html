@@ -14,16 +14,16 @@
     </svg>
   </div>
   
-  <div class="date-picker__calendar" *ngIf="mostrarCalendario()">
+  <div class="date-picker__calendar" *ngIf="mostrarCalendario()" (click)="onCalendarClick($event)">
     <div class="date-picker__header">
-      <button (click)="mesAnterior()" class="date-picker__nav">▲</button>
+      <button type="button" (click)="mesAnterior($event)" class="date-picker__nav">▲</button>
       <div class="date-picker__month-year">
         <span>{{ nombreMes() }}</span>
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
       </div>
-      <button (click)="mesSiguiente()" class="date-picker__nav">▼</button>
+      <button type="button" (click)="mesSiguiente($event)" class="date-picker__nav">▼</button>
     </div>
     
     <div class="date-picker__weekdays">
@@ -32,6 +32,7 @@
     
     <div class="date-picker__grid">
       <button
+        type="button"
         *ngFor="let dia of diasMes()"
         (click)="seleccionarDia(dia, $event)"
         [class.date-picker__day--other-month]="dia && !esMesActual(dia)"
@@ -44,8 +45,8 @@
     </div>
     
     <div class="date-picker__footer">
-      <button (click)="limpiar()" class="date-picker__footer-btn">Limpiar</button>
-      <button (click)="hoy()" class="date-picker__footer-btn">Hoy</button>
+      <button type="button" (click)="limpiar($event)" class="date-picker__footer-btn">Limpiar</button>
+      <button type="button" (click)="hoy($event)" class="date-picker__footer-btn">Hoy</button>
     </div>
   </div>
 </div>

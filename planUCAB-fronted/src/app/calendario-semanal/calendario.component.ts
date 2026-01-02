@@ -51,8 +51,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   mostrarModalMaterias = signal(false);
   eventoSeleccionado = signal<Event | null>(null);
   evaluacionSeleccionada = signal<Evaluacion | null>(null);
+  horarioSeleccionado = signal<Horario | null>(null);
   eventoParaEditar = signal<Event | null>(null);
   evaluacionParaEditar = signal<Evaluacion | null>(null);
+  horarioParaEditar = signal<Horario | null>(null);
   mostrarErrorBusqueda = signal(false);
   mensajeErrorBusqueda = signal('');
   mostrarConfirmacionEliminar = signal(false);
@@ -62,12 +64,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   private busquedaSubscription?: Subscription;
 
-  // Combinar eventos, horarios y evaluaciones convertidos a eventos virtuales
+  // Combinar eventos, horarios y evaluaciones para mostrar en el calendario
   eventosYHorarios = computed(() => {
     const eventos = this.eventos();
-    const horariosVirtuales = this.convertirHorariosAEventos();
-    const evaluacionesVirtuales = this.convertirEvaluacionesAEventos();
-    return [...eventos, ...horariosVirtuales, ...evaluacionesVirtuales];
+    const horarios = this.horarios();
+    const evaluaciones = this.evaluaciones();
+    return [...eventos, ...horarios, ...evaluaciones] as (Event | Horario | Evaluacion)[];
   });
 
   // Verificar si hay información registrada
@@ -122,27 +124,74 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.semanaInicio.set(semana);
   }
 
-  estaEnDia(evento: Event, dia: Date): boolean {
-    const d = new Date(evento.startDateTime);
-    return d.getFullYear() === dia.getFullYear() && d.getMonth() === dia.getMonth() && d.getDate() === dia.getDate();
+  estaEnDia(item: Event | Horario | Evaluacion, dia: Date): boolean {
+    // Si es un Event o Evaluacion, usar startDateTime
+    if ('startDateTime' in item) {
+      const d = new Date(item.startDateTime);
+      return d.getFullYear() === dia.getFullYear() && d.getMonth() === dia.getMonth() && d.getDate() === dia.getDate();
+    }
+    // Si es un Horario, verificar si el día de la semana coincide
+    if ('diaSemana' in item) {
+      const diaSemanaMap: { [key: string]: number } = {
+        'Lunes': 1, 'Martes': 2, 'Miércoles': 3, 'Jueves': 4,
+        'Viernes': 5, 'Sábado': 6, 'Domingo': 0
+      };
+      const diaSemanaNum = diaSemanaMap[item.diaSemana];
+      return diaSemanaNum !== undefined && dia.getDay() === diaSemanaNum;
+    }
+    return false;
   }
 
-  topPercent(evento: Event): string {
-    const d = new Date(evento.startDateTime);
-    const minutos = d.getHours() * 60 + d.getMinutes();
+  topPercent(item: Event | Horario | Evaluacion): string {
+    let minutos: number;
+    if ('startDateTime' in item) {
+      const d = new Date(item.startDateTime);
+      minutos = d.getHours() * 60 + d.getMinutes();
+    } else if ('startTime' in item) {
+      const [hora, minuto] = item.startTime.split(':').map(Number);
+      minutos = hora * 60 + minuto;
+    } else {
+      return '0%';
+    }
     const minInicio = this.startHour * 60;
     const minFin = this.endHour * 60;
     const pct = Math.max(0, Math.min(100, ((minutos - minInicio) / Math.max(1, (minFin - minInicio))) * 100));
     return pct + '%';
   }
 
-  heightPercent(evento: Event): string {
-    const start = new Date(evento.startDateTime);
-    const end = new Date(evento.endDateTime);
-    const dur = Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60));
+  heightPercent(item: Event | Horario | Evaluacion): string {
+    let dur: number;
+    if ('startDateTime' in item && 'endDateTime' in item) {
+      const start = new Date(item.startDateTime);
+      const end = new Date(item.endDateTime);
+      dur = Math.max(0, (end.getTime() - start.getTime()) / (1000 * 60));
+    } else if ('startTime' in item && 'endTime' in item) {
+      const [horaInicio, minutoInicio] = item.startTime.split(':').map(Number);
+      const [horaFin, minutoFin] = item.endTime.split(':').map(Number);
+      const minutosInicio = horaInicio * 60 + minutoInicio;
+      const minutosFin = horaFin * 60 + minutoFin;
+      dur = minutosFin - minutosInicio;
+    } else {
+      return '2%';
+    }
     const daySpan = Math.max(1, (this.endHour - this.startHour) * 60);
     const pct = Math.max(2, (dur / daySpan) * 100);
     return pct + '%';
+  }
+
+  getItemName(item: Event | Horario | Evaluacion): string {
+    if ('name' in item) {
+      return item.name;
+    } else if ('titulo' in item) {
+      return item.titulo;
+    } else if ('materia' in item) {
+      return typeof item.materia === 'string' ? item.materia : item.materia?.nombre || 'Materia desconocida';
+    }
+    return '';
+  }
+
+  getItemColor(item: Event | Horario | Evaluacion): string {
+    return item.colorHex || '#2196F3';
   }
 
   abrirModalCrear(): void {
@@ -165,11 +214,39 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   cerrarModalCrearHorario(): void {
     this.mostrarModalCrearHorario.set(false);
+    this.horarioParaEditar.set(null);
   }
 
   onHorarioCreado(): void {
     this.cargarHorarios();
     this.cerrarModalCrearHorario();
+  }
+
+  abrirEditarHorario(): void {
+    const horario = this.horarioSeleccionado();
+    if (horario) {
+      this.horarioParaEditar.set(horario);
+      this.cerrarDetallesEvento();
+      this.mostrarModalCrearHorario.set(true);
+    }
+  }
+
+  eliminarHorario(): void {
+    const horario = this.horarioSeleccionado();
+    if (!horario) return;
+
+    if (confirm(`¿Estás seguro de que deseas eliminar el horario de "${horario.materia?.nombre || 'Materia desconocida'}"?\n\nEsta acción no se puede deshacer.`)) {
+      this.horarioService.eliminarHorario(this.usuarioId, horario.id).subscribe({
+        next: () => {
+          this.cargarHorarios();
+          this.cerrarDetallesEvento();
+        },
+        error: (err) => {
+          console.error('Error al eliminar horario', err);
+          alert('Error al eliminar el horario. Por favor, intenta nuevamente.');
+        }
+      });
+    }
   }
 
   abrirModalCrearEvaluacion(): void {
@@ -194,23 +271,6 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.evaluacionParaEditar.set(null);
   }
 
-  convertirEvaluacionesAEventos(): Event[] {
-    const evaluaciones = this.evaluaciones();
-    return evaluaciones.map(evaluacion => {
-      // Crear un evento virtual a partir de la evaluación
-      const evento: Event = {
-        id: evaluacion.id,
-        userId: evaluacion.userId,
-        name: evaluacion.titulo,
-        location: evaluacion.location || '',
-        description: evaluacion.descripcion || '',
-        startDateTime: evaluacion.startDateTime,
-        endDateTime: evaluacion.endDateTime,
-        colorHex: evaluacion.colorHex || '#FF9800' // Usar el color personalizado o naranja por defecto
-      };
-      return evento;
-    });
-  }
 
   formatHour(hour: number): string {
     return `${String(hour).padStart(2, '0')}:00`;
@@ -233,29 +293,31 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     return `${this.formatMonthName(inicio)} ${inicio.getDate()} - ${this.formatMonthName(fin)} ${fin.getDate()}, ${fin.getFullYear()}`;
   }
 
-  abrirDetallesEvento(evento: Event): void {
-    // Verificar si es una evaluación buscando el ID en las evaluaciones
-    const evaluacion = this.evaluaciones().find(e => e.id === evento.id);
-    if (evaluacion) {
-      this.evaluacionSeleccionada.set(evaluacion);
+  abrirDetallesEvento(item: Event | Horario | Evaluacion): void {
+    // Verificar si es un horario
+    if ('diaSemana' in item && 'startTime' in item) {
+      this.horarioSeleccionado.set(item as Horario);
       this.eventoSeleccionado.set(null);
-    } else {
-      // Verificar si es un evento real (no un horario virtual)
-      // Los horarios virtuales tienen IDs > 1000000
-      if (evento.id < 1000000) {
-        this.eventoSeleccionado.set(evento);
-        this.evaluacionSeleccionada.set(null);
-      } else {
-        // Es un horario virtual, no se puede editar desde aquí
-        this.eventoSeleccionado.set(null);
-        this.evaluacionSeleccionada.set(null);
-      }
+      this.evaluacionSeleccionada.set(null);
+    }
+    // Verificar si es una evaluación
+    else if ('titulo' in item && 'nota' in item) {
+      this.evaluacionSeleccionada.set(item as Evaluacion);
+      this.eventoSeleccionado.set(null);
+      this.horarioSeleccionado.set(null);
+    }
+    // Es un evento
+    else if ('name' in item && 'startDateTime' in item) {
+      this.eventoSeleccionado.set(item as Event);
+      this.evaluacionSeleccionada.set(null);
+      this.horarioSeleccionado.set(null);
     }
   }
 
   cerrarDetallesEvento(): void {
     this.eventoSeleccionado.set(null);
     this.evaluacionSeleccionada.set(null);
+    this.horarioSeleccionado.set(null);
   }
 
   abrirEditarEvento(): void {
@@ -350,88 +412,6 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   }
 
-  // Convertir horarios a eventos virtuales que se repiten semanalmente
-  convertirHorariosAEventos(): Event[] {
-    const horarios = this.horarios();
-    const semanaActual = this.semanaInicio();
-    const eventosVirtuales: Event[] = [];
-
-    // Determinar rango de fechas: segunda semana de septiembre de 2025 hasta segunda semana de enero de 2026
-    const inicioPeriodo = this.getSegundaSemanaSeptiembre(2025);
-    const finPeriodo = this.getSegundaSemanaEnero(2026);
-
-    // Verificar si la semana actual está dentro del rango
-    if (semanaActual < inicioPeriodo || semanaActual > finPeriodo) {
-      return eventosVirtuales;
-    }
-
-    // Mapeo de días de la semana: Lunes = 1, Martes = 2, etc.
-    const diaSemanaMap: { [key: string]: number } = {
-      'Lunes': 1,
-      'Martes': 2,
-      'Miércoles': 3,
-      'Jueves': 4,
-      'Viernes': 5,
-      'Sábado': 6,
-      'Domingo': 0
-    };
-
-    horarios.forEach(horario => {
-      const diaSemanaNum = diaSemanaMap[horario.diaSemana];
-      if (diaSemanaNum === undefined) return;
-
-      // Encontrar el día de la semana correspondiente en la semana actual
-      const diasSemana = this.diasSemana();
-      const diaSemanaActual = diasSemana.find(d => d.getDay() === diaSemanaNum);
-
-      if (!diaSemanaActual) return;
-
-      // Crear un evento virtual para este horario en esta semana
-      const [horaInicio, minutoInicio] = horario.startTime.split(':').map(Number);
-      const [horaFin, minutoFin] = horario.endTime.split(':').map(Number);
-
-      const fechaInicio = new Date(diaSemanaActual);
-      fechaInicio.setHours(horaInicio, minutoInicio, 0, 0);
-
-      const fechaFin = new Date(diaSemanaActual);
-      fechaFin.setHours(horaFin, minutoFin, 0, 0);
-
-      const eventoVirtual: Event = {
-        id: horario.id! + 1000000, // ID virtual para distinguir de eventos reales
-        userId: horario.userId,
-        name: horario.materia?.nombre || 'Materia desconocida',
-        location: horario.location,
-        description: horario.profesor ? `Profesor: ${horario.profesor}` : undefined,
-        startDateTime: fechaInicio.toISOString(),
-        endDateTime: fechaFin.toISOString(),
-        colorHex: horario.colorHex
-      };
-
-      eventosVirtuales.push(eventoVirtual);
-    });
-
-    return eventosVirtuales;
-  }
-
-  // Obtener el inicio de la segunda semana de septiembre
-  private getSegundaSemanaSeptiembre(año: number): Date {
-    // Primero obtener el primer día de septiembre
-    const primerSeptiembre = new Date(año, 8, 1); // 8 = septiembre (0-indexed)
-    // Encontrar el domingo de la primera semana
-    const primerDomingo = startOfWeek(primerSeptiembre);
-    // La segunda semana comienza 7 días después
-    return addDays(primerDomingo, 7);
-  }
-
-  // Obtener el inicio de la segunda semana de enero
-  private getSegundaSemanaEnero(año: number): Date {
-    // Primero obtener el primer día de enero
-    const primerEnero = new Date(año, 0, 1);
-    // Encontrar el domingo de la primera semana
-    const primerDomingo = startOfWeek(primerEnero);
-    // La segunda semana comienza 7 días después
-    return addDays(primerDomingo, 7);
-  }
 
   // Buscar evento/horario/evaluación y navegar a su semana
   onBuscar(termino: string): void {
@@ -460,9 +440,24 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     });
 
     if (horarioEncontrado) {
-      // Los horarios se repiten semanalmente, así que navegar a la primera semana del período
-      const inicioPeriodo = this.getSegundaSemanaSeptiembre(2025);
-      this.semanaInicio.set(inicioPeriodo);
+      // Los horarios se repiten semanalmente, navegar a la semana actual o la próxima donde aparezca
+      const diaSemanaMap: { [key: string]: number } = {
+        'Lunes': 1, 'Martes': 2, 'Miércoles': 3, 'Jueves': 4,
+        'Viernes': 5, 'Sábado': 6, 'Domingo': 0
+      };
+      const diaSemanaNum = diaSemanaMap[horarioEncontrado.diaSemana];
+      if (diaSemanaNum !== undefined) {
+        // Encontrar el próximo día de la semana correspondiente
+        const hoy = new Date();
+        const diasSemana = this.diasSemana();
+        const diaEncontrado = diasSemana.find(d => d.getDay() === diaSemanaNum);
+        if (diaEncontrado) {
+          // Ya está en la semana actual, no hacer nada
+        } else {
+          // Navegar a la semana actual
+          this.semanaInicio.set(startOfWeek(hoy));
+        }
+      }
       this.mostrarErrorBusqueda.set(false);
       return;
     }
@@ -496,5 +491,9 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   cerrarSesion(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  irANotas(): void {
+    this.router.navigate(['/notas']);
   }
 }

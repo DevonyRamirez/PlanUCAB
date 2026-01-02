@@ -11,8 +11,8 @@
       "semestre" : "4to semestre",
       "uc" : 5
     },
-    "porcentaje" : 9.0,
-    "nota" : 0.0,
+    "porcentaje" : 15.0,
+    "nota" : 15.0,
     "profesor" : "MAPO",
     "descripcion" : "Recemos",
     "startDateTime" : "2025-11-13T09:00:00",
@@ -22,19 +22,55 @@
     "userId" : 1,
     "colorHex" : "#1AFF00",
     "location" : "A",
-    "titulo" : "Evaluación 1",
+    "titulo" : "Parcial 1",
     "materia" : {
       "id" : 5,
       "nombre" : "Cálculo Vectorial",
       "semestre" : "4to semestre",
       "uc" : 4
     },
-    "porcentaje" : 10.0,
-    "nota" : 0.0,
+    "porcentaje" : 30.0,
+    "nota" : 18.0,
     "profesor" : "Elvira",
     "descripcion" : "",
-    "startDateTime" : "2025-11-12T07:00:00",
-    "endDateTime" : "2025-11-12T09:00:00"
+    "startDateTime" : "2025-10-08T07:00:00",
+    "endDateTime" : "2025-10-08T09:00:00"
+  }, {
+    "id" : 7,
+    "userId" : 1,
+    "colorHex" : "#4DFF00",
+    "location" : "L2011",
+    "titulo" : "Parcial 2",
+    "materia" : {
+      "id" : 5,
+      "nombre" : "Cálculo Vectorial",
+      "semestre" : "4to semestre",
+      "uc" : 4
+    },
+    "porcentaje" : 30.0,
+    "nota" : 10.0,
+    "profesor" : "Elvira",
+    "descripcion" : "",
+    "startDateTime" : "2025-11-26T07:00:00",
+    "endDateTime" : "2025-11-26T09:00:00"
+  }, {
+    "id" : 8,
+    "userId" : 1,
+    "colorHex" : "#26FF00",
+    "location" : "L2011",
+    "titulo" : "Parcial 3",
+    "materia" : {
+      "id" : 5,
+      "nombre" : "Cálculo Vectorial",
+      "semestre" : "4to semestre",
+      "uc" : 4
+    },
+    "porcentaje" : 30.0,
+    "nota" : 16.0,
+    "profesor" : "Elvira",
+    "descripcion" : "",
+    "startDateTime" : "2026-01-14T07:00:00",
+    "endDateTime" : "2026-01-14T09:00:00"
   } ],
   "2" : [ {
     "id" : 1,

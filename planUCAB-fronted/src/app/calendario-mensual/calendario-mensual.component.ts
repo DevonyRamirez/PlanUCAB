@@ -26,6 +26,7 @@ export class CalendarioMensualComponent {
   @Output() crearHorario = new EventEmitter<void>();
   @Output() crearEvaluacion = new EventEmitter<void>();
   @Output() verMaterias = new EventEmitter<void>();
+  @Output() verNotas = new EventEmitter<void>();
   @Output() fechaSeleccionada = new EventEmitter<Date>();
   mesActual = signal(startOfMonth(new Date()));
   fechaSeleccionadaSignal = signal<Date | null>(null);
@@ -121,6 +122,10 @@ export class CalendarioMensualComponent {
 
   onVerMaterias(): void {
     this.verMaterias.emit();
+  }
+
+  onVerNotas(): void {
+    this.verNotas.emit();
   }
 
   @HostListener('document:click', ['$event'])

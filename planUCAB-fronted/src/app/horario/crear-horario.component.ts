@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators, FormArray, FormGroup } from '@angular/forms';
 import { HorarioService, Horario } from '../service/horario.service';
@@ -15,9 +15,10 @@ import { MateriaService, Materia } from '../service/materia.service';
   templateUrl: './crear-horario.component.html',
   styleUrl: './crear-horario.component.css'
 })
-export class CrearHorarioComponent implements OnInit {
+export class CrearHorarioComponent implements OnInit, OnChanges {
   @Input() horariosExistentes: Horario[] = [];
   @Input() eventosExistentes: Event[] = [];
+  @Input() horarioParaEditar: Horario | null = null;
   @Output() horarioCreado = new EventEmitter<void>();
   @Output() cerrar = new EventEmitter<void>();
   mensaje = '';
@@ -50,6 +51,49 @@ export class CrearHorarioComponent implements OnInit {
       this.form.patchValue({ userId });
     }
     this.cargarMaterias();
+    
+    // Si hay un horario para editar, cargar sus datos
+    if (this.horarioParaEditar) {
+      this.cargarDatosHorario();
+    }
+  }
+
+  ngOnChanges(): void {
+    // Si cambia el horario para editar, recargar los datos
+    if (this.horarioParaEditar) {
+      this.cargarDatosHorario();
+    }
+  }
+
+  cargarDatosHorario(): void {
+    if (!this.horarioParaEditar) return;
+    
+    const horario = this.horarioParaEditar;
+    const nombreMateria = typeof horario.materia === 'string' ? horario.materia : horario.materia?.nombre || '';
+    
+    // Esperar a que las materias se carguen antes de establecer el valor
+    if (this.materiasDisponibles.length === 0) {
+      // Si aún no se han cargado, esperar un momento
+      setTimeout(() => this.cargarDatosHorario(), 100);
+      return;
+    }
+    
+    this.form.patchValue({
+      materia: nombreMateria,
+      profesor: horario.profesor || '',
+      tipoClase: horario.tipoClase || '',
+      colorHex: horario.colorHex || '#2196F3'
+    });
+
+    // Limpiar el array de horarios y agregar el horario a editar
+    this.horariosArray.clear();
+    const horarioGroup = this.fb.group({
+      diaSemana: [horario.diaSemana, [Validators.required]],
+      location: [horario.location || '', [Validators.required, Validators.maxLength(50)]],
+      startTime: [horario.startTime, [Validators.required]],
+      endTime: [horario.endTime, [Validators.required]]
+    });
+    this.horariosArray.push(horarioGroup);
   }
 
   get horariosArray(): FormArray {
@@ -153,6 +197,46 @@ export class CrearHorarioComponent implements OnInit {
         tipoClase: tipoClase?.trim() || null,
         colorHex: colorHex
       });
+    }
+
+    // Si estamos editando un horario
+    if (this.horarioParaEditar) {
+      if (horariosValidos.length !== 1) {
+        this.mensajeError = 'Al editar, solo puedes modificar un horario a la vez';
+        this.mostrarError = true;
+        return;
+      }
+
+      const payload = horariosValidos[0];
+      this.horarioService.actualizarHorario(Number(userId), this.horarioParaEditar.id, payload).subscribe({
+        next: () => {
+          this.mensaje = 'Horario actualizado correctamente';
+          setTimeout(() => {
+            this.horarioCreado.emit();
+            this.cerrarModal();
+          }, 1000);
+        },
+        error: (err) => {
+          console.error('Error al actualizar horario', err);
+          let mensajeError = 'Error al actualizar el horario';
+
+          if (err.status === 0 || err.status === undefined) {
+            mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
+          } else if (err.status === 409) {
+            mensajeError = err.error?.message || 'El horario entra en conflicto con otro horario existente';
+          } else if (err.error?.message) {
+            mensajeError = `Error: ${err.error.message}`;
+          } else if (err.error?.errors) {
+            mensajeError = `Error de validación: ${JSON.stringify(err.error.errors)}`;
+          } else if (err.message) {
+            mensajeError = `Error: ${err.message}`;
+          }
+
+          this.mensajeError = mensajeError;
+          this.mostrarError = true;
+        }
+      });
+      return;
     }
 
     // Crear todos los horarios

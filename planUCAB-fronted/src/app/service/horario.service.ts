@@ -40,5 +40,13 @@ export class HorarioService {
   obtenerHorarios(userId: number): Observable<Horario[]> {
     return this.http.get<Horario[]>(`${this.baseUrl}/users/${userId}/horarios`);
   }
+
+  actualizarHorario(userId: number, horarioId: number, payload: CreateHorarioPayload): Observable<Horario> {
+    return this.http.put<Horario>(`${this.baseUrl}/users/${userId}/horarios/${horarioId}`, payload);
+  }
+
+  eliminarHorario(userId: number, horarioId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/users/${userId}/horarios/${horarioId}`);
+  }
 }
 

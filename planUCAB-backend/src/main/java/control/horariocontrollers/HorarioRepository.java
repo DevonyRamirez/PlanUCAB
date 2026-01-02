@@ -137,6 +137,56 @@ public class HorarioRepository {
                 : List.of();
     }
 
+    public Horario findById(Long userId, Long horarioId) {
+        List<Horario> horarios = userIdToHorarios.get(userId);
+        if (horarios == null) {
+            return null;
+        }
+        return horarios.stream()
+                .filter(h -> h.getId() != null && h.getId().equals(horarioId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public Horario update(Long userId, Long horarioId, Horario updatedHorario) {
+        List<Horario> horarios = userIdToHorarios.get(userId);
+        if (horarios == null) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        
+        int index = -1;
+        for (int i = 0; i < horarios.size(); i++) {
+            if (horarios.get(i).getId() != null && horarios.get(i).getId().equals(horarioId)) {
+                index = i;
+                break;
+            }
+        }
+        
+        if (index == -1) {
+            throw new IllegalArgumentException("Horario no encontrado");
+        }
+        
+        updatedHorario.setId(horarioId);
+        updatedHorario.setUserId(userId);
+        horarios.set(index, updatedHorario);
+        persist();
+        return updatedHorario;
+    }
+
+    public void delete(Long userId, Long horarioId) {
+        List<Horario> horarios = userIdToHorarios.get(userId);
+        if (horarios == null) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
+        
+        boolean removed = horarios.removeIf(h -> h.getId() != null && h.getId().equals(horarioId));
+        if (!removed) {
+            throw new IllegalArgumentException("Horario no encontrado");
+        }
+        
+        persist();
+    }
+
     private synchronized void persist() {
         Path path = Paths.get(storagePath);
         try {

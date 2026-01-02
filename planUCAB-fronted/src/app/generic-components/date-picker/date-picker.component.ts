@@ -109,15 +109,25 @@ export class DatePickerComponent implements OnChanges {
     }, 0);
   }
   
-  mesAnterior(): void {
+  mesAnterior(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
     this.mesActual.set(addMonths(this.mesActual(), -1));
   }
   
-  mesSiguiente(): void {
+  mesSiguiente(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
     this.mesActual.set(addMonths(this.mesActual(), 1));
   }
   
-  hoy(): void {
+  onCalendarClick(event: Event): void {
+    event.stopPropagation();
+  }
+  
+  hoy(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
     const hoy = new Date();
     const fechaStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
     this.valueChange.emit(fechaStr);
@@ -127,7 +137,9 @@ export class DatePickerComponent implements OnChanges {
     }, 0);
   }
   
-  limpiar(): void {
+  limpiar(event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
     this.valueChange.emit('');
     this.mostrarCalendario.set(false);
   }
@@ -145,9 +157,15 @@ export class DatePickerComponent implements OnChanges {
   cerrarSiClickFuera(event: Event): void {
     const target = event.target as HTMLElement;
     // No cerrar si el click es dentro del calendario o del input wrapper
-    if (!target.closest('.date-picker__calendar') && !target.closest('.date-picker__input-wrapper')) {
+    // Verificar específicamente los botones de navegación para que no cierren el calendario
+    const esBotonNav = target.closest('.date-picker__nav') !== null;
+    const esDentroCalendario = target.closest('.date-picker__calendar') !== null;
+    const esDentroInput = target.closest('.date-picker__input-wrapper') !== null;
+    
+    if (!esDentroCalendario && !esDentroInput && !esBotonNav) {
       this.mostrarCalendario.set(false);
     }
   }
 }
+
 

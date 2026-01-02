@@ -1,7 +1,7 @@
 <div class="calendario-semanal">
   <aside class="calendario-semanal__sidebar">
     <div class="calendario-semanal__sidebar-content">
-      <app-calendario-mensual (crearEvento)="abrirModalCrear()" (crearHorario)="abrirModalCrearHorario()" (crearEvaluacion)="abrirModalCrearEvaluacion()" (verMaterias)="abrirModalMaterias()" (fechaSeleccionada)="navegarAFecha($event)"></app-calendario-mensual>
+      <app-calendario-mensual (crearEvento)="abrirModalCrear()" (crearHorario)="abrirModalCrearHorario()" (crearEvaluacion)="abrirModalCrearEvaluacion()" (verMaterias)="abrirModalMaterias()" (verNotas)="irANotas()" (fechaSeleccionada)="navegarAFecha($event)"></app-calendario-mensual>
     </div>
     <div class="calendario-semanal__sidebar-footer">
       <button (click)="cerrarSesion()" class="calendario-semanal__logout-btn">
@@ -63,11 +63,11 @@
           <div *ngFor="let h of horas" class="day-col__grid-cell"></div>
           <!-- overlay de eventos -->
           <div class="events-layer">
-            <div *ngFor="let ev of eventosYHorarios()" [style.display]="estaEnDia(ev, d) ? 'block' : 'none'"
-                 [style.top]="topPercent(ev)" [style.height]="heightPercent(ev)" [style.background]="ev.colorHex"
+            <div *ngFor="let item of eventosYHorarios()" [style.display]="estaEnDia(item, d) ? 'block' : 'none'"
+                 [style.top]="topPercent(item)" [style.height]="heightPercent(item)" [style.background]="getItemColor(item)"
                  class="event"
-                 (click)="abrirDetallesEvento(ev)">
-              {{ ev.name }}
+                 (click)="abrirDetallesEvento(item)">
+              {{ getItemName(item) }}
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@
     </div>
   </main>
   <app-crear-evento *ngIf="mostrarModalCrear()" [eventosExistentes]="eventos()" [horariosExistentes]="horarios()" [eventoParaEditar]="eventoParaEditar()" (eventoCreado)="onEventoCreado()" (cerrar)="cerrarModalCrear()"></app-crear-evento>
-  <app-crear-horario *ngIf="mostrarModalCrearHorario()" [horariosExistentes]="horarios()" [eventosExistentes]="eventos()" (horarioCreado)="onHorarioCreado()" (cerrar)="cerrarModalCrearHorario()"></app-crear-horario>
+  <app-crear-horario *ngIf="mostrarModalCrearHorario()" [horariosExistentes]="horarios()" [eventosExistentes]="eventos()" [horarioParaEditar]="horarioParaEditar()" (horarioCreado)="onHorarioCreado()" (cerrar)="cerrarModalCrearHorario()"></app-crear-horario>
   <app-crear-evaluacion *ngIf="mostrarModalCrearEvaluacion()" [evaluacionParaEditar]="evaluacionParaEditar()" (evaluacionCreada)="onEvaluacionCreada()" (cerrar)="cerrarModalCrearEvaluacion()"></app-crear-evaluacion>
 
 <!-- Modal Materias -->
@@ -187,6 +187,55 @@
       <div class="event-details-footer">
         <button type="button" class="event-details-edit-btn" (click)="abrirEditarEvaluacion()">Editar</button>
         <button type="button" class="event-details-delete-btn" (click)="eliminarEvaluacion()">Eliminar</button>
+        <button type="button" class="event-details-close-btn" (click)="cerrarDetallesEvento()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Detalles del Horario -->
+  <div class="event-details-overlay" *ngIf="horarioSeleccionado()" (click)="cerrarDetallesEvento()">
+    <div class="event-details-content" (click)="$event.stopPropagation()">
+      <div class="event-details-header" [style.background]="horarioSeleccionado()?.colorHex || '#2196F3'">
+        <h2>{{ horarioSeleccionado()?.materia?.nombre || 'Materia desconocida' }}</h2>
+      </div>
+      <div class="event-details-body">
+        <div class="event-detail-item">
+          <div class="event-detail-label">Materia</div>
+          <div class="event-detail-value">
+            {{ horarioSeleccionado()?.materia?.nombre || horarioSeleccionado()?.materia }}
+          </div>
+        </div>
+        
+        <div class="event-detail-item">
+          <div class="event-detail-label">Día de la Semana</div>
+          <div class="event-detail-value">{{ horarioSeleccionado()?.diaSemana }}</div>
+        </div>
+        
+        <div class="event-detail-item">
+          <div class="event-detail-label">Hora</div>
+          <div class="event-detail-value">
+            {{ horarioSeleccionado()?.startTime }} - {{ horarioSeleccionado()?.endTime }}
+          </div>
+        </div>
+        
+        <div class="event-detail-item" *ngIf="horarioSeleccionado()?.profesor">
+          <div class="event-detail-label">Profesor</div>
+          <div class="event-detail-value">{{ horarioSeleccionado()?.profesor }}</div>
+        </div>
+        
+        <div class="event-detail-item" *ngIf="horarioSeleccionado()?.tipoClase">
+          <div class="event-detail-label">Tipo de Clase</div>
+          <div class="event-detail-value">{{ horarioSeleccionado()?.tipoClase }}</div>
+        </div>
+        
+        <div class="event-detail-item" *ngIf="horarioSeleccionado()?.location">
+          <div class="event-detail-label">Ubicación</div>
+          <div class="event-detail-value">{{ horarioSeleccionado()?.location }}</div>
+        </div>
+      </div>
+      <div class="event-details-footer">
+        <button type="button" class="event-details-edit-btn" (click)="abrirEditarHorario()">Editar</button>
+        <button type="button" class="event-details-delete-btn" (click)="eliminarHorario()">Eliminar</button>
         <button type="button" class="event-details-close-btn" (click)="cerrarDetallesEvento()">Cerrar</button>
       </div>
     </div>

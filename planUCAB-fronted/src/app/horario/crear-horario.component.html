@@ -1,7 +1,7 @@
 <div class="modal-overlay" (click)="cerrarModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Crear Horario</h2>
+      <h2>{{ horarioParaEditar ? 'Editar Horario' : 'Crear Horario' }}</h2>
     </div>
     <div class="modal-form-wrapper">
       <form [formGroup]="form" (ngSubmit)="submit()" class="modal-form">
@@ -20,7 +20,7 @@
           <div *ngFor="let horario of horariosArray.controls; let i = index" [formGroupName]="i" class="horario-item">
             <div class="horario-header">
               <h4>Día {{ i + 1 }}</h4>
-              <button type="button" *ngIf="horariosArray.length > 1" (click)="eliminarDia(i)" class="btn-eliminar">×</button>
+              <button type="button" *ngIf="horariosArray.length > 1 && !horarioParaEditar" (click)="eliminarDia(i)" class="btn-eliminar">×</button>
             </div>
             
             <label>
@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <button type="button" (click)="agregarDia()" class="btn-add-day" *ngIf="horariosArray.length < 3">
+        <button type="button" (click)="agregarDia()" class="btn-add-day" *ngIf="horariosArray.length < 3 && !horarioParaEditar">
           + Añadir otro día
         </button>
 
@@ -83,7 +83,7 @@
 
         <div class="modal-buttons">
           <button type="button" (click)="cancelar()">Cancelar</button>
-          <button type="submit">Crear horario(s)</button>
+          <button type="submit">{{ horarioParaEditar ? 'Actualizar horario' : 'Crear horario(s)' }}</button>
         </div>
         <div class="mensaje" [style.color]="mensaje.startsWith('Error') ? '#d32f2f' : '#333'">{{ mensaje }}</div>
       </form>
