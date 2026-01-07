@@ -20,15 +20,9 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface UpdateUserRequest {
-  username?: string;
-  email?: string;
-  password?: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly baseUrl = 'http://localhost:8081/api';
+  private readonly baseUrl = 'http://localhost:8080/api';
   private readonly STORAGE_KEY = 'planUCAB_user';
   private readonly STORAGE_KEY_ID = 'planUCAB_user_id';
   private readonly STORAGE_KEY_PASSWORD = 'planUCAB_password';
@@ -96,46 +90,16 @@ export class AuthService {
     if (storedUser) {
       try {
         const user = JSON.parse(storedUser) as User;
-        
-        // Verificar que el usuario existe en el backend
-        this.http.get<User>(`${this.baseUrl}/auth/users/${user.id}`).subscribe({
-          next: (backendUser) => {
-            // El usuario existe, cargar los datos
-            if (storedPassword) {
-              backendUser.password = storedPassword;
-            }
-            this.currentUser.set(backendUser);
-            this.isAuthenticated.set(true);
-          },
-          error: () => {
-            // El usuario no existe en el backend, limpiar localStorage
-            this.logout();
-          }
-        });
+        if (storedPassword) {
+          user.password = storedPassword;
+        }
+        this.currentUser.set(user);
+        this.isAuthenticated.set(true);
       } catch (e) {
         // Si hay error al parsear, limpiar el localStorage
         this.logout();
       }
     }
-  }
-
-  updateUser(userId: number, request: UpdateUserRequest): Observable<User> {
-    return this.http.put<User>(`${this.baseUrl}/auth/users/${userId}`, request).pipe(
-      tap(user => {
-        // Si se actualiza la contraseña, guardarla
-        if (request.password) {
-          localStorage.setItem(this.STORAGE_KEY_PASSWORD, request.password);
-        }
-        // Actualizar el usuario en el estado
-        const currentPassword = request.password || this.getCurrentUserPassword() || undefined;
-        const updatedUser = { ...user, password: currentPassword };
-        this.setCurrentUser(updatedUser);
-      })
-    );
-  }
-
-  deleteUser(userId: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/auth/users/${userId}`);
   }
 }
 

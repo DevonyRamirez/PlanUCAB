@@ -206,6 +206,11 @@ public class EvaluacionRepository {
         persist();
     }
 
+    public void deleteAllByUserId(Long userId) {
+        userIdToEvaluaciones.remove(userId);
+        persist();
+    }
+
     private synchronized void persist() {
         Path path = Paths.get(storagePath);
         try {

@@ -187,6 +187,11 @@ public class HorarioRepository {
         persist();
     }
 
+    public void deleteAllByUserId(Long userId) {
+        userIdToHorarios.remove(userId);
+        persist();
+    }
+
     private synchronized void persist() {
         Path path = Paths.get(storagePath);
         try {

@@ -46,8 +46,109 @@
       </div>
     </div>
     <div class="profile-modal-footer">
+      <button type="button" class="profile-edit-btn" (click)="abrirEditModal()">
+        Editar Datos
+      </button>
+      <button type="button" class="profile-delete-btn" (click)="abrirConfirmDelete()">
+        Eliminar Cuenta
+      </button>
       <button type="button" class="profile-logout-btn" (click)="logout()">
         Cerrar Sesión
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edición -->
+<div class="edit-modal-overlay" *ngIf="mostrarEditModal()" (click)="cerrarEditModal()">
+  <div class="edit-modal-content" (click)="$event.stopPropagation()">
+    <div class="edit-modal-header">
+      <h3>Editar Datos</h3>
+      <button (click)="cerrarEditModal()" class="edit-modal-close" title="Cerrar">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="edit-modal-body">
+      <div class="edit-form-group">
+        <label for="edit-username">Nombre de Usuario</label>
+        <input 
+          type="text" 
+          id="edit-username" 
+          [(ngModel)]="editForm.username"
+          placeholder="Nombre de usuario" />
+      </div>
+      
+      <div class="edit-form-group">
+        <label for="edit-email">Correo Electrónico</label>
+        <input 
+          type="email" 
+          id="edit-email" 
+          [(ngModel)]="editForm.email"
+          placeholder="correo@est.ucab.edu.ve" />
+      </div>
+      
+      <div class="edit-form-group">
+        <label for="edit-password">Nueva Contraseña (opcional)</label>
+        <input 
+          type="password" 
+          id="edit-password" 
+          [(ngModel)]="editForm.password"
+          placeholder="Dejar vacío para no cambiar" />
+      </div>
+      
+      <div class="edit-form-group" *ngIf="editForm.password">
+        <label for="edit-confirm-password">Confirmar Contraseña</label>
+        <input 
+          type="password" 
+          id="edit-confirm-password" 
+          [(ngModel)]="editForm.confirmPassword"
+          placeholder="Confirmar nueva contraseña" />
+      </div>
+
+      <div class="edit-error" *ngIf="editError()">
+        {{ editError() }}
+      </div>
+      
+      <div class="edit-success" *ngIf="editSuccess()">
+        {{ editSuccess() }}
+      </div>
+    </div>
+    
+    <div class="edit-modal-footer">
+      <button type="button" class="edit-cancel-btn" (click)="cerrarEditModal()">
+        Cancelar
+      </button>
+      <button 
+        type="button" 
+        class="edit-save-btn" 
+        (click)="guardarCambios()"
+        [disabled]="isSubmitting()">
+        {{ isSubmitting() ? 'Guardando...' : 'Guardar Cambios' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div class="delete-modal-overlay" *ngIf="mostrarConfirmDelete()" (click)="cerrarConfirmDelete()">
+  <div class="delete-modal-content" (click)="$event.stopPropagation()">
+    <div class="delete-modal-header">
+      <h3>⚠️ Eliminar Cuenta</h3>
+    </div>
+    <div class="delete-modal-body">
+      <p>¿Estás seguro de que deseas eliminar tu cuenta?</p>
+      <p class="delete-warning">Esta acción es irreversible y eliminará todos tus datos, incluyendo evaluaciones, horarios y materias.</p>
+    </div>
+    <div class="delete-modal-footer">
+      <button type="button" class="delete-cancel-btn" (click)="cerrarConfirmDelete()">
+        Cancelar
+      </button>
+      <button type="button" class="delete-confirm-btn" (click)="confirmarEliminar()">
+        Sí, Eliminar
       </button>
     </div>
   </div>

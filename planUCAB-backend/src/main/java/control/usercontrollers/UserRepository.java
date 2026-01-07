@@ -89,6 +89,13 @@ public class UserRepository {
         return new ArrayList<>(users.values());
     }
 
+    public void delete(User user) {
+        if (user != null && user.getId() != null) {
+            users.remove(user.getId());
+            persist();
+        }
+    }
+
     private synchronized void persist() {
         Path path = Paths.get(storagePath);
         try {

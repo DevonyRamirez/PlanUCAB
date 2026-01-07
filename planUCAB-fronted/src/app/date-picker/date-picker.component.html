@@ -1,0 +1,52 @@
+<div class="date-picker">
+  <div class="date-picker__input-wrapper" (click)="mostrarCalendario.set(!mostrarCalendario())">
+    <input 
+      type="text" 
+      [value]="fechaFormateada()" 
+      placeholder="mm/dd/yyyy" 
+      readonly
+      class="date-picker__input" />
+    <svg class="date-picker__icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+      <line x1="16" y1="2" x2="16" y2="6"></line>
+      <line x1="8" y1="2" x2="8" y2="6"></line>
+      <line x1="3" y1="10" x2="21" y2="10"></line>
+    </svg>
+  </div>
+  
+  <div class="date-picker__calendar" *ngIf="mostrarCalendario()">
+    <div class="date-picker__header">
+      <button (click)="mesAnterior()" class="date-picker__nav">▲</button>
+      <div class="date-picker__month-year">
+        <span>{{ nombreMes() }}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <button (click)="mesSiguiente()" class="date-picker__nav">▼</button>
+    </div>
+    
+    <div class="date-picker__weekdays">
+      <div *ngFor="let d of diasSemana" class="date-picker__weekday">{{ d }}</div>
+    </div>
+    
+    <div class="date-picker__grid">
+      <button
+        *ngFor="let dia of diasMes()"
+        (click)="seleccionarDia(dia, $event)"
+        [class.date-picker__day--other-month]="dia && !esMesActual(dia)"
+        [class.date-picker__day--today]="dia && esHoy(dia)"
+        [class.date-picker__day--selected]="dia && esSeleccionado(dia)"
+        class="date-picker__day"
+        [disabled]="!dia">
+        {{ dia?.getDate() }}
+      </button>
+    </div>
+    
+    <div class="date-picker__footer">
+      <button (click)="limpiar()" class="date-picker__footer-btn">Limpiar</button>
+      <button (click)="hoy()" class="date-picker__footer-btn">Hoy</button>
+    </div>
+  </div>
+</div>
+
