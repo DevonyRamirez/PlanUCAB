@@ -1,0 +1,19 @@
+<header class="header">
+  <div class="header__logo">
+    <img src="assets/PlanUCAB_light.png" alt="PlanUCAB" class="header__logo-img" />
+  </div>
+  
+  <div class="header__search">
+    <app-barra-busqueda></app-barra-busqueda>
+  </div>
+  
+  <div class="header__user">
+    <span class="header__user-name">{{ nombreUsuario }}</span>
+    <button (click)="togglePerfil()" class="header__profile-btn" title="Ver perfil">
+      <img src="assets/cuenta-perfil-logo.svg" alt="Perfil" class="header__user-icon" />
+    </button>
+  </div>
+
+  <app-cuenta [mostrar]="mostrarPerfil" (cerrar)="cerrarPerfil()"></app-cuenta>
+</header>
+

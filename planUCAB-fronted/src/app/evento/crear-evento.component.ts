@@ -1,0 +1,247 @@
+import { Component, EventEmitter, Output, Input, OnInit, OnChanges } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { EventoService, Event } from '../service/evento.service';
+import { Horario } from '../service/horario.service';
+import { DatePickerComponent } from '../generic-components/date-picker/date-picker.component';
+import { TimePickerComponent } from '../generic-components/time-picker/time-picker.component';
+import { ColorPickerComponent } from '../generic-components/color-picker/color-picker.component';
+import { AuthService } from '../service/auth.service';
+
+@Component({
+  selector: 'app-crear-evento',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, DatePickerComponent, TimePickerComponent, ColorPickerComponent],
+  templateUrl: './crear-evento.component.html',
+  styleUrl: './crear-evento.component.css'
+})
+export class CrearEventoComponent implements OnInit, OnChanges {
+  @Input() eventosExistentes: Event[] = [];
+  @Input() horariosExistentes: Horario[] = [];
+  @Input() eventoParaEditar: Event | null = null;
+  @Output() eventoCreado = new EventEmitter<void>();
+  @Output() cerrar = new EventEmitter<void>();
+  mensaje = '';
+  mostrarError = false;
+  mensajeError = '';
+
+  form = this.fb.group({
+    userId: [0, [Validators.required, Validators.min(1)]],
+    name: ['', [Validators.required, Validators.maxLength(30)]],
+    location: ['', [Validators.maxLength(200)]],
+    date: ['', [Validators.required]],
+    startTime: ['', [Validators.required]],
+    endTime: ['', [Validators.required]],
+    description: ['', [Validators.maxLength(1000)]],
+    colorHex: ['#2196F3', [Validators.required, Validators.pattern(/^#([A-Fa-f0-9]{6})$/)]]
+  });
+
+  constructor(
+    private fb: FormBuilder,
+    private eventoService: EventoService,
+    private authService: AuthService
+  ) {
+    // Cuando cambie la hora de inicio, validar y limpiar la hora de fin si es necesario
+    this.form.get('startTime')?.valueChanges.subscribe(startTime => {
+      if (startTime) {
+        const endTime = this.form.get('endTime')?.value;
+        if (endTime) {
+          const normalizedStart = this.normalizeTime(startTime);
+          const normalizedEnd = this.normalizeTime(endTime);
+          const start = new Date(`1970-01-01T${normalizedStart}`);
+          const end = new Date(`1970-01-01T${normalizedEnd}`);
+          if (!(start < end)) {
+            // La hora de fin es menor o igual a la de inicio, limpiarla
+            this.form.patchValue({ endTime: '' }, { emitEvent: false });
+          }
+        }
+      }
+    });
+  }
+
+  ngOnInit(): void {
+    const userId = this.authService.getCurrentUserId();
+    if (userId) {
+      this.form.patchValue({ userId });
+    }
+    
+    // Si hay un evento para editar, cargar sus datos
+    if (this.eventoParaEditar) {
+      this.cargarDatosEvento();
+    }
+  }
+
+  ngOnChanges(): void {
+    // Si cambia el evento para editar, recargar los datos
+    if (this.eventoParaEditar) {
+      this.cargarDatosEvento();
+    }
+  }
+
+  private cargarDatosEvento(): void {
+    if (!this.eventoParaEditar) return;
+    
+    const evento = this.eventoParaEditar;
+    const startDate = new Date(evento.startDateTime);
+    const endDate = new Date(evento.endDateTime);
+    
+    // Formatear fecha como YYYY-MM-DD
+    const dateStr = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
+    
+    // Formatear horas como HH:mm
+    const startTimeStr = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
+    const endTimeStr = `${String(endDate.getHours()).padStart(2, '0')}:${String(endDate.getMinutes()).padStart(2, '0')}`;
+    
+    this.form.patchValue({
+      userId: evento.userId,
+      name: evento.name,
+      location: evento.location || '',
+      date: dateStr,
+      startTime: startTimeStr,
+      endTime: endTimeStr,
+      description: evento.description || '',
+      colorHex: evento.colorHex || '#2196F3'
+    });
+  }
+
+  submit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      const faltantes: string[] = [];
+      if (this.form.get('name')?.hasError('required')) faltantes.push('título');
+      if (this.form.get('date')?.hasError('required')) faltantes.push('fecha');
+      if (this.form.get('startTime')?.hasError('required')) faltantes.push('hora de inicio');
+      if (this.form.get('endTime')?.hasError('required')) faltantes.push('hora de fin');
+      const mensajeValidacion = faltantes.length
+        ? `Por favor rellena: ${faltantes.join(', ')}`
+        : 'Hay campos inválidos. Verifica el formulario.';
+      this.mensajeError = mensajeValidacion;
+      this.mostrarError = true;
+      return;
+    }
+    const { userId, name, location, date, startTime, endTime, description, colorHex } = this.form.value as any;
+    // Normalizar horas a formato 24h (HH:mm)
+    const normalizedStartTime = this.normalizeTime(startTime);
+    const normalizedEndTime = this.normalizeTime(endTime);
+    // La validación de conflictos se hace en el backend
+    // Convertir strings vacíos a null para campos opcionales
+    const locationValue = location?.trim() || null;
+    const descriptionValue = description?.trim() || null;
+    
+    const payload = { name, location: locationValue, date, startTime: normalizedStartTime, endTime: normalizedEndTime, description: descriptionValue, colorHex };
+    
+    // Si hay un evento para editar, actualizar; si no, crear
+    if (this.eventoParaEditar) {
+      this.eventoService
+        .actualizarEvento(Number(userId), this.eventoParaEditar.id, payload)
+        .subscribe({
+          next: (ev) => {
+            this.mensaje = `Evento actualizado (#${ev.id})`;
+            setTimeout(() => {
+              this.eventoCreado.emit();
+              this.cerrarModal();
+            }, 1000);
+          },
+          error: (err) => {
+            console.error('Error al actualizar evento', err);
+            let mensajeError = 'Error al actualizar el evento';
+
+            if (err.status === 0 || err.status === undefined) {
+              mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
+            } else if (err.status === 409) {
+              // Conflicto de horarios
+              mensajeError = err.error?.message || 'El evento entra en conflicto con otro evento existente';
+            } else if (err.error?.message) {
+              mensajeError = `Error: ${err.error.message}`;
+            } else if (err.error?.errors) {
+              mensajeError = `Error de validación: ${JSON.stringify(err.error.errors)}`;
+            } else if (err.message) {
+              mensajeError = `Error: ${err.message}`;
+            }
+
+            this.mensajeError = mensajeError;
+            this.mostrarError = true;
+          }
+        });
+    } else {
+      this.eventoService
+        .crearEvento(Number(userId), payload)
+        .subscribe({
+          next: (ev) => {
+            this.mensaje = `Evento creado (#${ev.id})`;
+            setTimeout(() => {
+              this.eventoCreado.emit();
+              this.cerrarModal();
+            }, 1000);
+          },
+        error: (err) => {
+          console.error('Error al crear evento', err);
+          let mensajeError = 'Error al crear el evento';
+
+          if (err.status === 0 || err.status === undefined) {
+            mensajeError = 'No se pudo conectar con el servidor. Verifica que el backend esté corriendo en http://localhost:8081';
+          } else if (err.status === 409) {
+            // Conflicto de horarios
+            mensajeError = err.error?.message || 'El evento entra en conflicto con otro evento existente';
+          } else if (err.error?.message) {
+            mensajeError = `Error: ${err.error.message}`;
+          } else if (err.error?.errors) {
+            mensajeError = `Error de validación: ${JSON.stringify(err.error.errors)}`;
+          } else if (err.message) {
+            mensajeError = `Error: ${err.message}`;
+          }
+
+          this.mensajeError = mensajeError;
+          this.mostrarError = true;
+        }
+      });
+    }
+  }
+
+  cancelar(): void {
+    this.cerrarModal();
+  }
+
+  cerrarModal(): void {
+    this.cerrar.emit();
+    const userId = this.authService.getCurrentUserId() || 0;
+    this.form.reset({
+      userId,
+      colorHex: '#2196F3'
+    });
+    this.mensaje = '';
+    this.mostrarError = false;
+    this.mensajeError = '';
+  }
+
+  cerrarError(): void {
+    this.mostrarError = false;
+    this.mensajeError = '';
+  }
+
+  private normalizeTime(t: string): string {
+    if (!t) return '';
+    const ampm = /\s*(AM|PM)$/i;
+    if (ampm.test(t)) {
+      const [time, mer] = t.trim().split(/\s+/);
+      const [hStr, mStr] = time.split(':');
+      let h = parseInt(hStr, 10);
+      const m = parseInt(mStr, 10) || 0;
+      const upper = mer.toUpperCase();
+      if (upper === 'PM' && h !== 12) h += 12;
+      if (upper === 'AM' && h === 12) h = 0;
+      // Mantener minutos exactos sin redondear
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+    // Si ya está en formato HH:mm, devolverlo tal cual
+    if (/^\d{1,2}:\d{2}$/.test(t.trim())) {
+      const [hStr, mStr] = t.trim().split(':');
+      const h = parseInt(hStr, 10);
+      const m = parseInt(mStr, 10) || 0;
+      return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+    }
+    return t;
+  }
+}
+
+

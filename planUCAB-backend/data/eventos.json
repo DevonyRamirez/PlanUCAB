@@ -1,0 +1,76 @@
+{
+  "1" : [ {
+    "id" : 5,
+    "userId" : 1,
+    "colorHex" : "#2196F3",
+    "location" : "Mi casa",
+    "name" : "Evento ",
+    "description" : null,
+    "startDateTime" : "2025-11-19T12:00:00",
+    "endDateTime" : "2025-11-19T12:30:00"
+  } ],
+  "2" : [ {
+    "id" : 1,
+    "userId" : 2,
+    "colorHex" : "#8FACC1",
+    "location" : "Online",
+    "name" : "Reunion",
+    "description" : "Desarrollo de software",
+    "startDateTime" : "2025-11-12T19:00:00",
+    "endDateTime" : "2025-11-12T22:00:00"
+  }, {
+    "id" : 2,
+    "userId" : 2,
+    "colorHex" : "#2196F3",
+    "location" : "jejee",
+    "name" : "Hola",
+    "description" : null,
+    "startDateTime" : "2025-11-12T01:00:00",
+    "endDateTime" : "2025-11-12T02:00:00"
+  }, {
+    "id" : 3,
+    "userId" : 2,
+    "colorHex" : "#3C5467",
+    "location" : "Ola",
+    "name" : "JEEJEJE",
+    "description" : "Ola",
+    "startDateTime" : "2025-11-12T15:30:00",
+    "endDateTime" : "2025-11-12T15:40:00"
+  }, {
+    "id" : 4,
+    "userId" : 2,
+    "colorHex" : "#2196F3",
+    "location" : "l2315",
+    "name" : "ola",
+    "description" : "ksmdkw",
+    "startDateTime" : "2025-11-12T04:00:00",
+    "endDateTime" : "2025-11-12T06:00:00"
+  }, {
+    "id" : 6,
+    "userId" : 2,
+    "colorHex" : "#20F3D4",
+    "location" : "Las Mercedes, Caracas",
+    "name" : "Notion",
+    "description" : "Vestimenta casual",
+    "startDateTime" : "2025-11-26T18:00:00",
+    "endDateTime" : "2025-11-26T20:00:00"
+  }, {
+    "id" : 7,
+    "userId" : 2,
+    "colorHex" : "#2196F3",
+    "location" : "Las Mercedes, Caracas",
+    "name" : "Notion",
+    "description" : "Vestimenta casual",
+    "startDateTime" : "2025-11-27T14:00:00",
+    "endDateTime" : "2025-11-27T17:00:00"
+  }, {
+    "id" : 8,
+    "userId" : 2,
+    "colorHex" : "#EC20F3",
+    "location" : "Caracas",
+    "name" : "Hola",
+    "description" : "JSWHDIIOW",
+    "startDateTime" : "2025-11-26T03:00:00",
+    "endDateTime" : "2025-11-26T04:00:00"
+  } ]
+}
