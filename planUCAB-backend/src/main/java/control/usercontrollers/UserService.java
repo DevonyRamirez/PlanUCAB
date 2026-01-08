@@ -4,6 +4,7 @@ import model.User;
 import exceptions.EventException;
 import control.evaluacioncontrollers.EvaluacionRepository;
 import control.horariocontrollers.HorarioRepository;
+import control.eventcontrollers.EventRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,13 +13,15 @@ public class UserService {
     private final UserRepository userRepository;
     private final EvaluacionRepository evaluacionRepository;
     private final HorarioRepository horarioRepository;
+    private final EventRepository eventRepository;
 
     public UserService(UserRepository userRepository, 
                        EvaluacionRepository evaluacionRepository,
-                       HorarioRepository horarioRepository) {
+                       HorarioRepository horarioRepository, EventRepository eventRepository) {
         this.userRepository = userRepository;
         this.evaluacionRepository = evaluacionRepository;
         this.horarioRepository = horarioRepository;
+        this.eventRepository = eventRepository;
     }
 
     public UserResponse register(CreateUserRequest request) {
@@ -87,6 +90,7 @@ public class UserService {
         // Eliminar todos los datos asociados al usuario
         evaluacionRepository.deleteAllByUserId(id);
         horarioRepository.deleteAllByUserId(id);
+        eventRepository.deleteAllByUserId(id);
         
         // Eliminar el usuario
         userRepository.delete(user);

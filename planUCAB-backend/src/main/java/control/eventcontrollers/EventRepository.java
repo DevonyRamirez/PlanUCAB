@@ -129,6 +129,13 @@ public class EventRepository {
         persist();
     }
 
+    public void deleteAllByUserId(Long userId) {
+        List<Event> eventos = userIdToEvents.remove(userId);
+        if (eventos != null) {
+            persist();
+        }
+    }
+
     private synchronized void persist() {
         Path path = Paths.get(storagePath);
         try {
